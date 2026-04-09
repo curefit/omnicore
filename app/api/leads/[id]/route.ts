@@ -6,35 +6,40 @@ export async function GET(
   _req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await context.params
-  const lead = await prisma.lead.findUnique({
-    where: { id },
-    include: {
-      quote: { include: { lineItems: true } },
-    },
-  })
-  if (!lead) {
-    return NextResponse.json({ error: "Lead not found" }, { status: 404 })
-  }
-
-  let equipmentCategory: string | null = null
-  if (lead.formData) {
-    try {
-      const fd = JSON.parse(lead.formData)
-      if (fd.gymSqFt && fd.totalUnits) {
-        equipmentCategory = deriveEquipmentCategory(fd.gymSqFt, fd.totalUnits)
-      }
-    } catch {
-      // formData may be malformed; ignore
-    }
-  }
-
-  let equipmentRecommendation = null
-  if (equipmentCategory) {
-    equipmentRecommendation = await prisma.equipmentRecommendation.findUnique({
-      where: { sizeCategory: equipmentCategory },
+  try {
+    const { id } = await context.params
+    const lead = await prisma.lead.findUnique({
+      where: { id },
+      include: {
+        quote: { include: { lineItems: true } },
+      },
     })
-  }
+    if (!lead) {
+      return NextResponse.json({ error: "Lead not found" }, { status: 404 })
+    }
 
-  return NextResponse.json({ lead, equipmentCategory, equipmentRecommendation })
+    let equipmentCategory: string | null = null
+    if (lead.formData) {
+      try {
+        const fd = JSON.parse(lead.formData)
+        if (fd.gymSqFt && fd.totalUnits) {
+          equipmentCategory = deriveEquipmentCategory(fd.gymSqFt, fd.totalUnits)
+        }
+      } catch {
+        // formData may be malformed; ignore
+      }
+    }
+
+    let equipmentRecommendation = null
+    if (equipmentCategory) {
+      equipmentRecommendation = await prisma.equipmentRecommendation.findUnique({
+        where: { sizeCategory: equipmentCategory },
+      })
+    }
+
+    return NextResponse.json({ lead, equipmentCategory, equipmentRecommendation })
+  } catch (err) {
+    console.error("Get lead error:", err)
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  }
 }

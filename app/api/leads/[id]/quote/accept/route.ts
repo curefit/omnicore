@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/client"
+import { Prisma } from "@prisma/client"
 import { LeadFormSubmitSchema } from "@/lib/validations/lead"
 
 export async function POST(
@@ -29,16 +30,13 @@ export async function POST(
     return NextResponse.json({ error: "Stored form data is invalid" }, { status: 400 })
   }
 
-  // Check for duplicate center code
-  const existing = await prisma.center.findUnique({ where: { code: formData.code } })
-  if (existing) {
-    return NextResponse.json(
-      { error: `Center code ${formData.code} already exists` },
-      { status: 409 }
-    )
-  }
+  try {
+    const center = await prisma.$transaction(async (tx) => {
+    const existing = await tx.center.findUnique({ where: { code: formData.code } })
+    if (existing) {
+      throw new Error(`DUPLICATE_CODE:${formData.code}`)
+    }
 
-  const center = await prisma.$transaction(async (tx) => {
     const center = await tx.center.create({
       data: {
         name: formData.name,
@@ -116,5 +114,19 @@ export async function POST(
     return center
   })
 
-  return NextResponse.json({ centerId: center.id, code: center.code })
+    return NextResponse.json({ centerId: center.id, code: center.code })
+  } catch (err) {
+    if (err instanceof Error && err.message.startsWith("DUPLICATE_CODE:")) {
+      const code = err.message.split(":")[1]
+      return NextResponse.json({ error: `Center code ${code} already exists` }, { status: 409 })
+    }
+    if (
+      err instanceof Prisma.PrismaClientKnownRequestError &&
+      err.code === "P2025"
+    ) {
+      return NextResponse.json({ error: "Record not found" }, { status: 404 })
+    }
+    console.error("Quote accept error:", err)
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  }
 }

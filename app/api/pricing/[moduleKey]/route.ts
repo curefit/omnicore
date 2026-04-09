@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/client"
+import { Prisma } from "@prisma/client"
 import { z } from "zod"
 import { UpdatePricingConfigSchema } from "@/lib/validations/quote"
 
@@ -24,6 +25,12 @@ export async function PUT(
         { error: "Validation failed", details: err.issues },
         { status: 400 }
       )
+    }
+    if (
+      err instanceof Prisma.PrismaClientKnownRequestError &&
+      err.code === "P2025"
+    ) {
+      return NextResponse.json({ error: "Pricing config not found" }, { status: 404 })
     }
     console.error("Pricing update error:", err)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })

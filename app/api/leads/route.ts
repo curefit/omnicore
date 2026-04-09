@@ -5,11 +5,16 @@ import { CreateLeadSchema } from "@/lib/validations/lead"
 import { generateInviteToken, tokenExpiresAt } from "@/lib/leads/token"
 
 export async function GET() {
-  const leads = await prisma.lead.findMany({
-    orderBy: { createdAt: "desc" },
-    include: { quote: { select: { status: true } } },
-  })
-  return NextResponse.json({ leads })
+  try {
+    const leads = await prisma.lead.findMany({
+      orderBy: { createdAt: "desc" },
+      include: { quote: { select: { status: true } } },
+    })
+    return NextResponse.json({ leads })
+  } catch (err) {
+    console.error("List leads error:", err)
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  }
 }
 
 export async function POST(req: NextRequest) {

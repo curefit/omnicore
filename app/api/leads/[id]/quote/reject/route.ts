@@ -18,16 +18,21 @@ export async function POST(
     return NextResponse.json({ error: "Quote is not in SENT status" }, { status: 409 })
   }
 
-  await prisma.$transaction([
-    prisma.quote.update({
-      where: { id: lead.quote.id },
-      data: { status: "REJECTED" },
-    }),
-    prisma.lead.update({
-      where: { id },
-      data: { status: "REJECTED" },
-    }),
-  ])
+  try {
+    await prisma.$transaction([
+      prisma.quote.update({
+        where: { id: lead.quote.id },
+        data: { status: "REJECTED" },
+      }),
+      prisma.lead.update({
+        where: { id },
+        data: { status: "REJECTED" },
+      }),
+    ])
 
-  return NextResponse.json({ ok: true })
+    return NextResponse.json({ ok: true })
+  } catch (err) {
+    console.error("Quote reject error:", err)
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  }
 }

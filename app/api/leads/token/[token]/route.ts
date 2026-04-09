@@ -15,10 +15,6 @@ export async function GET(
   if (!lead) {
     return NextResponse.json({ error: "Invalid invite link" }, { status: 404 })
   }
-  if (isTokenExpired(lead.inviteExpiresAt)) {
-    return NextResponse.json({ error: "This invite link has expired" }, { status: 410 })
-  }
-
   // Allow quote review page to load lead+quote even after form is submitted
   if (lead.status === "QUOTE_SENT" && forQuote) {
     const fullLead = await prisma.lead.findUnique({
@@ -26,6 +22,10 @@ export async function GET(
       include: { quote: { include: { lineItems: true } } },
     })
     return NextResponse.json({ lead: fullLead })
+  }
+
+  if (isTokenExpired(lead.inviteExpiresAt)) {
+    return NextResponse.json({ error: "This invite link has expired" }, { status: 410 })
   }
 
   if (lead.status !== "INVITED") {
