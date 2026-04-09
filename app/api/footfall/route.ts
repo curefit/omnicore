@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
     // Build byHour array for hours 5–21
     const hourLabel = (h: number) => {
       const suffix = h >= 12 ? "pm" : "am"
-      const display = h > 12 ? h - 12 : h
+      const display = h > 12 ? h - 12 : h === 0 ? 12 : h
       return `${display}${suffix}`
     }
 
