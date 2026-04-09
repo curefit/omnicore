@@ -15,6 +15,19 @@ vi.mock("next/navigation", () => ({
   useParams: () => ({}),
 }))
 
+// Mock Next.js Image — renders a plain img for testing
+vi.mock("next/image", () => ({
+  default: ({
+    src,
+    alt,
+    ...props
+  }: {
+    src: string
+    alt: string
+    [key: string]: unknown
+  }) => React.createElement("img", { src, alt, ...props }),
+}))
+
 // Mock Next.js Link — renders as a plain anchor for testing
 vi.mock("next/link", () => ({
   default: ({

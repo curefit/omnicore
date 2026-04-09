@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import {
@@ -8,7 +9,7 @@ import {
   ROLE_SWITCH_TARGET,
   type Role,
 } from "@/lib/constants/navigation"
-import { ArrowLeftRight, Zap } from "lucide-react"
+import { ArrowLeftRight } from "lucide-react"
 
 interface SidebarProps {
   role: Role
@@ -24,13 +25,23 @@ export function Sidebar({ role, currentPath }: SidebarProps) {
   return (
     <aside className="flex flex-col h-screen w-60 shrink-0 border-r border-[#1f2937] bg-[#0d1117]">
       {/* ── Brand ── */}
-      <div className="flex items-center gap-2.5 px-5 py-5 border-b border-[#1f2937]">
-        <div className="flex items-center justify-center w-7 h-7 rounded-md bg-cyan-500/10 border border-cyan-500/30">
-          <Zap className="w-4 h-4 text-cyan-400" />
-        </div>
-        <span className="font-display text-[15px] font-bold tracking-tight text-white">
-          OmniCore
-        </span>
+      <div className="flex flex-col gap-3 px-5 py-5 border-b border-[#1f2937]">
+        <Image
+          src="/brand/omnicore-mark.png"
+          alt="OmniCore"
+          width={40}
+          height={40}
+          className="h-10 w-auto max-w-[120px] object-contain object-left"
+          priority
+        />
+        <Image
+          src="/brand/omnicore-fullname.png"
+          alt=""
+          width={200}
+          height={48}
+          className="w-full max-w-[200px] h-auto object-contain object-left opacity-95"
+          aria-hidden
+        />
       </div>
 
       {/* ── Role pill ── */}
