@@ -59,11 +59,11 @@ export default async function RWAAdminDashboardPage() {
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 mb-8">
         <StatCard
-          label="Live Occupancy"
+          label="Booked Slots"
           value={stats.liveOccupancy}
           icon={Activity}
           accent="cyan"
-          description="check-ins today"
+          description="amenity bookings today"
         />
         <StatCard
           label="Trainers Active"
