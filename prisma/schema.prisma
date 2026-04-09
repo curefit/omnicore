@@ -20,6 +20,7 @@ model Center {
   city           String
   pincode        String
   capacity       Int
+  gymSqFt        Int?
   operatingSince DateTime?
   imageUrl       String?
   createdAt      DateTime  @default(now())
