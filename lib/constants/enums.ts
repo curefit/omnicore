@@ -214,7 +214,7 @@ export const MODULE_PRICING_TYPE: Record<CenterModuleKey, PricingType> = {
 export const MODULE_PRICING_LABEL: Record<CenterModuleKey, string> = {
   [CenterModuleKey.TRAINERS]: "Monthly rate",
   [CenterModuleKey.ASSETS]: "One-time setup",
-  [CenterModuleKey.VENDING_MACHINES]: "One-time installation + revenue share",
+  [CenterModuleKey.VENDING_MACHINES]: "One-time installation + monthly revenue share",
   [CenterModuleKey.MYGATE]: "Monthly rate",
   [CenterModuleKey.BRANDING]: "One-time setup",
 }
