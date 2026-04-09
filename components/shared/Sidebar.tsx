@@ -16,32 +16,48 @@ interface SidebarProps {
   currentPath: string
 }
 
+const ROLE_HOME: Record<Role, string> = {
+  "cf-admin": "/cf-admin",
+  "rwa-admin": "/rwa-admin",
+}
+
 export function Sidebar({ role, currentPath }: SidebarProps) {
   const navItems = NAV_BY_ROLE[role]
   const roleLabel = ROLE_LABELS[role]
   const switchTarget = ROLE_SWITCH_TARGET[role]
   const isRwaAdmin = role === "rwa-admin"
+  const brandHref = ROLE_HOME[role]
 
   return (
     <aside className="flex flex-col h-screen w-60 shrink-0 border-r border-[#1f2937] bg-[#0d1117]">
-      {/* ── Brand ── */}
-      <div className="flex flex-col gap-3 px-5 py-5 border-b border-[#1f2937]">
-        <Image
-          src="/brand/omnicore-mark.png"
-          alt="OmniCore"
-          width={40}
-          height={40}
-          className="h-10 w-auto max-w-[120px] object-contain object-left"
-          priority
-        />
-        <Image
-          src="/brand/omnicore-fullname.png"
-          alt=""
-          width={200}
-          height={48}
-          className="w-full max-w-[200px] h-auto object-contain object-left opacity-95"
-          aria-hidden
-        />
+      {/* ── Brand lockup: mark + wordmark in one row (fits 15rem sidebar) ── */}
+      <div className="border-b border-[#1f2937] px-4 py-4">
+        <Link
+          href={brandHref}
+          className="group flex items-center gap-3 rounded-lg p-1 -m-1 outline-none ring-cyan-500/40 transition-colors hover:bg-white/[0.03] focus-visible:ring-2"
+        >
+          <span className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#111827]/80 ring-1 ring-white/[0.06]">
+            <Image
+              src="/brand/omnicore-mark.png"
+              alt=""
+              width={36}
+              height={36}
+              className="h-8 w-8 object-contain"
+              priority
+              sizes="36px"
+            />
+          </span>
+          <span className="relative flex min-h-[2.25rem] min-w-0 flex-1 items-center">
+            <Image
+              src="/brand/omnicore-fullname.png"
+              alt="OmniCore"
+              width={220}
+              height={48}
+              className="h-9 max-h-10 w-full object-contain object-left"
+              sizes="(max-width: 240px) 168px, 200px"
+            />
+          </span>
+        </Link>
       </div>
 
       {/* ── Role pill ── */}
