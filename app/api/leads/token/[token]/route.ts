@@ -38,6 +38,7 @@ export async function GET(
   return NextResponse.json({
     lead: {
       id: lead.id,
+      status: lead.status,
       societyName: lead.societyName,
       contactName: lead.contactName,
       contactEmail: lead.contactEmail,
