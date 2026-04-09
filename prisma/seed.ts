@@ -17,7 +17,7 @@ async function main() {
   await prisma.servicePricingConfig.deleteMany()
   await prisma.equipmentRecommendation.deleteMany()
   await prisma.serviceRequest.deleteMany()
-  await prisma.footfallEvent.deleteMany()
+  await prisma.amenityBooking.deleteMany()
   await prisma.pTSession.deleteMany()
   await prisma.trainerAttendance.deleteMany()
   await prisma.centerTrainerMapping.deleteMany()
@@ -479,53 +479,103 @@ async function main() {
 
   console.log("✓ PT sessions created")
 
-  // ─── Footfall Events (last 24 hours) ──────────────────────────────────────
+  // ─── Amenity Bookings — slot-based footfall (booking = footfall) ──────────────
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
 
-  const footfallMembers = [
-    "Amit Shah", "Priya Nair", "Ravi Kumar", "Deepa Menon", "Suresh Pillai",
-    "Anjali Singh", "Raj Patel", "Kavya Reddy", "Mohan Das", "Leena Joshi",
-    "Arun Krishnan", "Smita Rao", "Nikhil Bansal", "Pooja Agarwal", "Vijay Bhat",
+  const daysAgoBooking = (n: number) => {
+    const d = new Date(today)
+    d.setDate(d.getDate() - n)
+    return d
+  }
+
+  const prestigeResidents = [
+    { name: "Priya Sharma", flat: "A-204" },
+    { name: "Rohan Mehta", flat: "B-101" },
+    { name: "Anita Desai", flat: "C-302" },
+    { name: "Vikram Nair", flat: "A-105" },
+    { name: "Sunita Reddy", flat: "D-201" },
+    { name: "Arjun Kapoor", flat: "B-304" },
+    { name: "Meena Iyer", flat: "C-103" },
+    { name: "Karan Singh", flat: "A-402" },
+    { name: "Divya Patel", flat: "D-105" },
+    { name: "Rahul Joshi", flat: "B-202" },
+    { name: "Neha Gupta", flat: "C-401" },
+    { name: "Amit Kumar", flat: "A-301" },
   ]
 
-  const footfallEvents = []
-  for (let i = 0; i < footfallMembers.length; i++) {
-    const checkInTime = hoursAgo(Math.random() * 8 + 1)
-    footfallEvents.push({
-      centerId: centerPrestige.id,
-      eventType: "CHECK_IN",
-      memberName: footfallMembers[i],
-      memberId: `MBR-PLH-${1000 + i}`,
-      timestamp: checkInTime,
-      source: "MYGATE",
-    })
-    // Some members have already checked out
-    if (i < 10) {
-      footfallEvents.push({
-        centerId: centerPrestige.id,
-        eventType: "CHECK_OUT",
-        memberName: footfallMembers[i],
-        memberId: `MBR-PLH-${1000 + i}`,
-        timestamp: new Date(checkInTime.getTime() + (30 + Math.random() * 60) * 60 * 1000),
-        source: "MYGATE",
-      })
+  const brigadeResidents = [
+    { name: "Deepa Rao", flat: "T1-502" },
+    { name: "Suresh Pillai", flat: "T2-301" },
+    { name: "Kavitha Nambiar", flat: "T1-204" },
+    { name: "Rajesh Shetty", flat: "T3-101" },
+    { name: "Lakshmi Varma", flat: "T2-402" },
+    { name: "Mohan Das", flat: "T1-303" },
+    { name: "Usha Krishnan", flat: "T3-205" },
+    { name: "Sanjay Bhat", flat: "T2-105" },
+  ]
+
+  // Peak slot pattern: hour → typical booking count per day
+  const peakPattern: Record<number, number> = {
+    5: 2, 6: 8, 7: 11, 8: 9, 9: 6, 10: 4,
+    11: 3, 16: 3, 17: 5, 18: 10, 19: 12, 20: 8, 21: 4,
+  }
+
+  const amenityBookings: {
+    centerId: string
+    memberName: string
+    memberFlat: string
+    slotDate: Date
+    slotHour: number
+    status: string
+    bookedAt: Date
+    createdAt: Date
+  }[] = []
+
+  const pickRandom = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)]
+
+  for (const dayOffset of [6, 5, 4, 3, 2, 1, 0]) {
+    const slotDate = daysAgoBooking(dayOffset)
+
+    for (const [hourStr, baseCount] of Object.entries(peakPattern)) {
+      const slotHour = parseInt(hourStr)
+      const variation = Math.floor(Math.random() * 5) - 2
+      const totalCount = Math.max(0, baseCount + variation)
+
+      const prestigeCount = Math.ceil(totalCount * 0.6)
+      for (let i = 0; i < prestigeCount; i++) {
+        const member = pickRandom(prestigeResidents)
+        amenityBookings.push({
+          centerId: centerPrestige.id,
+          memberName: member.name,
+          memberFlat: member.flat,
+          slotDate,
+          slotHour,
+          status: "BOOKED",
+          bookedAt: new Date(slotDate.getTime() + slotHour * 3600000 - 86400000),
+          createdAt: new Date(slotDate.getTime() + slotHour * 3600000 - 86400000),
+        })
+      }
+
+      const brigadeCount = Math.ceil(totalCount * 0.4)
+      for (let i = 0; i < brigadeCount; i++) {
+        const member = pickRandom(brigadeResidents)
+        amenityBookings.push({
+          centerId: centerBrigade.id,
+          memberName: member.name,
+          memberFlat: member.flat,
+          slotDate,
+          slotHour,
+          status: "BOOKED",
+          bookedAt: new Date(slotDate.getTime() + slotHour * 3600000 - 86400000),
+          createdAt: new Date(slotDate.getTime() + slotHour * 3600000 - 86400000),
+        })
+      }
     }
   }
 
-  // Brigade footfall
-  for (let i = 0; i < 8; i++) {
-    footfallEvents.push({
-      centerId: centerBrigade.id,
-      eventType: "CHECK_IN",
-      memberName: footfallMembers[i],
-      memberId: `MBR-BO-${2000 + i}`,
-      timestamp: hoursAgo(Math.random() * 6 + 0.5),
-      source: "MYGATE",
-    })
-  }
-
-  await prisma.footfallEvent.createMany({ data: footfallEvents })
-
-  console.log("✓ Footfall events created")
+  await prisma.amenityBooking.createMany({ data: amenityBookings })
+  console.log(`✓ ${amenityBookings.length} amenity bookings seeded (7 days, peak-hour distribution)`)
 
   // ─── Service Requests ──────────────────────────────────────────────────────
 
@@ -756,7 +806,7 @@ async function main() {
   console.log(`   Trainers: 5 (3 fulltime, 2 PT)`)
   console.log(`   Assets: 8 (including 1 red, 1 amber)`)
   console.log(`   Service Requests: 4 (1 open critical, 1 in-progress, 1 assigned, 1 resolved)`)
-  console.log(`   Footfall Events: ${footfallEvents.length}`)
+  console.log(`   Amenity Bookings: ${amenityBookings.length}`)
   console.log(`   PT Sessions: ${ptSessions.length}`)
 }
 

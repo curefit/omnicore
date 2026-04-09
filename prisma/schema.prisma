@@ -33,7 +33,7 @@ model Center {
   equipmentAssets    EquipmentAsset[]
   trainerMappings    CenterTrainerMapping[]
   trainerAttendances TrainerAttendance[]
-  footfallEvents     FootfallEvent[]
+  amenityBookings    AmenityBooking[]
   serviceRequests    ServiceRequest[]
   ptSessions         PTSession[]
   lead               Lead?
@@ -67,6 +67,25 @@ model ResidentialDetails {
   contactPersonEmail String
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
+}
+
+model AmenityBooking {
+  id         String   @id @default(cuid())
+  centerId   String
+  center     Center   @relation(fields: [centerId], references: [id], onDelete: Cascade)
+  // MyGate member identifier (stubbed for demo)
+  memberId   String?
+  memberName String
+  // Flat/apartment number, e.g. "A-204"
+  memberFlat String?
+  // Date of the booking slot (midnight UTC)
+  slotDate   DateTime
+  // Hour of slot: 6 = 6am–7am, 7 = 7am–8am, ..., 21 = 9pm–10pm
+  slotHour   Int
+  // status: BOOKED | CANCELLED
+  status     String   @default("BOOKED")
+  bookedAt   DateTime @default(now())
+  createdAt  DateTime @default(now())
 }
 
 model MyGateConfig {
@@ -184,19 +203,6 @@ model PTSession {
   isPaid       Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-}
-
-model FootfallEvent {
-  id         String   @id @default(cuid())
-  centerId   String
-  center     Center   @relation(fields: [centerId], references: [id], onDelete: Cascade)
-  // EventType: CHECK_IN | CHECK_OUT
-  eventType  String
-  memberName String?
-  memberId   String?
-  timestamp  DateTime @default(now())
-  source     String   @default("MYGATE")
-  createdAt  DateTime @default(now())
 }
 
 model ServiceRequest {

@@ -8,11 +8,17 @@ async function getStats() {
   const startOfDay = new Date(now)
   startOfDay.setHours(0, 0, 0, 0)
 
+  const endOfDay = new Date(startOfDay)
+  endOfDay.setDate(endOfDay.getDate() + 1)
+
   const [liveOccupancy, trainersIn, assetAlerts, openRequests] =
     await Promise.all([
-      // Live occupancy = check-ins minus check-outs today
-      prisma.footfallEvent.count({
-        where: { eventType: "CHECK_IN", timestamp: { gte: startOfDay } },
+      // Today's booked amenity slots (slot-based footfall)
+      prisma.amenityBooking.count({
+        where: {
+          status: "BOOKED",
+          slotDate: { gte: startOfDay, lt: endOfDay },
+        },
       }),
       // Trainers who checked in today and haven't checked out
       prisma.trainerAttendance.count({
@@ -53,11 +59,11 @@ export default async function RWAAdminDashboardPage() {
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 mb-8">
         <StatCard
-          label="Live Occupancy"
+          label="Booked Slots"
           value={stats.liveOccupancy}
           icon={Activity}
           accent="cyan"
-          description="check-ins today"
+          description="amenity bookings today"
         />
         <StatCard
           label="Trainers Active"
