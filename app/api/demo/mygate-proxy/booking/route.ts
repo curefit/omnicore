@@ -55,7 +55,14 @@ export async function POST(req: NextRequest) {
 
   const center = await prisma.center.findUnique({ where: { id: centerId } })
   if (!center) {
-    return NextResponse.json({ error: "Unknown centerId" }, { status: 404 })
+    return NextResponse.json(
+      {
+        error: "Unknown centerId",
+        hint:
+          "No Center row with this id in the database used by this server. Cuids change when you run db:seed — use GET /api/demo/centers or the demo page dropdown, or copy Center.id from Prisma Studio for this DATABASE_URL.",
+      },
+      { status: 404 }
+    )
   }
 
   const booking = await prisma.amenityBooking.create({

@@ -203,6 +203,7 @@ npx prisma generate   # if schema models changed (regenerates client)
 
 - [`PLAN.md`](./PLAN.md) — Full implementation plan, phase tracker, deviation approval process
 - [`docs/superpowers/specs/`](./docs/superpowers/specs/) — Design specs per feature
+- [`docs/demo-checkin-flow.md`](./docs/demo-checkin-flow.md) — MyGate proxy → QR → kiosk demo and regenerating seeded `centerId`s
 
 ---
 
