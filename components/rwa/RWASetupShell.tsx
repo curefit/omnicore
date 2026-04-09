@@ -32,7 +32,6 @@ type GymDetailsInput = z.infer<typeof GymDetailsSchema>
 const DEMO_DEFAULTS: GymDetailsInput = {
   gymSetupType: "NEW_GYM",
   name: "Prestige Greenview Gym",
-  code: "PGV-004",
   address: "Prestige Greenview, Sarjapur Road",
   city: "Bengaluru",
   pincode: "560102",
