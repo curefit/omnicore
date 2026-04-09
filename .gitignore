@@ -53,5 +53,9 @@ prisma/dev.db-journal
 prisma/*.db
 prisma/*.db-journal
 
+# Stray SQLite at repo root (wrong path vs Prisma); do not commit
+/dev.db
+/dev.db-journal
+
 # local only
 asset-management-service/
