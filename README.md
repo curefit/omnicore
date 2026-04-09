@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# OmniCore — Community Gym Facility Management
+
+A multi-role B2B SaaS portal for managing community gym facilities inside RWAs and corporate campuses. Built for hackathon demo quality.
+
+## Roles
+
+| Role | Access |
+|---|---|
+| **CF Admin** | Manages leads, pricing, onboarding approval, trainers, assets, payroll, service requests |
+| **RWA Admin** | Fills onboarding wizard, accepts pricing quote, views footfall dashboard, trainer attendance, asset status, creates service requests |
+
+## Lead Funnel Flow
+
+```
+CF Admin creates Lead → invites RWA Admin (magic link)
+RWA Admin fills setup wizard → CF Admin reviews + sets pricing
+CF Admin sends Quote → RWA Admin accepts
+Center auto-creates → CF Admin activates
+```
+
+## Tech Stack
+
+| Layer | Choice |
+|---|---|
+| Framework | Next.js 16, App Router |
+| Language | TypeScript (strict) |
+| Styling | Tailwind CSS v4 |
+| UI Primitives | Radix UI (shadcn pattern) |
+| ORM | Prisma 5 + SQLite (dev) |
+| Validation | Zod |
+| Testing | Vitest + React Testing Library |
+| Analytics | Trino (`dataplatform-trino.curefit.co`) |
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+# Install
+npm install
+
+# Database setup (first time)
+npx prisma migrate dev
+
+# Seed demo data
+npm run db:seed
+
+# Dev server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Tests
+npm test
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Environment Variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Copy `.env.example` → `.env`:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+DATABASE_URL="file:./prisma/dev.db"
 
-## Learn More
+# Optional — Trino for real asset/SR data (falls back to seed if not set)
+TRINO_HOST="dataplatform-trino.curefit.co"
+TRINO_USER="fitness-analysts"
+TRINO_PASSWORD="<see team vault>"
+TRINO_CATALOG="delta"
+TRINO_SCHEMA="pk_prod_cultsport_asset_management_service"
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Key URLs
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Role | Path | Purpose |
+|---|---|---|
+| CF Admin | `/cf-admin/leads` | Lead pipeline |
+| CF Admin | `/cf-admin/leads/new` | Create lead + invite |
+| CF Admin | `/cf-admin/leads/[id]` | Review submission + equipment recommendation |
+| CF Admin | `/cf-admin/leads/[id]/quote` | Set pricing + send quote |
+| CF Admin | `/cf-admin/pricing` | Default rate card |
+| CF Admin | `/cf-admin/onboarding` | Active + onboarding centers |
+| RWA Admin | `/rwa-admin/setup/[token]` | Onboarding wizard (magic link) |
+| RWA Admin | `/rwa-admin/quote/[token]` | Quote review + accept/reject |
+| RWA Admin | `/rwa-admin` | Dashboard |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Documentation
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [`PLAN.md`](./PLAN.md) — Full implementation plan, phase tracker, deviation process
+- [`docs/superpowers/specs/`](./docs/superpowers/specs/) — Design specs per feature

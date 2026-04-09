@@ -15,14 +15,22 @@ OmniCore is a multi-role B2B SaaS portal for managing community gym facilities i
 
 | Role | Access |
 |---|---|
-| **CF Admin** | Full read/write. Owns onboarding, trainers, payroll, assets, service requests, pricing. |
-| **RWA Admin** | Mostly read-only. Sees footfall dashboard, trainer attendance, asset status, service requests. Can create requests. |
+| **CF Admin** | Full read/write. Creates leads, sets pricing, approves/activates centers. Owns trainers, payroll, assets, service requests. |
+| **RWA Admin** | Fills onboarding wizard via invite link, accepts pricing quote, views footfall dashboard, trainer attendance, asset status, service requests. Can create service requests. |
+
+### Lead Funnel (approved 2026-04-09)
+```
+CF Admin creates Lead → invites RWA Admin (magic link, stubbed for demo)
+RWA Admin fills setup wizard → CF Admin reviews + sets per-module pricing
+CF Admin sends Quote → RWA Admin reviews + accepts
+Center auto-creates as ONBOARDING → CF Admin activates to ACTIVE
+```
 
 **Out of scope (do not build):**
 - Operator role
 - Asset Manager role as standalone login
 - Invoicing, GST, late fees, PDF generation
-- Production authentication
+- Production authentication / real email sending
 - Full external integration plumbing
 
 ---
@@ -115,6 +123,11 @@ Pipeline metadata columns (ignore in queries): `op`, `kafka_ms`, `pinaka_ts_ms`,
 ## Entities (Prisma Schema — Authoritative)
 
 ```
+Lead
+  └── Quote
+        └── QuoteLineItem[]   ← one row per selected module with pricing
+  └── Center (created on quote acceptance)
+
 Center
   ├── ResidentialDetails
   ├── MyGateConfig
@@ -131,6 +144,9 @@ Trainer
   ├── CenterTrainerMapping[]
   ├── TrainerAttendance[]
   └── PTSession[]
+
+ServicePricingConfig          ← CF Admin default rate card (one row per moduleKey)
+EquipmentRecommendation       ← seeded lookup: SMALL | MEDIUM | LARGE → equipment list
 ```
 
 **String-typed fields (SQLite has no native enums — validated via Zod + TypeScript constants in `lib/constants/enums.ts`):**
@@ -138,6 +154,11 @@ Trainer
 | Field | Valid values |
 |---|---|
 | Center.status | `ACTIVE` \| `ONBOARDING` \| `INACTIVE` |
+| Lead.status | `INVITED` \| `FORM_SUBMITTED` \| `QUOTE_SENT` \| `ACCEPTED` \| `ACTIVE` \| `REJECTED` |
+| Quote.status | `DRAFT` \| `SENT` \| `ACCEPTED` \| `REJECTED` |
+| QuoteLineItem.pricingType | `MONTHLY` \| `ONE_TIME` \| `ONE_TIME_PLUS_TAKE_RATE` |
+| ServicePricingConfig.pricingType | `MONTHLY` \| `ONE_TIME` \| `ONE_TIME_PLUS_TAKE_RATE` |
+| EquipmentRecommendation.sizeCategory | `SMALL` \| `MEDIUM` \| `LARGE` |
 | Trainer.trainerType | `FULLTIME` \| `PT` |
 | TrainerAttendance.source | `MYGATE` \| `OTP` \| `MANUAL` |
 | TrainerAttendance.status | `PRESENT` \| `ABSENT` \| `LATE` |
@@ -148,40 +169,73 @@ Trainer
 
 ---
 
-## Onboarding Flow (Multi-Step — Conditional)
+## Onboarding Flow (Two-Sided Lead Funnel — Approved 2026-04-09)
 
-The onboarding is a **dynamic multi-step flow** where later steps depend on which modules are selected in Step 2.
+Onboarding is now a **two-sided lead funnel** initiated by CF Admin and completed by RWA Admin.
+
+### Step-by-step
 
 ```
-Step 1 — Gym & Society Details
-  • Gym/center name
-  • Society/RWA name
-  • Sq ft of gym
-  • Total residential units
-  • Address, City, Pincode
-  • Contact person name, phone, email
+[CF Admin] /cf-admin/leads/new
+  • Enter society name, RWA contact name, email, phone
+  • System generates invite token (stubbed — shows copy link)
 
-Step 2 — Select Modules (checkboxes)
-  • Trainers               → enables Steps 3a
-  • Asset Management       → enables Step 3b
-  • Vending Machines       → enables Step 3c
-  • Branding               → enables Step 3d
-  • MyGate Integration     → enables Step 3e (footfall + trainer attendance)
+[RWA Admin] /rwa-admin/setup/[token]  ← magic link
+  Step 1 — Gym & Society Details
+    • Gym name, center code, sq ft, capacity
+    • RWA name, total units, address, city, pincode
+    • Contact person name, phone, email
 
-Steps 3a–3e — Conditional (only shown if module was selected in Step 2)
-  3a. Trainer Setup        → map initial trainers, set schedules
-  3b. Asset Setup          → tag initial equipment inventory
-  3c. Vending Machines     → machine IDs, locations
-  3d. Branding             → logo, display name, colors
-  3e. MyGate Config        → society ID, API key, webhook URL
+  Step 2 — Select Modules
+    • Module cards show payment type label only (no amounts):
+      - Trainers             → "Monthly rate"
+      - Asset Management     → "One-time setup"
+      - Vending Machines     → "One-time installation + monthly revenue share"
+      - Branding             → "One-time setup"
+      - MyGate Integration   → "Monthly rate"
 
-Final Step — Review & Confirm
-  • Summary of all entered data
-  • Submit saves center as ONBOARDING status
-  • CF Admin can return and complete remaining steps later
+  Steps 3+ — Conditional on module selection
+    • Trainer Setup  → map trainers (if TRAINERS selected)
+    • Asset Setup    → equipment inventory stub (if ASSETS selected)
+    • MyGate Config  → society ID, API key (if MYGATE selected)
+    • Vending Setup  → machine locations (if VENDING_MACHINES selected)
+    • Branding       → display name (if BRANDING selected)
+
+  Final Step — Review & Confirm
+    • Submits formData as JSON to Lead record (no Center created yet)
+
+[CF Admin] /cf-admin/leads/[id]
+  • Reviews submitted form data
+  • Sees equipment recommendation panel (SMALL/MEDIUM/LARGE based on sq ft + units)
+
+[CF Admin] /cf-admin/leads/[id]/quote
+  • Sets pricing per selected module (pre-filled from ServicePricingConfig defaults)
+  • Module pricing types:
+      TRAINERS          → monthly fee (₹/month)
+      ASSETS            → one-time fee (₹)
+      VENDING_MACHINES  → one-time install fee (₹) + take rate (%)
+      MYGATE            → monthly fee (₹/month)
+      BRANDING          → one-time fee (₹)
+  • Sends quote → Lead.status → QUOTE_SENT
+
+[RWA Admin] /rwa-admin/quote/[token]
+  • Sees quote breakdown with line items and totals
+  • Accepts → Center auto-created as ONBOARDING, Lead.status → ACCEPTED
+  • Rejects → Lead.status → REJECTED (CF Admin renegotiates)
+
+[CF Admin] /cf-admin/onboarding
+  • Center appears in onboarding list → CF Admin flips to ACTIVE
 ```
 
-**Key rule:** Draft saving at every step. Center is created in `ONBOARDING` status. Steps can be completed out of order or resumed later.
+### Equipment Recommendation Logic
+
+Computed from submitted `gymSqFt` and `totalUnits`:
+```
+SMALL  → gymSqFt < 1000  OR  totalUnits < 200
+MEDIUM → gymSqFt 1000–2500  OR  totalUnits 200–500
+LARGE  → gymSqFt > 2500  OR  totalUnits > 500
+```
+Seeded in `EquipmentRecommendation`. Informational only — shown to CF Admin to inform pricing.
 
 ---
 
@@ -224,9 +278,9 @@ WorkOrder.state:       CREATED → ACCEPTED → STARTED → COMPLETED / CANCELLE
 | Phase | Description | Data Source | Status |
 |---|---|---|---|
 | **0** | Foundation: scaffold, Prisma schema, seed, Vitest, app shell, role switcher | Prisma | ✅ Done |
-| **1** | Shared components: StatCard, StatusBadge, DataTable, Timeline, Stepper | — | 🔄 In Progress |
-| **2** | Onboarding flow: dynamic multi-step with module selection | Prisma | ⬜ Pending |
-| **3** | CF Admin overview: center grid, detail view, quick actions | Prisma | ⬜ Pending |
+| **1** | Shared components: StatCard, StatusBadge, DataTable, Timeline, Stepper | — | ✅ Done |
+| **2** | Onboarding wizard (RWA-facing): dynamic multi-step with module selection + payment type labels | Prisma | ✅ Done |
+| **3** | Lead funnel + pricing: CF Admin lead pipeline, RWA invite flow, quote builder, RWA quote acceptance | Prisma | 🔄 In Progress |
 | **4** | RWA Admin dashboard: footfall, attendance, asset widget, open SR count | Prisma (footfall/attendance) + Trino (assets/SRs) | ⬜ Pending |
 | **5** | Trainer operations: roster, attendance table, PT payroll preview, CSV export | Prisma | ⬜ Pending |
 | **6** | Asset operations: inventory from Trino, SR/WO history, CultFix deep link | Trino (primary) + Prisma seed (fallback) | ⬜ Pending |
@@ -241,10 +295,18 @@ WorkOrder.state:       CREATED → ACCEPTED → STARTED → COMPLETED / CANCELLE
   /cf-admin/
     layout.tsx              ← CF Admin shell (sidebar + main)
     page.tsx                ← CF Admin landing / overview
+    /leads/
+      page.tsx              ← Lead pipeline (kanban or table view)
+      /new/
+        page.tsx            ← Create lead + generate invite link
+      /[id]/
+        page.tsx            ← Lead detail + equipment recommendation panel
+        /quote/
+          page.tsx          ← Quote builder (set pricing per module)
+    /pricing/
+      page.tsx              ← ServicePricingConfig rate card editor
     /onboarding/
-      page.tsx              ← Onboarding entry (center list + new center CTA)
-      /[centerId]/
-        page.tsx            ← Dynamic step form for a center
+      page.tsx              ← Centers in ONBOARDING status + activate CTA
     /trainers/
     /assets/
     /service-requests/
@@ -252,10 +314,32 @@ WorkOrder.state:       CREATED → ACCEPTED → STARTED → COMPLETED / CANCELLE
   /rwa-admin/
     layout.tsx              ← RWA Admin shell
     page.tsx                ← RWA Admin dashboard
+    /setup/
+      /[token]/
+        page.tsx            ← Onboarding wizard (magic link entry)
+    /quote/
+      /[token]/
+        page.tsx            ← Quote review + accept/reject
     /attendance/
     /assets/
     /service-requests/
   /api/
+    /leads/
+      route.ts              ← POST create lead
+      /[id]/
+        /quote/
+          route.ts          ← POST send quote
+    /rwa/
+      /setup/
+        /[token]/
+          route.ts          ← GET validate token, POST submit form
+      /quote/
+        /[token]/
+          route.ts          ← GET fetch quote, POST accept/reject
+    /pricing/
+      route.ts              ← GET/POST ServicePricingConfig
+    /onboarding/
+      route.ts              ← POST create center (from accepted quote)
     /footfall/
       /stream/route.ts      ← SSE endpoint (Phase 7)
     /webhooks/
@@ -269,14 +353,28 @@ WorkOrder.state:       CREATED → ACCEPTED → STARTED → COMPLETED / CANCELLE
     StatusBadge.tsx
     DataTable.tsx
     Timeline.tsx
-  /onboarding/
-    OnboardingShell.tsx     ← Stepper wrapper
+    Stepper.tsx
+  /leads/                   ← CF Admin lead management components
+    LeadPipelineTable.tsx
+    LeadDetailPanel.tsx
+    EquipmentRecommendationPanel.tsx
+    QuoteBuilder.tsx
+    QuoteLineItem.tsx
+  /onboarding/              ← RWA Admin wizard (moved to /rwa-admin/setup/[token])
+    OnboardingShell.tsx
+    ModuleSelector.tsx
+    FormField.tsx
     StepGymDetails.tsx
     StepModuleSelection.tsx
     StepTrainerSetup.tsx
     StepAssetSetup.tsx
     StepMyGateConfig.tsx
+    StepVendingSetup.tsx
+    StepBrandingSetup.tsx
     StepReview.tsx
+  /quote/                   ← RWA Admin quote review
+    QuoteReviewCard.tsx
+    QuoteAcceptDialog.tsx
   /dashboard/               ← RWA Admin dashboard widgets
     FootfallCard.tsx
     LiveFeed.tsx
@@ -289,7 +387,14 @@ WorkOrder.state:       CREATED → ACCEPTED → STARTED → COMPLETED / CANCELLE
   /constants/
     navigation.ts           ← Nav items per role
     enums.ts                ← Domain enums + business logic functions
-  /validations/             ← Zod schemas per entity (Phase 2+)
+  /validations/             ← Zod schemas per entity
+    center.ts
+    lead.ts
+    quote.ts
+    pricing.ts
+  /onboarding/
+    steps.ts                ← deriveOnboardingSteps() — conditional step logic
+    equipment.ts            ← deriveEquipmentCategory() — SMALL/MEDIUM/LARGE logic
   /db/
     client.ts               ← Prisma singleton
   /trino/
@@ -301,11 +406,16 @@ WorkOrder.state:       CREATED → ACCEPTED → STARTED → COMPLETED / CANCELLE
 
 /prisma
   schema.prisma             ← Source of truth for data model
-  seed.ts                   ← Demo data
+  seed.ts                   ← Demo data (includes ServicePricingConfig defaults + EquipmentRecommendation)
 
 /tests
   /unit/                    ← Vitest unit tests
   /e2e/                     ← Playwright E2E (Phase 7)
+
+/docs
+  /superpowers/
+    /specs/                 ← Feature design specs
+      2026-04-09-lead-funnel-pricing-design.md
 ```
 
 ---
@@ -316,6 +426,9 @@ WorkOrder.state:       CREATED → ACCEPTED → STARTED → COMPLETED / CANCELLE
 |---|---|---|---|
 | Centers | 3 | Prisma seed | 2 ACTIVE (with MyGate), 1 ONBOARDING (no MyGate) |
 | Trainers | 5 | Prisma seed | 3 FULLTIME, 2 PT |
+| Leads | 3 | Prisma seed | 1 INVITED, 1 QUOTE_SENT, 1 ACCEPTED |
+| ServicePricingConfig | 5 | Prisma seed | One default rate per module (TRAINERS, ASSETS, VENDING_MACHINES, BRANDING, MYGATE) |
+| EquipmentRecommendation | 3 | Prisma seed | SMALL / MEDIUM / LARGE category lists |
 | Assets | 8 | Prisma seed | **Fallback only** — real data comes from Trino. 1 RED, 1 AMBER, rest GREEN |
 | Service Requests | 4 | Prisma seed | **Fallback only** — real data comes from Trino |
 | Footfall Events | 33 | Prisma seed | Simulated last 24h for Prestige + Brigade |
@@ -340,6 +453,12 @@ WorkOrder.state:       CREATED → ACCEPTED → STARTED → COMPLETED / CANCELLE
 | 8 | CultFix deep link for ticket creation | CultFix owns the QR→SR→WO workflow. OmniCore links out with centerId+assetId. Avoids rebuilding ticket logic. | 2026-04-09 |
 | 9 | Prisma EquipmentAsset + ServiceRequest are demo-only | Real asset + SR data lives in AMS/Trino. Prisma tables kept for seeded demo fallback when Trino is unavailable. | 2026-04-09 |
 | 10 | Trino column names are lowercase-flattened | MongoDB camelCase → all lowercase in datalake (e.g. `assetownerid`, `qrcode`, `serialnumber`). No underscores between words. | 2026-04-09 |
+| 11 | Two-sided onboarding: RWA Admin fills wizard, CF Admin prices and approves | RWA Admin knows their gym best. CF Admin owns commercial decisions. Matches real-world B2B sales flow. | 2026-04-09 |
+| 12 | Lead funnel introduced (Lead, Quote, QuoteLineItem models) | Enables end-to-end demo story: invite → wizard → pricing → quote → acceptance → center creation | 2026-04-09 |
+| 13 | Module pricing types: MONTHLY, ONE_TIME, ONE_TIME_PLUS_TAKE_RATE | Different commercial models per module. Trainers/MyGate = subscription. Assets/Branding = one-off. Vending = install fee + revenue share. | 2026-04-09 |
+| 14 | Equipment recommendations via seeded lookup (not AI/dynamic) | Hackathon scope — lookup by SMALL/MEDIUM/LARGE category sufficient to demo value. Dynamic AI-driven recommendations deferred. | 2026-04-09 |
+| 15 | RWA Admin wizard moved from `/cf-admin/onboarding/new` → `/rwa-admin/setup/[token]` | CF Admin should not be filling in RWA-specific data. Token-gated page allows RWA Admin to self-serve after invite. | 2026-04-09 |
+| 16 | Module cards show payment type label only (no amounts) in wizard | RWA Admin sees pricing category for context; actual numbers visible only in CF-generated quote | 2026-04-09 |
 
 ---
 
@@ -370,6 +489,8 @@ Add an entry to the Deviation Log table below.
 | 1 | 2026-04-09 | mkn | **Tech stack addition: Trino** — Add `dataplatform-trino.curefit.co` as analytics data source for Phases 4 + 6. Catalog `delta`, schema `pk_prod_cultsport_asset_management_service`. Credentials in `.env`. `lib/trino/` added to folder structure. | APPROVED | ✅ | ✅ |
 | 2 | 2026-04-09 | mkn | **Phase 6 data source change** — Asset inventory + service request reports pulled from Trino instead of OmniCore's own Prisma tables. Prisma `EquipmentAsset` + `ServiceRequest` become seed-only fallback. | APPROVED | ✅ | ✅ |
 | 3 | 2026-04-09 | mkn | **CultFix deep link for ticket creation** — "Raise ticket" in Phase 6 opens CultFix portal with `centerId` + `assetId` pre-filled via URL params instead of creating a ServiceRequest in OmniCore's DB. SR creation is out of scope for OmniCore. | APPROVED | ✅ | ✅ |
+| 4 | 2026-04-09 | mkn | **Phase 3 redesigned: Lead funnel + pricing replaces CF Admin overview** — Introduces Lead, Quote, QuoteLineItem, ServicePricingConfig, EquipmentRecommendation models. Adds new pages for lead pipeline, quote builder, and RWA-facing wizard + quote acceptance. Spec in `docs/superpowers/specs/2026-04-09-lead-funnel-pricing-design.md`. | APPROVED | ✅ | ✅ |
+| 5 | 2026-04-09 | mkn | **Onboarding wizard moved to RWA Admin** — `/cf-admin/onboarding/new` retired; wizard now lives at `/rwa-admin/setup/[token]`. CF Admin flow becomes: create lead → review submission → set pricing → send quote. Center is created only after RWA Admin accepts the quote. | APPROVED | ✅ | ✅ |
 
 ---
 
@@ -377,27 +498,43 @@ Add an entry to the Deviation Log table below.
 
 | Area | Minimum | Tool |
 |---|---|---|
-| Business logic (asset status, payroll calc) | 100% | Vitest |
-| Form validation (Zod schemas) | All schemas | Vitest |
+| Business logic (asset status, payroll calc, equipment category) | 100% | Vitest |
+| Form validation (Zod schemas — lead, quote, pricing, center) | All schemas | Vitest |
 | Sidebar nav per role | All nav items | Vitest + RTL |
-| Onboarding step progression | All paths | Vitest + RTL |
-| CF Admin vs RWA Admin route access | Happy path | Playwright |
-| Onboarding end-to-end | Happy path | Playwright |
+| Onboarding step progression (all conditional paths) | All paths | Vitest + RTL |
+| Lead funnel state transitions | All valid + invalid transitions | Vitest |
+| Quote line item pricing type rendering | All three types | Vitest + RTL |
+| ModuleSelector payment type labels | All 5 modules | Vitest + RTL |
+| Equipment recommendation logic (SMALL/MEDIUM/LARGE boundaries) | All boundaries | Vitest |
+| CF Admin lead pipeline → quote → accept E2E | Happy path | Playwright |
+| RWA Admin wizard + quote acceptance E2E | Happy path | Playwright |
 
 ---
 
 ## Demo Script (Hackathon)
 
-1. Open as **CF Admin**
-2. Show center grid (3 centers, different statuses)
-3. Start new center onboarding → select modules → conditional steps appear
-4. Switch to **RWA Admin** (one click) — layout shifts, menu collapses, READ ONLY badge appears
-5. Show live footfall dashboard with check-in feed
-6. Show **asset health widget** — real asset counts from Trino (GREEN/AMBER/RED), open ticket count + SLA breaches
-7. Switch back to **CF Admin** → show asset inventory (real data from Trino, filtered by center)
-8. Click "Raise Ticket" on a RED asset → deep link opens CultFix with centerId + assetId pre-filled
-9. Show PT payroll preview for a trainer
-10. Show service request history table (Trino) with state transitions timeline
+### Act 1 — Lead Funnel (CF Admin → RWA Admin → CF Admin → RWA Admin)
+1. Open as **CF Admin** → Lead Pipeline shows 3 seeded leads in different states
+2. Click "New Lead" → enter RWA contact → system generates invite link (shown as copy/stub)
+3. Open invite link → switches to **RWA Admin** setup wizard
+4. Fill wizard: gym details → select modules (module cards show payment type labels)
+5. Conditional steps appear based on module selection → complete and submit
+6. Back to **CF Admin** → lead moves to FORM_SUBMITTED, equipment recommendation panel visible
+7. Click "Build Quote" → pre-filled rate card, adjust per-module pricing, send quote
+8. Back to **RWA Admin** → `/rwa-admin/quote/[token]` shows line-item breakdown
+9. RWA Admin accepts → center auto-created, lead = ACCEPTED
+10. CF Admin activates center → status flips ONBOARDING → ACTIVE
+
+### Act 2 — Operations Dashboard (RWA Admin)
+11. Switch to **RWA Admin** dashboard — footfall card, trainer attendance, asset widget
+12. Show **asset health widget** — real asset counts from Trino (GREEN/AMBER/RED)
+13. Show open ticket count + SLA breaches
+
+### Act 3 — CF Admin Operations
+14. Switch to **CF Admin** → asset inventory (real data from Trino, filtered by center)
+15. Click "Raise Ticket" on a RED asset → deep link opens CultFix with centerId + assetId pre-filled
+16. Show PT payroll preview for a trainer
+17. Show service request history table (Trino) with state transitions timeline
 
 ---
 
@@ -443,4 +580,4 @@ TRINO_SCHEMA="pk_prod_cultsport_asset_management_service"
 
 ---
 
-*Last updated: 2026-04-09 by mkn + shivalingesh (Trino integration + architecture update)*
+*Last updated: 2026-04-09 by mkn — Phase 3 redesigned as lead funnel + pricing; RWA Admin wizard + quote acceptance added; new Prisma models (Lead, Quote, QuoteLineItem, ServicePricingConfig, EquipmentRecommendation); folder structure, roles, demo script, test requirements all updated. See deviations #4 and #5.*
