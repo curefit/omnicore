@@ -10,6 +10,11 @@ export default function RWAAdminLayout({
 }) {
   const pathname = usePathname()
 
+  // No sidebar on the token gate entry page
+  if (pathname === "/rwa-admin/join") {
+    return <>{children}</>
+  }
+
   return (
     <div className="flex h-screen overflow-hidden bg-[#0a0d14]">
       <Sidebar role="rwa-admin" currentPath={pathname} />
