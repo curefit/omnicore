@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { formatPaise } from "@/lib/leads/quote"
 import { MODULE_PRICING_LABEL } from "@/lib/constants/enums"
+import { EquipmentBreakdownPanel } from "./EquipmentBreakdownPanel"
 
 interface PricingConfig {
   moduleKey: string
@@ -21,10 +22,25 @@ interface LineItem {
   takeRatePct: number | null
 }
 
+interface EquipmentItem {
+  sku: string
+  name: string
+  category: string
+  qty: number
+  imageUrl?: string
+}
+
+interface CatalogPriceItem {
+  sku: string
+  minPricePerUnit: number | null
+}
+
 interface Props {
   leadId: string
   selectedModules: string[]
   pricingConfigs: PricingConfig[]
+  selectedEquipment?: EquipmentItem[]
+  catalogItems?: CatalogPriceItem[]
   existingQuote: {
     id: string
     status: string
@@ -32,10 +48,11 @@ interface Props {
     lineItems: LineItem[]
     quoteMode?: string
     totalAmount?: number | null
+    revisionRound?: number
   } | null
 }
 
-export function QuoteBuilder({ leadId, selectedModules, pricingConfigs, existingQuote }: Props) {
+export function QuoteBuilder({ leadId, selectedModules, pricingConfigs, selectedEquipment = [], catalogItems = [], existingQuote }: Props) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [sending, setSending] = useState(false)
@@ -50,14 +67,24 @@ export function QuoteBuilder({ leadId, selectedModules, pricingConfigs, existing
 
   const configByModule = Object.fromEntries(pricingConfigs.map((c) => [c.moduleKey, c]))
 
+  // Compute catalog minimum for ASSETS: sum(minPricePerUnit × qty) across selected equipment
+  const catalogMinimumForAssets = selectedEquipment.reduce((sum, item) => {
+    const cat = catalogItems.find((c) => c.sku === item.sku)
+    return sum + (cat?.minPricePerUnit ?? 0) * item.qty
+  }, 0)
+
   const initLineItems = () =>
     selectedModules.map((moduleKey) => {
       const cfg = configByModule[moduleKey]
       const existing = existingQuote?.lineItems.find((li) => li.moduleKey === moduleKey)
+      // For ASSETS: if no existing quote yet, pre-fill with catalog minimum (if available)
+      const assetsDefault = moduleKey === "ASSETS" && !existingQuote && catalogMinimumForAssets > 0
+        ? catalogMinimumForAssets
+        : (cfg?.defaultOneTimeFee ?? 0)
       return {
         moduleKey,
         pricingType: cfg?.pricingType ?? "MONTHLY",
-        oneTimeFee: existing?.oneTimeFee ?? cfg?.defaultOneTimeFee ?? 0,
+        oneTimeFee: existing?.oneTimeFee ?? (moduleKey === "ASSETS" ? assetsDefault : (cfg?.defaultOneTimeFee ?? 0)),
         monthlyFee: existing?.monthlyFee ?? cfg?.defaultMonthlyFee ?? 0,
         takeRatePct: existing?.takeRatePct ?? cfg?.defaultTakeRatePct ?? 0,
       }
@@ -178,22 +205,42 @@ export function QuoteBuilder({ leadId, selectedModules, pricingConfigs, existing
 
         <div className="divide-y divide-[#1f2937]">
           {lineItems.map((li) => (
-            <QuoteLineItemRow key={li.moduleKey} item={li} onUpdate={updateItem} readOnly={quoteMode === "TOTAL"} />
+            <div key={li.moduleKey}>
+              <QuoteLineItemRow item={li} onUpdate={updateItem} readOnly={quoteMode === "TOTAL"} />
+              {li.moduleKey === "ASSETS" && selectedEquipment.length > 0 && (
+                <div className="px-6 pb-3">
+                  <EquipmentBreakdownPanel
+                    items={selectedEquipment}
+                    catalogItems={catalogItems}
+                    totalAssetFee={li.oneTimeFee}
+                  />
+                </div>
+              )}
+            </div>
           ))}
         </div>
 
         <div className="px-6 py-4 border-t border-[#1f2937] bg-[#0a0a0a] space-y-1">
-          {totalOneTime > 0 && (
+          {quoteMode === "TOTAL" && totalAmount > 0 ? (
             <div className="flex justify-between text-sm">
-              <span className="text-[#6b7280]">Total One-time</span>
-              <span className="text-[#e5e7eb] font-medium">{formatPaise(totalOneTime)}</span>
+              <span className="text-[#6b7280]">Total Agreed Amount</span>
+              <span className="text-[#e5e7eb] font-semibold">{formatPaise(Math.round(totalAmount * 100))}</span>
             </div>
-          )}
-          {totalMonthly > 0 && (
-            <div className="flex justify-between text-sm">
-              <span className="text-[#6b7280]">Total Monthly</span>
-              <span className="text-[#e5e7eb] font-medium">{formatPaise(totalMonthly)}</span>
-            </div>
+          ) : (
+            <>
+              {totalOneTime > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#6b7280]">Total One-time</span>
+                  <span className="text-[#e5e7eb] font-medium">{formatPaise(totalOneTime)}</span>
+                </div>
+              )}
+              {totalMonthly > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#6b7280]">Total Monthly</span>
+                  <span className="text-[#e5e7eb] font-medium">{formatPaise(totalMonthly)}</span>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

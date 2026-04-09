@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 import { EQUIPMENT_CATALOG, MODEL_GYM_SETUPS, getModelGymItems } from "../lib/equipment/catalog"
+import { appendHistory } from "../lib/leads/quoteHistory"
 
 const prisma = new PrismaClient()
 
@@ -136,19 +137,25 @@ async function main() {
 
   // ─── Service Configs ───────────────────────────────────────────────────────
 
+  // Service configs represent the membership/PT pricing that members pay.
+  // For revenue estimation: monthly recurring ≈ active members × membership fee + PT volume.
+  // Prestige (1,200 units, ~35 active members): 35 × ₹2,200 + 8 PT × ₹7,500 + 12 classes × ₹1,500 = ~₹1.4L/mo gross
+  // Brigade (800 units, ~28 active members): 28 × ₹1,800 + 6 PT × ₹5,000 + classes = ~₹88K/mo gross
+  // CultSport take from these: ~35-40% = Prestige ~₹49K/mo, Brigade ~₹31K/mo
   await prisma.serviceConfig.createMany({
     data: [
-      // Prestige — premium bundle
-      { centerId: centerPrestige.id, serviceName: "Full Gym Access", serviceType: "MEMBERSHIP", monthlyFee: 1800, setupFee: 500 },
-      { centerId: centerPrestige.id, serviceName: "Personal Training (8 sessions)", serviceType: "PT", monthlyFee: 6000, setupFee: 0 },
-      { centerId: centerPrestige.id, serviceName: "Yoga & Zumba", serviceType: "GROUP_CLASS", monthlyFee: 1200, setupFee: 0 },
-      { centerId: centerPrestige.id, serviceName: "Locker Access", serviceType: "ADD_ON", monthlyFee: 300, setupFee: 100 },
-      // Brigade — standard bundle
-      { centerId: centerBrigade.id, serviceName: "Full Gym Access", serviceType: "MEMBERSHIP", monthlyFee: 1500, setupFee: 300 },
-      { centerId: centerBrigade.id, serviceName: "Personal Training (4 sessions)", serviceType: "PT", monthlyFee: 3500, setupFee: 0 },
-      { centerId: centerBrigade.id, serviceName: "Zumba Classes", serviceType: "GROUP_CLASS", monthlyFee: 800, setupFee: 0 },
-      // Sobha — minimal (onboarding)
-      { centerId: centerSobha.id, serviceName: "Full Gym Access", serviceType: "MEMBERSHIP", monthlyFee: 1200, setupFee: 200 },
+      // Prestige Lakeside — premium RWA, higher willingness to pay
+      { centerId: centerPrestige.id, serviceName: "Full Gym Access", serviceType: "MEMBERSHIP", monthlyFee: 2200, setupFee: 999 },
+      { centerId: centerPrestige.id, serviceName: "Personal Training (8 sessions)", serviceType: "PT", monthlyFee: 7500, setupFee: 0 },
+      { centerId: centerPrestige.id, serviceName: "Yoga & Zumba (16 sessions)", serviceType: "GROUP_CLASS", monthlyFee: 1500, setupFee: 0 },
+      { centerId: centerPrestige.id, serviceName: "Locker + Towel Service", serviceType: "ADD_ON", monthlyFee: 450, setupFee: 200 },
+      // Brigade Orchards — mid-segment, price-sensitive
+      { centerId: centerBrigade.id, serviceName: "Full Gym Access", serviceType: "MEMBERSHIP", monthlyFee: 1800, setupFee: 499 },
+      { centerId: centerBrigade.id, serviceName: "Personal Training (6 sessions)", serviceType: "PT", monthlyFee: 5000, setupFee: 0 },
+      { centerId: centerBrigade.id, serviceName: "Zumba Classes (12 sessions)", serviceType: "GROUP_CLASS", monthlyFee: 900, setupFee: 0 },
+      // Sobha Dream Acres — compact, value tier
+      { centerId: centerSobha.id, serviceName: "Full Gym Access", serviceType: "MEMBERSHIP", monthlyFee: 1400, setupFee: 299 },
+      { centerId: centerSobha.id, serviceName: "Personal Training (4 sessions)", serviceType: "PT", monthlyFee: 4000, setupFee: 0 },
     ],
   })
 
@@ -263,28 +270,49 @@ async function main() {
 
   await prisma.equipmentAsset.createMany({
     data: [
+      // Brigade — Multi-Gym, linked to catalog SKU
       {
         centerId: centerBrigade.id,
-        name: "Multi-Gym Station",
+        name: "Multi-Gym Station CS-JXS03",
         category: "Strength",
-        brand: "Technogym",
-        model: "Selection 900",
-        purchasedOn: daysAgo(300),
+        brand: "Cultsport",
+        model: "JXS03",
+        catalogItemSku: "CS-JXS03",
+        installationDate: daysAgo(300),
+        purchasedOn: daysAgo(310),
         lastServicedOn: daysAgo(20),
         nextServiceDue: daysFromNow(70),
         condition: "GOOD",
       },
+      // CS-AC800 treadmill — intentionally OLD version (superseded by CS-V6) for upgrade ad demo
       {
         centerId: centerBrigade.id,
-        name: "Treadmill #1",
-        category: "Cardio",
-        brand: "Matrix",
-        model: "T75",
-        purchasedOn: daysAgo(350),
+        name: "Motorized Treadmill CS-AC800",
+        category: "TREADMILL",
+        brand: "Cultsport",
+        model: "AC800",
+        catalogItemSku: "CS-AC800",  // ← isLatestVersion=false in catalog → triggers upgrade ad
+        installationDate: daysAgo(350),
+        purchasedOn: daysAgo(360),
         lastServicedOn: daysAgo(50),
         nextServiceDue: daysFromNow(20),
         condition: "FAIR",
-        notes: "Belt tension checked. Within acceptable range.",
+        notes: "Belt tension checked. Within acceptable range. Newer CS-V6 model available.",
+      },
+      // Second treadmill — same old version for demo
+      {
+        centerId: centerBrigade.id,
+        name: "Motorized Treadmill CS-AC800 #2",
+        category: "TREADMILL",
+        brand: "Cultsport",
+        model: "AC800",
+        catalogItemSku: "CS-AC800",
+        installationDate: daysAgo(350),
+        purchasedOn: daysAgo(360),
+        lastServicedOn: daysAgo(90),
+        nextServiceDue: daysAgo(2), // OVERDUE — red timer demo
+        condition: "POOR",
+        notes: "Service overdue — scheduled with technician.",
       },
       {
         centerId: centerSobha.id,
@@ -639,38 +667,104 @@ async function main() {
   console.log("✓ Service requests created")
 
   // ─── ServicePricingConfig — default rate card ────────────────────────────────
+  // Default rate card — CF Admin adjusts per-lead based on gym size, negotiation, contract term.
+  // Trainers: ₹25,000-45,000/mo depending on headcount. Default = 1 full-time.
+  // Assets: Equipment cost varies ₹4L (small) to ₹25L+ (large). Default = MEDIUM baseline.
+  // Vending: ₹75,000 install + 9% revenue share.
+  // MyGate: ₹8,500/mo (API + support + SMS).
+  // Branding: ₹35,000 one-time (signage, app listing, display config).
   await prisma.servicePricingConfig.createMany({
     data: [
-      {
-        moduleKey: "TRAINERS",
-        pricingType: "MONTHLY",
-        defaultMonthlyFee: 1500000, // ₹15,000/month in paise
-      },
-      {
-        moduleKey: "ASSETS",
-        pricingType: "ONE_TIME",
-        defaultOneTimeFee: 50000000, // ₹5,00,000 one-time in paise
-      },
-      {
-        moduleKey: "VENDING_MACHINES",
-        pricingType: "ONE_TIME_PLUS_TAKE_RATE",
-        defaultOneTimeFee: 5000000, // ₹50,000 installation in paise
-        defaultTakeRatePct: 8.5,
-      },
-      {
-        moduleKey: "MYGATE",
-        pricingType: "MONTHLY",
-        defaultMonthlyFee: 500000, // ₹5,000/month in paise
-      },
-      {
-        moduleKey: "BRANDING",
-        pricingType: "ONE_TIME",
-        defaultOneTimeFee: 2500000, // ₹25,000 one-time in paise
-      },
+      { moduleKey: "TRAINERS",         pricingType: "MONTHLY",               defaultMonthlyFee: 2500000                                       }, // ₹25,000/mo
+      { moduleKey: "ASSETS",           pricingType: "ONE_TIME",              defaultOneTimeFee: 128000000                                     }, // ₹12,80,000 (MEDIUM baseline)
+      { moduleKey: "VENDING_MACHINES", pricingType: "ONE_TIME_PLUS_TAKE_RATE", defaultOneTimeFee: 7500000, defaultTakeRatePct: 9.0            }, // ₹75,000 + 9%
+      { moduleKey: "MYGATE",           pricingType: "MONTHLY",               defaultMonthlyFee: 850000                                        }, // ₹8,500/mo
+      { moduleKey: "BRANDING",         pricingType: "ONE_TIME",              defaultOneTimeFee: 3500000                                       }, // ₹35,000 one-time
     ],
   })
 
   // ─── EquipmentCatalogItem — Cultsport Commercial Catalog 2025 ────────────────
+  // Min prices in paise. CS-AC800 is intentionally marked as superseded by CS-V6 for the upgrade ad demo.
+  // Full pricing for all 58 catalog items (in paise, ₹1 = 100 paise).
+  // Based on Cultsport commercial list pricing with standard RWA B2B discount applied.
+  // Cardio: premium for commercial-grade motors + warranties.
+  // Strength: selectorized machines priced per series (Flow < Flux < Fuel < Force for plate-loaded).
+  // Free weights: per-set pricing (not per kg).
+  const CATALOG_MIN_PRICES: Record<string, number> = {
+    // ── TREADMILLS ──────────────────────────────────────────────────────────
+    "CS-XG-V12":    25000000, // ₹2,50,000 — flagship, 9HP AC, decline feature
+    "CS-AC800":     15000000, // ₹1,50,000 — entry commercial (superseded by CS-V6)
+    "CS-V6":        20000000, // ₹2,00,000 — current standard commercial
+    "CS-T919":      22000000, // ₹2,20,000 — 21.5" touchscreen display
+    "CS-XZ8001S":   18000000, // ₹1,80,000 — mid-range motorized
+    "CS-XZ8003C":   16000000, // ₹1,60,000 — curved manual (no motor cost)
+    // ── ELLIPTICALS ──────────────────────────────────────────────────────────
+    "CS-RE500":     18000000, // ₹1,80,000 — self-powered hybrid brake
+    "CS-E12-V5":    16500000, // ₹1,65,000 — 15-level incline
+    "CS-E17":       22000000, // ₹2,20,000 — 40 resistance levels, 22" stride
+    // ── BIKES ────────────────────────────────────────────────────────────────
+    "CS-R11-V4":     7500000, // ₹75,000  — recumbent
+    "CS-B11V3":      8000000, // ₹80,000  — upright
+    "CS-K8938":     10000000, // ₹1,00,000 — spin bike
+    "CS-XZ671-E":    9000000, // ₹90,000  — air bike
+    // ── HIGH INTENSITY ────────────────────────────────────────────────────────
+    "CS-XZ1116E":   20500000, // ₹2,05,000 — commercial stairmill
+    "CS-XZ-TK104":   6500000, // ₹65,000  — tank sled
+    // ── STRENGTH: FLOW SERIES ─────────────────────────────────────────────────
+    "CS-M1-001":    25000000, // ₹2,50,000 — Chest Press
+    "CS-M1-003":    24500000, // ₹2,45,000 — Shoulder Press
+    "CS-M1-002A":   24000000, // ₹2,40,000 — Pec Fly / Rear Delt
+    "CS-M1-012":    25000000, // ₹2,50,000 — Lat Pull Down
+    "CS-M1-004":    23500000, // ₹2,35,000 — Seated Row
+    "CS-M1-008":    26000000, // ₹2,60,000 — Assisted Dip/Chin
+    "CS-M1-013":    24000000, // ₹2,40,000 — Leg Curl
+    "CS-M1-014":    24500000, // ₹2,45,000 — Seated Leg Extension
+    // ── STRENGTH: FLUX SERIES ─────────────────────────────────────────────────
+    "CS-TY01":      23000000, // ₹2,30,000 — Chest Press (Flux)
+    "CS-TY16":      28000000, // ₹2,80,000 — Seated Leg Press (Flux, 135kg stack)
+    "CS-TY13":      25000000, // ₹2,50,000 — Leg Extension (Flux)
+    "CS-TY14":      26000000, // ₹2,60,000 — Seated Leg Curl (Flux)
+    // ── STRENGTH: FUEL SERIES (compact) ──────────────────────────────────────
+    "CS-ASN001":    21000000, // ₹2,10,000 — Chest Press (Fuel)
+    "CS-ASN015":    24000000, // ₹2,40,000 — Seated Leg Press (Fuel)
+    "CS-JXS03":     80000000, // ₹8,00,000 — 3-station Multi Gym (7 workouts)
+    // ── STRENGTH: FORCE SERIES (plate-loaded, iso-lateral) ────────────────────
+    "CS-MWH001":    19000000, // ₹1,90,000 — Chest Press (Force)
+    "CS-XH022":     22000000, // ₹2,20,000 — 45° Leg Press (Force)
+    // ── CABLE & FUNCTIONAL ────────────────────────────────────────────────────
+    "CS-H005":      45000000, // ₹4,50,000 — Cable Crossover (full rig)
+    "CS-H005A":     50000000, // ₹5,00,000 — Functional Trainer (Fuel)
+    "CS-XH005A":    55000000, // ₹5,50,000 — Functional Trainer (Flow, heavier)
+    "CS-H005B":     16000000, // ₹1,60,000 — Single Adjustable Pulley
+    "CS-H020":      24000000, // ₹2,40,000 — Smith Machine (Fuel)
+    "CS-H021":      18000000, // ₹1,80,000 — Squat Rack (Fuel)
+    "CS-MWH018":    16000000, // ₹1,60,000 — Half Rack (Fuel)
+    "CS-XH021":     17000000, // ₹1,70,000 — Squat Rack (Flow)
+    // ── BENCHES ──────────────────────────────────────────────────────────────
+    "CS-H023":       7500000, // ₹75,000  — Olympic Flat Bench (Fuel)
+    "CS-H025":       9500000, // ₹95,000  — Olympic Incline Bench (Fuel)
+    "CS-H037":       4500000, // ₹45,000  — Adjustable Bench (Fuel)
+    "CS-H034":       5500000, // ₹55,000  — Adjustable AB Bench (Fuel)
+    "CS-H026":       4200000, // ₹42,000  — Hyperextension Bench
+    "CS-H040":       4000000, // ₹40,000  — Preacher Curl Bench
+    // ── FREE WEIGHTS ──────────────────────────────────────────────────────────
+    "CS-DUMBBELL-2-25":  7500000, // ₹75,000  — Rubber Hex Set 2–25 kg (13 pairs)
+    "CS-DUMBBELL-2-40":  8000000, // ₹80,000  — Rubber Hex Set 2–40 kg (full range)
+    "CS-H030":           5000000, // ₹50,000  — 2-Tier Dumbbell Rack
+    "CS-DH030A":         5000000, // ₹50,000  — 3-Tier Dumbbell Rack
+    "CS-BUMPER-SET":     3500000, // ₹35,000  — Bumper Plate Set (5 pairs)
+    "CS-BARBELL-20":      850000, // ₹8,500   — Olympic Barbell 20kg
+    // ── KETTLEBELLS ──────────────────────────────────────────────────────────
+    "CS-KB-4-24":        2800000, // ₹28,000  — Kettlebell Set 4–24 kg (9 sizes)
+    // ── ACCESSORIES ──────────────────────────────────────────────────────────
+    "CS-ACC-BANDS":       350000, // ₹3,500   — Resistance Band Set (5 levels)
+    "CS-ACC-MEDBALLS":   1200000, // ₹12,000  — Medicine Ball Set 3–10 kg
+    "CS-ACC-BATTLEROPE":  850000, // ₹8,500   — Battle Rope 15m
+    "CS-ACC-TRX":        1500000, // ₹15,000  — TRX Suspension Trainer (commercial)
+    "CS-ACC-YOGAMAT":     250000, // ₹2,500   — Premium Yoga Mat
+    "CS-ACC-FOAMROLLER":  450000, // ₹4,500   — Foam Roller Set
+  }
+
   await prisma.equipmentCatalogItem.createMany({
     data: EQUIPMENT_CATALOG.map((item) => ({
       sku: item.sku,
@@ -681,9 +775,13 @@ async function main() {
       imageUrl2: item.imageUrl2 ?? null,
       specsJson: item.specs ?? null,
       isHighlight: item.isHighlight ?? false,
+      minPricePerUnit: CATALOG_MIN_PRICES[item.sku] ?? null,
+      version: 1,
+      isLatestVersion: item.sku === "CS-AC800" ? false : true,
+      supersedesSku: item.sku === "CS-AC800" ? "CS-V6" : null,
     })),
   })
-  console.log(`✓ Equipment catalog seeded (${EQUIPMENT_CATALOG.length} items)`)
+  console.log(`✓ Equipment catalog seeded (${EQUIPMENT_CATALOG.length} items, with pricing + upgrade tracking)`)
 
   // ─── EquipmentRecommendation — model gym setups per tier ─────────────────────
   // Items reference EquipmentCatalogItem.sku and include resolved name/category for display.
@@ -749,7 +847,11 @@ async function main() {
         contactPersonEmail: "priya@sobhadream.in",
         selectedModules: ["TRAINERS", "ASSETS", "MYGATE"],
         trainerIds: [],
-        selectedEquipment: getModelGymItems("MEDIUM"),
+        // Sobha: budget-conscious. Removed 2 strength machines, kept essentials.
+        // Estimated equipment cost: ~₹10.8L
+        selectedEquipment: getModelGymItems("MEDIUM").filter((i: {sku: string}) =>
+          !["CS-M1-003", "CS-M1-004", "CS-ASN001"].includes(i.sku)
+        ),
       }),
     },
   })
@@ -783,28 +885,251 @@ async function main() {
     },
   })
 
+  // Brigade Metropolis: 2,200 sqft, 480 units — LARGE-leaning MEDIUM. 
+  // Requested: 4 treadmills, 2 bikes, elliptical, 6 Flow Series machines, squat rack, 
+  // functional trainer, full free weight set + vending zone.
+  // Trainers: 2 full-time (₹25K × 2 = ₹50K) + 1 PT (₹18K) = ₹68K → negotiated ₹62K.
+  // Equipment: ₹18.4L (larger than Purva, includes 2 extra machines + heavier free weight set).
+  // Vending: ₹90K install + 9% share.
+  // MyGate: ₹8,500/mo (standard).
+  // Notes: CF Admin discounted trainers by 10% from default on 2-year lock-in.
+  const brigadeMQuoteHistory = appendHistory("[]", {
+    round: 0, action: "CF_QUOTE_SENT", actorRole: "CF_ADMIN",
+    snapshot: { totalOneTime: 192500000, totalMonthly: 7050000, quoteMode: "ITEMIZED" },
+  })
+
   await prisma.quote.create({
     data: {
       leadId: lead3.id,
       status: "SENT",
-      sentAt: new Date(),
-      notes: "Standard pricing applied. Vending take rate negotiable.",
+      sentAt: daysAgo(1),
+      notes: "Trainer rate at ₹62K/mo (10% loyalty discount on 2-yr contract). Vending take rate at 9% — standard for 480-unit society. Equipment covers full MEDIUM+ setup per sqft assessment.",
+      historyJson: brigadeMQuoteHistory,
       lineItems: {
         create: [
-          { moduleKey: "TRAINERS", pricingType: "MONTHLY", monthlyFee: 1500000 },
-          { moduleKey: "ASSETS", pricingType: "ONE_TIME", oneTimeFee: 50000000 },
-          {
-            moduleKey: "VENDING_MACHINES",
-            pricingType: "ONE_TIME_PLUS_TAKE_RATE",
-            oneTimeFee: 5000000,
-            takeRatePct: 8.5,
-          },
-          { moduleKey: "MYGATE", pricingType: "MONTHLY", monthlyFee: 500000 },
+          // 2 full-time + 1 PT trainer → ₹62,000/mo negotiated
+          { moduleKey: "TRAINERS",  pricingType: "MONTHLY",               monthlyFee:  6200000 },
+          // Full medium+ equipment: 4 treadmills, bikes, elliptical, 6 strength machines,
+          // rack, functional trainer, dumbbell set 2-40kg, kettlebells → ₹18,40,000
+          { moduleKey: "ASSETS",    pricingType: "ONE_TIME",              oneTimeFee: 184000000 },
+          // Vending: 1 machine at ₹90,000 install + 9% share
+          { moduleKey: "VENDING_MACHINES", pricingType: "ONE_TIME_PLUS_TAKE_RATE",
+            oneTimeFee: 9000000, takeRatePct: 9.0 },
+          // MyGate: standard ₹8,500/mo
+          { moduleKey: "MYGATE",    pricingType: "MONTHLY",               monthlyFee:   850000 },
         ],
       },
     },
   })
 
+  // ─── DEMO: Purva Panorama — fully accepted lead with 2-round negotiation history ──
+  // This is the primary RWA Admin demo center showing the complete journey.
+  const purvaEquipment = [
+    ...getModelGymItems("MEDIUM"),
+    // Extra items added during negotiation round 2
+    { sku: "CS-XZ1116E", name: "Stairmill CS-XZ1116E", category: "HIGH_INTENSITY", qty: 1, imageUrl: "/equipment/hiit-1.jpg" },
+    { sku: "CS-H025", name: "Olympic Incline Bench (Fuel)", category: "BENCH", qty: 1, imageUrl: "/equipment/bench-1.jpg" },
+  ]
+
+  // Purva Panorama: 1,850 sqft, 420 units — solid MEDIUM.
+  // Negotiation: CF sent ₹13.85L equipment + ₹35K/mo services.
+  // RWA: "Can we add a Stairmill and Incline Bench for the yoga zone?"
+  // CF revised: Added ₹2.45L for those items (₹2.05L stairmill + ₹40K bench).
+  // Final: ₹16.3L one-time + ₹43.5K/mo. RWA accepted — strong deal.
+  let purvaHistory = "[]"
+  purvaHistory = appendHistory(purvaHistory, {
+    round: 0, action: "CF_QUOTE_SENT", actorRole: "CF_ADMIN",
+    snapshot: { totalOneTime: 138500000, totalMonthly: 3500000, quoteMode: "ITEMIZED" },
+  })
+  purvaHistory = appendHistory(purvaHistory, {
+    round: 1, action: "RWA_REVISION_REQUESTED", actorRole: "RWA_ADMIN",
+    notes: "Happy with the setup! Can we add a Stairmill and Olympic Incline Bench? We have 180 sqft extra near the yoga zone.",
+    snapshot: { equipmentCount: purvaEquipment.length },
+  })
+  purvaHistory = appendHistory(purvaHistory, {
+    round: 1, action: "CF_QUOTE_REVISED", actorRole: "CF_ADMIN",
+    snapshot: { totalOneTime: 163000000, totalMonthly: 4350000, quoteMode: "ITEMIZED" },
+  })
+  purvaHistory = appendHistory(purvaHistory, {
+    round: 1, action: "RWA_ACCEPTED", actorRole: "RWA_ADMIN",
+    snapshot: { totalOneTime: 163000000, totalMonthly: 4350000, quoteMode: "ITEMIZED" },
+  })
+
+  // Create Purva Panorama center
+  const centerPurva = await prisma.center.create({
+    data: {
+      name: "Purva Panorama",
+      code: "PP-GYM-001",
+      status: "ONBOARDING",
+      address: "Purva Panorama, Bellary Road",
+      city: "Bengaluru",
+      pincode: "560024",
+      capacity: 50,
+      gymSqFt: 1850,
+      operatingSince: null,
+    },
+  })
+
+  await prisma.residentialDetails.create({
+    data: {
+      centerId: centerPurva.id,
+      rwaName: "Purva Panorama Residents Association",
+      totalUnits: 420,
+      contactPersonName: "Kavitha Reddy",
+      contactPersonPhone: "+91 98861 44321",
+      contactPersonEmail: "kavitha@purvapanorama.com",
+    },
+  })
+
+  await prisma.centerModule.createMany({
+    data: [
+      { centerId: centerPurva.id, moduleKey: "TRAINERS", isEnabled: true },
+      { centerId: centerPurva.id, moduleKey: "ASSETS", isEnabled: true },
+      { centerId: centerPurva.id, moduleKey: "MYGATE", isEnabled: true },
+    ],
+  })
+
+  await prisma.myGateConfig.create({
+    data: {
+      centerId: centerPurva.id,
+      societyId: "MGS-PP-9901",
+      apiKey: "mg_live_pk_pp_xxxxxxxxxxxx",
+      webhookUrl: "https://omnicore.internal/api/webhooks/mygate/pp",
+      isActive: false,
+    },
+  })
+
+  // Create accepted lead linked to Purva center
+  const leadPurva = await prisma.lead.create({
+    data: {
+      societyName: "Purva Panorama",
+      contactName: "Kavitha Reddy",
+      contactEmail: "kavitha@purvapanorama.com",
+      contactPhone: "9886144321",
+      status: "ACCEPTED",
+      inviteToken: "DEMO-TOKEN-PURVA-ACCEPTED",
+      inviteExpiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+      centerId: centerPurva.id,
+      formData: JSON.stringify({
+        gymSetupType: "NEW_GYM",
+        name: "Purva Panorama Gym",
+        code: "PP-GYM-001",
+        address: "Purva Panorama, Bellary Road",
+        city: "Bengaluru",
+        pincode: "560024",
+        capacity: 50,
+        gymSqFt: 1850,
+        rwaName: "Purva Panorama Residents Association",
+        totalUnits: 420,
+        contactPersonName: "Kavitha Reddy",
+        contactPersonPhone: "9886144321",
+        contactPersonEmail: "kavitha@purvapanorama.com",
+        selectedModules: ["TRAINERS", "ASSETS", "MYGATE"],
+        trainerIds: [],
+        selectedEquipment: purvaEquipment,
+      }),
+    },
+  })
+
+  // Create accepted quote with full history
+  await prisma.quote.create({
+    data: {
+      leadId: leadPurva.id,
+      status: "ACCEPTED",
+      sentAt: daysAgo(5),
+      acceptedAt: daysAgo(2),
+      notes: "Final quote — MEDIUM+ setup with Stairmill & Incline Bench added in Round 2. 2-year contract. Trainers: 1 full-time + 1 PT. MyGate live at go-live.",
+      quoteMode: "ITEMIZED",
+      revisionRound: 1,
+      historyJson: purvaHistory,
+      lineItems: {
+        create: [
+          // 1 full-time trainer (₹28K) + 1 PT specialist (₹15K) = ₹43,000/mo total
+          { moduleKey: "TRAINERS",  pricingType: "MONTHLY",  monthlyFee:  4300000 },
+          // Equipment: MEDIUM baseline (₹12.8L) + Stairmill (₹2.05L) + Incline Bench (₹40K)
+          // + installation (₹45K) + first-year service contract (₹40K) = ₹16,30,000
+          { moduleKey: "ASSETS",    pricingType: "ONE_TIME", oneTimeFee: 163000000 },
+          // MyGate: standard ₹8,500/mo (includes API, support, resident QR)
+          { moduleKey: "MYGATE",    pricingType: "MONTHLY",  monthlyFee:   850000 },
+        ],
+      },
+    },
+  })
+
+  // Seed equipment assets for Purva from accepted quote
+  const sixMonths = daysFromNow(180)
+  const threeMonths = daysFromNow(90)
+  const overdue = daysAgo(5)
+  const soonDue = daysFromNow(12)
+
+  await prisma.equipmentAsset.createMany({
+    data: [
+      // Treadmills — CS-AC800 (old version → shows upgrade ad)
+      { centerId: centerPurva.id, name: "Motorized Treadmill CS-AC800", category: "TREADMILL",
+        catalogItemSku: "CS-AC800", installationDate: daysAgo(2), condition: "GOOD",
+        nextServiceDue: sixMonths },
+      { centerId: centerPurva.id, name: "Motorized Treadmill CS-AC800 #2", category: "TREADMILL",
+        catalogItemSku: "CS-AC800", installationDate: daysAgo(2), condition: "GOOD",
+        nextServiceDue: threeMonths },
+      // Bikes
+      { centerId: centerPurva.id, name: "Upright Bike CS-B11V3", category: "BIKE",
+        catalogItemSku: "CS-B11V3", installationDate: daysAgo(2), condition: "GOOD",
+        nextServiceDue: sixMonths },
+      { centerId: centerPurva.id, name: "Upright Bike CS-B11V3 #2", category: "BIKE",
+        catalogItemSku: "CS-B11V3", installationDate: daysAgo(2), condition: "GOOD",
+        nextServiceDue: threeMonths },
+      // Elliptical
+      { centerId: centerPurva.id, name: "Elliptical CS-RE500", category: "ELLIPTICAL",
+        catalogItemSku: "CS-RE500", installationDate: daysAgo(2), condition: "GOOD",
+        nextServiceDue: sixMonths },
+      // Strength machines
+      { centerId: centerPurva.id, name: "Chest Press (Flow Series)", category: "STRENGTH_FLOW",
+        catalogItemSku: "CS-M1-001", installationDate: daysAgo(2), condition: "GOOD",
+        nextServiceDue: threeMonths },
+      { centerId: centerPurva.id, name: "Lat Pull Down (Flow Series)", category: "STRENGTH_FLOW",
+        catalogItemSku: "CS-M1-012", installationDate: daysAgo(2), condition: "GOOD",
+        nextServiceDue: soonDue },  // AMBER — due in 12 days
+      // Stairmill (added in revision)
+      { centerId: centerPurva.id, name: "Stairmill CS-XZ1116E", category: "HIGH_INTENSITY",
+        catalogItemSku: "CS-XZ1116E", installationDate: daysAgo(2), condition: "GOOD",
+        nextServiceDue: sixMonths },
+      // Bench (added in revision) — OVERDUE for demo
+      { centerId: centerPurva.id, name: "Olympic Incline Bench (Fuel)", category: "BENCH",
+        catalogItemSku: "CS-H025", installationDate: daysAgo(2), condition: "POOR",
+        notes: "Minor padding tear on left side. Service logged.",
+        nextServiceDue: overdue },  // RED — overdue
+      // Free weights
+      { centerId: centerPurva.id, name: "Rubber Hex Dumbbell Set 2–40kg", category: "FREE_WEIGHTS",
+        catalogItemSku: "CS-DUMBBELL-2-40", installationDate: daysAgo(2), condition: "GOOD",
+        nextServiceDue: sixMonths },
+      { centerId: centerPurva.id, name: "3-Tier Dumbbell Rack", category: "FREE_WEIGHTS",
+        catalogItemSku: "CS-DH030A", installationDate: daysAgo(2), condition: "GOOD",
+        nextServiceDue: sixMonths },
+      { centerId: centerPurva.id, name: "Squat Rack CS-H021", category: "CABLE_FUNCTIONAL",
+        catalogItemSku: "CS-H021", installationDate: daysAgo(2), condition: "GOOD",
+        nextServiceDue: threeMonths },
+      { centerId: centerPurva.id, name: "Functional Trainer CS-H005A", category: "CABLE_FUNCTIONAL",
+        catalogItemSku: "CS-H005A", installationDate: daysAgo(2), condition: "GOOD",
+        nextServiceDue: sixMonths },
+      { centerId: centerPurva.id, name: "Kettlebell Set 4–24kg", category: "KETTLEBELL",
+        catalogItemSku: "CS-KB-4-24", installationDate: daysAgo(2), condition: "GOOD",
+        nextServiceDue: sixMonths },
+    ],
+  })
+
+  // Service request for the overdue bench
+  await prisma.serviceRequest.create({
+    data: {
+      centerId: centerPurva.id,
+      title: "Olympic Incline Bench — Padding Repair Required",
+      description: "Left-side padding has a 5cm tear. Bench removed from use pending repair.",
+      status: "OPEN",
+      priority: "HIGH",
+      reportedBy: "Kavitha Reddy (RWA Admin)",
+    },
+  })
+
+  console.log("✓ Purva Panorama demo center seeded (14 assets, 1 overdue SR, 2-round negotiation history)")
   console.log(`✓ Seeded: ${EQUIPMENT_CATALOG.length} catalog items, 3 model gym tiers, 4+ leads (DEMO-TOKEN-2026 + 3 pipeline), 1 quote`)
   console.log("\n✅ Seed complete!")
   console.log(`   Centers: 3 (2 active, 1 onboarding)`)

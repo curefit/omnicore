@@ -25,6 +25,23 @@ export default async function QuotePage({ params }: Props) {
 
   const selectedModules: string[] = formData?.selectedModules ?? []
 
+  // Equipment from the RWA's wizard selection (or revision if negotiating)
+  const rawEquipment = lead.quote?.revisionEquipmentJson
+    ? (() => { try { return JSON.parse(lead.quote.revisionEquipmentJson) } catch { return null } })()
+    : formData?.selectedEquipment
+
+  const selectedEquipment: Array<{ sku: string; name: string; category: string; qty: number; imageUrl?: string }> =
+    Array.isArray(rawEquipment) ? rawEquipment : []
+
+  // Fetch catalog prices for breakdown panel
+  const skus = selectedEquipment.map((e) => e.sku)
+  const catalogItems = skus.length > 0
+    ? await prisma.equipmentCatalogItem.findMany({
+        where: { sku: { in: skus } },
+        select: { sku: true, minPricePerUnit: true },
+      })
+    : []
+
   return (
     <div className="max-w-3xl space-y-6">
       <div className="flex items-center gap-4">
@@ -35,11 +52,18 @@ export default async function QuotePage({ params }: Props) {
       <div>
         <h1 className="text-2xl font-semibold text-[#e5e7eb]">Quote Builder</h1>
         <p className="text-sm text-[#6b7280] mt-1">{lead.societyName}</p>
+        {lead.quote?.revisionRound != null && lead.quote.revisionRound > 0 && (
+          <p className="text-xs text-amber-400 mt-1">
+            Revision round {lead.quote.revisionRound} — RWA Admin updated equipment selection
+          </p>
+        )}
       </div>
       <QuoteBuilder
         leadId={id}
         selectedModules={selectedModules}
         pricingConfigs={pricingConfigs}
+        selectedEquipment={selectedEquipment}
+        catalogItems={catalogItems}
         existingQuote={lead.quote}
       />
     </div>
