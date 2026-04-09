@@ -106,7 +106,7 @@ export default function RWAJoinPage() {
 
           <div className="border-t border-[#1f2937] pt-4">
             <p className="text-xs text-[#4b5563] text-center">
-              Don't have an invite?{" "}
+              Don&apos;t have an invite?{" "}
               <span className="text-[#6b7280]">
                 Contact your CultSport relationship manager.
               </span>

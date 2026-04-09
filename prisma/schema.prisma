@@ -20,8 +20,10 @@ model Center {
   city           String
   pincode        String
   capacity       Int
-  gymSqFt        Int?
-  operatingSince DateTime?
+  gymSqFt          Int?
+  // Numeric ID returned by center-service after quote acceptance
+  externalCenterId Int?
+  operatingSince   DateTime?
   imageUrl       String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt

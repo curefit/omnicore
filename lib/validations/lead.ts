@@ -26,7 +26,7 @@ export type CreateLeadInput = z.infer<typeof CreateLeadSchema>
 // Mirrors OnboardingPayloadSchema in app/api/onboarding/route.ts.
 export const LeadFormSubmitSchema = z.object({
   name: z.string().min(2),
-  code: z.string().min(3).max(20).regex(/^[A-Z0-9-]+$/),
+  // code is auto-generated server-side — not collected from RWA Admin
   address: z.string().min(5),
   city: z.string().min(2),
   pincode: z.string().regex(/^\d{6}$/),

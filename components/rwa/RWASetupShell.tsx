@@ -9,11 +9,6 @@ import { MODULE_PRICING_LABEL } from "@/lib/constants/enums"
 
 const GymDetailsSchema = z.object({
   name: z.string().min(2, "Gym name is required"),
-  code: z
-    .string()
-    .min(3)
-    .max(20)
-    .regex(/^[A-Z0-9-]+$/, "Code must be uppercase letters, numbers, and hyphens only"),
   address: z.string().min(5, "Address is required"),
   city: z.string().min(2, "City is required"),
   pincode: z.string().regex(/^\d{6}$/, "Enter a valid 6-digit pincode"),
@@ -153,12 +148,6 @@ export function RWASetupShell({ leadId, token, societyName }: Props) {
               <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">Gym Name *</label>
               <input {...register("name")} className="form-input" placeholder={`${societyName} Gym`} />
               {errors.name && <p className="text-xs text-red-400">{errors.name.message}</p>}
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">Short Code *</label>
-              <input {...register("code")} className="form-input uppercase" placeholder="SOC-GYM-01" />
-              {errors.code && <p className="text-xs text-red-400">{errors.code.message}</p>}
             </div>
 
             <div className="space-y-1">
@@ -304,7 +293,6 @@ export function RWASetupShell({ leadId, token, societyName }: Props) {
 
           <div className="space-y-2">
             <ConfirmRow label="Gym Name" value={gymData.name} />
-            <ConfirmRow label="Code" value={gymData.code} />
             <ConfirmRow label="Address" value={`${gymData.address}, ${gymData.city} - ${gymData.pincode}`} />
             <ConfirmRow label="Capacity" value={`${gymData.capacity} members`} />
             {gymData.gymSqFt && <ConfirmRow label="Gym Size" value={`${gymData.gymSqFt} sq ft`} />}
