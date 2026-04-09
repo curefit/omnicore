@@ -428,7 +428,7 @@ export function RWASetupShell({ leadId, token, societyName }: Props) {
               disabled={submitting}
               className="flex-1 py-2.5 bg-[#f97316] text-white text-sm font-medium rounded-lg hover:bg-[#ea6c0c] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {submitting ? "Submitting…" : "Submit to CultSport →"}
+              {submitting ? "Submitting…" : "Submit to CF Admin →"}
             </button>
           </div>
         </div>
