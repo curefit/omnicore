@@ -2,7 +2,7 @@
 
 import { Users, Wrench, Package, Palette, Wifi } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { CENTER_MODULE_META, type CenterModuleKey } from "@/lib/constants/enums"
+import { CENTER_MODULE_META, MODULE_PRICING_LABEL, type CenterModuleKey } from "@/lib/constants/enums"
 
 const ICON_MAP: Record<string, React.ElementType> = {
   Users,
@@ -102,6 +102,9 @@ export function ModuleSelector({ selected, onChange, disabled }: ModuleSelectorP
               <p className="mt-0.5 text-xs text-[#9ca3af] leading-relaxed">
                 {module.description}
               </p>
+              <span className="text-xs text-[#6b7280] mt-1">
+                {MODULE_PRICING_LABEL[module.key as keyof typeof MODULE_PRICING_LABEL]}
+              </span>
             </div>
           </button>
         )
