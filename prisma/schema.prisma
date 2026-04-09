@@ -224,9 +224,11 @@ model Lead {
   contactName     String
   contactEmail    String
   contactPhone    String?
+  // status: INVITED | FORM_SUBMITTED | QUOTE_SENT | ACCEPTED | ACTIVE | REJECTED
   status          String   @default("INVITED")
   inviteToken     String   @unique
   inviteExpiresAt DateTime
+  // JSON snapshot of the RWA Admin's wizard submission (LeadFormSubmitSchema shape)
   formData        String?
   centerId        String?  @unique
   center          Center?  @relation(fields: [centerId], references: [id])
@@ -239,6 +241,7 @@ model Quote {
   id         String          @id @default(cuid())
   leadId     String          @unique
   lead       Lead            @relation(fields: [leadId], references: [id])
+  // status: DRAFT | SENT | ACCEPTED | REJECTED
   status     String          @default("DRAFT")
   notes      String?
   sentAt     DateTime?
@@ -249,27 +252,39 @@ model Quote {
 }
 
 model QuoteLineItem {
-  id          String @id @default(cuid())
+  id          String   @id @default(cuid())
   quoteId     String
-  quote       Quote  @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  quote       Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
   moduleKey   String
+  // pricingType: MONTHLY | ONE_TIME | ONE_TIME_PLUS_TAKE_RATE
   pricingType String
+  // oneTimeFee and monthlyFee are in paise (₹1 = 100 paise)
   oneTimeFee  Int?
   monthlyFee  Int?
   takeRatePct Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model ServicePricingConfig {
-  id                 String  @id @default(cuid())
-  moduleKey          String  @unique
+  id                 String   @id @default(cuid())
+  moduleKey          String   @unique
+  // pricingType: MONTHLY | ONE_TIME | ONE_TIME_PLUS_TAKE_RATE
   pricingType        String
+  // defaultOneTimeFee and defaultMonthlyFee are in paise (₹1 = 100 paise)
   defaultOneTimeFee  Int?
   defaultMonthlyFee  Int?
   defaultTakeRatePct Float?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 }
 
 model EquipmentRecommendation {
-  id           String @id @default(cuid())
-  sizeCategory String @unique
+  id           String   @id @default(cuid())
+  // sizeCategory: SMALL | MEDIUM | LARGE
+  sizeCategory String   @unique
+  // JSON: [{ name: string, quantity: number }]
   items        String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
