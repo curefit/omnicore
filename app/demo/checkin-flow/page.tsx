@@ -140,10 +140,13 @@ export default function DemoCheckinFlowPage() {
           {loading ? "…" : "Create booking + QR"}
         </button>
         {qrSvg ? (
-          <div
-            className="flex justify-center rounded bg-white p-4 [&_svg]:h-auto [&_svg]:max-w-full"
-            dangerouslySetInnerHTML={{ __html: qrSvg }}
-          />
+          <div className="flex justify-center rounded bg-white p-4">
+            <img
+              src={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(qrSvg)}`}
+              alt="Check-in QR code"
+              className="h-auto max-w-full"
+            />
+          </div>
         ) : null}
         {payload ? (
           <p className="break-all font-mono text-xs text-[#a5b4fc]">

@@ -3,6 +3,7 @@ import QRCode from "qrcode"
 import { z } from "zod"
 import { prisma } from "@/lib/db/client"
 import { formatCheckinPayload } from "@/lib/demo/checkinPayload"
+import { parseLocalDateOnly } from "@/lib/demo/dateOnly"
 
 const BodySchema = z.object({
   centerId: z.string().min(1),
@@ -47,11 +48,10 @@ export async function POST(req: NextRequest) {
   }
 
   const { centerId, memberName, memberFlat, memberId, slotDate, slotHour } = parsed.data
-  const slot = new Date(slotDate)
-  if (Number.isNaN(slot.getTime())) {
-    return NextResponse.json({ error: "Invalid slotDate" }, { status: 400 })
+  const slot = parseLocalDateOnly(slotDate)
+  if (!slot) {
+    return NextResponse.json({ error: "Invalid slotDate (use YYYY-MM-DD)" }, { status: 400 })
   }
-  slot.setHours(0, 0, 0, 0)
 
   const center = await prisma.center.findUnique({ where: { id: centerId } })
   if (!center) {
