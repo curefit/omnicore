@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { formatPaise } from "@/lib/leads/quote"
 import { MODULE_PRICING_LABEL } from "@/lib/constants/enums"
+import { EquipmentBreakdownPanel } from "./EquipmentBreakdownPanel"
 
 interface PricingConfig {
   moduleKey: string
@@ -21,10 +22,25 @@ interface LineItem {
   takeRatePct: number | null
 }
 
+interface EquipmentItem {
+  sku: string
+  name: string
+  category: string
+  qty: number
+  imageUrl?: string
+}
+
+interface CatalogPriceItem {
+  sku: string
+  minPricePerUnit: number | null
+}
+
 interface Props {
   leadId: string
   selectedModules: string[]
   pricingConfigs: PricingConfig[]
+  selectedEquipment?: EquipmentItem[]
+  catalogItems?: CatalogPriceItem[]
   existingQuote: {
     id: string
     status: string
@@ -32,10 +48,11 @@ interface Props {
     lineItems: LineItem[]
     quoteMode?: string
     totalAmount?: number | null
+    revisionRound?: number
   } | null
 }
 
-export function QuoteBuilder({ leadId, selectedModules, pricingConfigs, existingQuote }: Props) {
+export function QuoteBuilder({ leadId, selectedModules, pricingConfigs, selectedEquipment = [], catalogItems = [], existingQuote }: Props) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [sending, setSending] = useState(false)
@@ -178,22 +195,42 @@ export function QuoteBuilder({ leadId, selectedModules, pricingConfigs, existing
 
         <div className="divide-y divide-[#1f2937]">
           {lineItems.map((li) => (
-            <QuoteLineItemRow key={li.moduleKey} item={li} onUpdate={updateItem} readOnly={quoteMode === "TOTAL"} />
+            <div key={li.moduleKey}>
+              <QuoteLineItemRow item={li} onUpdate={updateItem} readOnly={quoteMode === "TOTAL"} />
+              {li.moduleKey === "ASSETS" && selectedEquipment.length > 0 && (
+                <div className="px-6 pb-3">
+                  <EquipmentBreakdownPanel
+                    items={selectedEquipment}
+                    catalogItems={catalogItems}
+                    totalAssetFee={li.oneTimeFee}
+                  />
+                </div>
+              )}
+            </div>
           ))}
         </div>
 
         <div className="px-6 py-4 border-t border-[#1f2937] bg-[#0a0a0a] space-y-1">
-          {totalOneTime > 0 && (
+          {quoteMode === "TOTAL" && totalAmount > 0 ? (
             <div className="flex justify-between text-sm">
-              <span className="text-[#6b7280]">Total One-time</span>
-              <span className="text-[#e5e7eb] font-medium">{formatPaise(totalOneTime)}</span>
+              <span className="text-[#6b7280]">Total Agreed Amount</span>
+              <span className="text-[#e5e7eb] font-semibold">{formatPaise(Math.round(totalAmount * 100))}</span>
             </div>
-          )}
-          {totalMonthly > 0 && (
-            <div className="flex justify-between text-sm">
-              <span className="text-[#6b7280]">Total Monthly</span>
-              <span className="text-[#e5e7eb] font-medium">{formatPaise(totalMonthly)}</span>
-            </div>
+          ) : (
+            <>
+              {totalOneTime > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#6b7280]">Total One-time</span>
+                  <span className="text-[#e5e7eb] font-medium">{formatPaise(totalOneTime)}</span>
+                </div>
+              )}
+              {totalMonthly > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#6b7280]">Total Monthly</span>
+                  <span className="text-[#e5e7eb] font-medium">{formatPaise(totalMonthly)}</span>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

@@ -263,28 +263,49 @@ async function main() {
 
   await prisma.equipmentAsset.createMany({
     data: [
+      // Brigade — Multi-Gym, linked to catalog SKU
       {
         centerId: centerBrigade.id,
-        name: "Multi-Gym Station",
+        name: "Multi-Gym Station CS-JXS03",
         category: "Strength",
-        brand: "Technogym",
-        model: "Selection 900",
-        purchasedOn: daysAgo(300),
+        brand: "Cultsport",
+        model: "JXS03",
+        catalogItemSku: "CS-JXS03",
+        installationDate: daysAgo(300),
+        purchasedOn: daysAgo(310),
         lastServicedOn: daysAgo(20),
         nextServiceDue: daysFromNow(70),
         condition: "GOOD",
       },
+      // CS-AC800 treadmill — intentionally OLD version (superseded by CS-V6) for upgrade ad demo
       {
         centerId: centerBrigade.id,
-        name: "Treadmill #1",
-        category: "Cardio",
-        brand: "Matrix",
-        model: "T75",
-        purchasedOn: daysAgo(350),
+        name: "Motorized Treadmill CS-AC800",
+        category: "TREADMILL",
+        brand: "Cultsport",
+        model: "AC800",
+        catalogItemSku: "CS-AC800",  // ← isLatestVersion=false in catalog → triggers upgrade ad
+        installationDate: daysAgo(350),
+        purchasedOn: daysAgo(360),
         lastServicedOn: daysAgo(50),
         nextServiceDue: daysFromNow(20),
         condition: "FAIR",
-        notes: "Belt tension checked. Within acceptable range.",
+        notes: "Belt tension checked. Within acceptable range. Newer CS-V6 model available.",
+      },
+      // Second treadmill — same old version for demo
+      {
+        centerId: centerBrigade.id,
+        name: "Motorized Treadmill CS-AC800 #2",
+        category: "TREADMILL",
+        brand: "Cultsport",
+        model: "AC800",
+        catalogItemSku: "CS-AC800",
+        installationDate: daysAgo(350),
+        purchasedOn: daysAgo(360),
+        lastServicedOn: daysAgo(90),
+        nextServiceDue: daysAgo(2), // OVERDUE — red timer demo
+        condition: "POOR",
+        notes: "Service overdue — scheduled with technician.",
       },
       {
         centerId: centerSobha.id,
@@ -671,6 +692,25 @@ async function main() {
   })
 
   // ─── EquipmentCatalogItem — Cultsport Commercial Catalog 2025 ────────────────
+  // Min prices in paise. CS-AC800 is intentionally marked as superseded by CS-V6 for the upgrade ad demo.
+  const CATALOG_MIN_PRICES: Record<string, number> = {
+    "CS-XG-V12":   25000000, // ₹2,50,000
+    "CS-AC800":    15000000, // ₹1,50,000 — older treadmill, superseded by CS-V6
+    "CS-V6":       20000000, // ₹2,00,000 — newer treadmill
+    "CS-T919":     22000000, // ₹2,20,000
+    "CS-RE500":    18000000, // ₹1,80,000
+    "CS-E17":      22000000, // ₹2,20,000
+    "CS-B11V3":     8000000, // ₹80,000
+    "CS-K8938":    10000000, // ₹1,00,000
+    "CS-M1-001":   25000000, // ₹2,50,000 (Flow Series Chest Press)
+    "CS-M1-012":   25000000, // ₹2,50,000 (Flow Series Lat Pull)
+    "CS-H005A":    50000000, // ₹5,00,000 (Functional Trainer)
+    "CS-H021":     18000000, // ₹1,80,000 (Squat Rack)
+    "CS-DUMBBELL-2-40": 8000000, // ₹80,000
+    "CS-DH030A":    5000000, // ₹50,000 (3-Tier Rack)
+    "CS-JXS03":    80000000, // ₹8,00,000 (Multi Gym)
+  }
+
   await prisma.equipmentCatalogItem.createMany({
     data: EQUIPMENT_CATALOG.map((item) => ({
       sku: item.sku,
@@ -681,9 +721,13 @@ async function main() {
       imageUrl2: item.imageUrl2 ?? null,
       specsJson: item.specs ?? null,
       isHighlight: item.isHighlight ?? false,
+      minPricePerUnit: CATALOG_MIN_PRICES[item.sku] ?? null,
+      version: 1,
+      isLatestVersion: item.sku === "CS-AC800" ? false : true,
+      supersedesSku: item.sku === "CS-AC800" ? "CS-V6" : null,
     })),
   })
-  console.log(`✓ Equipment catalog seeded (${EQUIPMENT_CATALOG.length} items)`)
+  console.log(`✓ Equipment catalog seeded (${EQUIPMENT_CATALOG.length} items, with pricing + upgrade tracking)`)
 
   // ─── EquipmentRecommendation — model gym setups per tier ─────────────────────
   // Items reference EquipmentCatalogItem.sku and include resolved name/category for display.

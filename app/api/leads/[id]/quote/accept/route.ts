@@ -175,6 +175,27 @@ export async function POST(
         })
       }
 
+      // Create EquipmentAsset rows from accepted equipment selection
+      const equipmentList: Array<{ sku: string; name: string; category: string; qty: number }> =
+        (formData as Record<string, unknown>).selectedEquipment as Array<{ sku: string; name: string; category: string; qty: number }> ?? []
+
+      if (equipmentList.length > 0) {
+        const sixMonthsFromNow = new Date(Date.now() + 180 * 24 * 60 * 60 * 1000)
+        await tx.equipmentAsset.createMany({
+          data: equipmentList.flatMap(({ sku, name, category, qty }) =>
+            Array.from({ length: Math.min(qty, 10) }, () => ({
+              centerId: center.id,
+              name,
+              category,
+              catalogItemSku: sku,
+              condition: "GOOD",
+              installationDate: new Date(),
+              nextServiceDue: sixMonthsFromNow,
+            }))
+          ),
+        })
+      }
+
       await tx.lead.update({
         where: { id },
         data: { status: "ACCEPTED", centerId: center.id },

@@ -495,6 +495,11 @@ Add an entry to the Deviation Log table below.
 | 8 | 2026-04-09 | shivalingesh | **Quote.quoteMode + Quote.totalAmount** — CF Admin can price as ITEMIZED (per-module line items) or TOTAL (single agreed amount, individual prices hidden from RWA quote). | APPROVED | ✅ | ✅ |
 | 9 | 2026-04-09 | shivalingesh | **New wizard field gymSetupType (NEW_GYM / EXISTING_GYM)** — Mandatory dropdown added to Set-up-your-gym Step 1. NEW_GYM → StepEquipmentSelection (full Cultsport catalog filtered by tier, model gym pre-selected). EXISTING_GYM → StepServicesNeeded (upgrade highlights). deriveOnboardingSteps() updated to accept gymSetupType param. | APPROVED | ✅ | ✅ |
 | 10 | 2026-04-09 | shivalingesh | **Pre-filled demo defaults** — RWASetupShell uses DEMO_DEFAULTS (all fields pre-filled), selectedModules defaults to TRAINERS+ASSETS+MYGATE, model gym equipment pre-selected by tier. Demo URL: http://localhost:3000/rwa/setup/DEMO-TOKEN-2026 | APPROVED | ✅ | ✅ |
+| 11 | 2026-04-09 | shivalingesh | **EquipmentCatalogItem pricing + versioning** — Added minPricePerUnit, version, isLatestVersion, supersedesSku. Enables Quote Builder min-price warnings and RWA Assets upgrade ads. | APPROVED | ✅ | ✅ |
+| 12 | 2026-04-09 | shivalingesh | **Quote negotiation loop** — Added REVISION_REQUESTED + CANCELLED statuses, revisionRound, revisionNotes, revisionEquipmentJson to Quote. RWA can edit equipment list and send back; CF Admin sees diff banner. | APPROVED | ✅ | ✅ |
+| 13 | 2026-04-09 | shivalingesh | **EquipmentAsset.catalogItemSku + installationDate** — Links installed assets to catalog for upgrade tracking. Quote accept now auto-creates EquipmentAsset rows from accepted equipment. | APPROVED | ✅ | ✅ |
+| 14 | 2026-04-09 | shivalingesh | **New pages: /cf-admin/assets + /rwa-admin/assets** — CF Admin catalog management with per-item pricing editor. RWA Admin asset view with maintenance timers and upgrade ads. | APPROVED | ✅ | ✅ |
+| 15 | 2026-04-09 | shivalingesh | **RWA Admin dashboard center info hero card** — Dashboard now shows linked center name, status, modules, city, and sqft after quote is accepted. | APPROVED | ✅ | ✅ |
 
 ---
 

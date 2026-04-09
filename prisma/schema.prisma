@@ -131,10 +131,13 @@ model EquipmentAsset {
   lastServicedOn DateTime?
   nextServiceDue DateTime?
   // AssetCondition: GOOD | FAIR | POOR
-  condition      String    @default("GOOD")
-  notes          String?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  condition        String    @default("GOOD")
+  notes            String?
+  // Catalog reference — links back to EquipmentCatalogItem for upgrade tracking
+  catalogItemSku   String?
+  installationDate DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   serviceRequests ServiceRequest[]
 }
@@ -249,7 +252,7 @@ model Quote {
   id          String          @id @default(cuid())
   leadId      String          @unique
   lead        Lead            @relation(fields: [leadId], references: [id])
-  // status: DRAFT | SENT | ACCEPTED | REJECTED
+  // status: DRAFT | SENT | REVISION_REQUESTED | CANCELLED | ACCEPTED | REJECTED
   status      String          @default("DRAFT")
   notes       String?
   sentAt      DateTime?
@@ -260,6 +263,10 @@ model Quote {
   quoteMode   String          @default("ITEMIZED")
   // totalAmount in paise — only used when quoteMode = TOTAL
   totalAmount Int?
+  // Negotiation fields
+  revisionRound         Int     @default(0)
+  revisionNotes         String? // RWA's change request message
+  revisionEquipmentJson String? // JSON of RWA's updated equipment selection
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
 }
@@ -305,18 +312,23 @@ model EquipmentRecommendation {
 // Master catalog of Cultsport commercial equipment (from Commercial Catalog 2025 PDF).
 // Seeded once and used for recommendations, wizard selection, and CF Admin quote builder.
 model EquipmentCatalogItem {
-  id          String   @id @default(cuid())
-  sku         String   @unique
-  name        String
+  id               String   @id @default(cuid())
+  sku              String   @unique
+  name             String
   // category: TREADMILL | ELLIPTICAL | BIKE | HIGH_INTENSITY | STRENGTH_FLOW | STRENGTH_FLUX |
   //           STRENGTH_FUEL | STRENGTH_FORCE | CABLE_FUNCTIONAL | BENCH | FREE_WEIGHTS |
   //           KETTLEBELL | ACCESSORIES
-  category    String
-  series      String?  // FLOW | FLUX | FUEL | FORCE (for strength selectorized machines)
-  imageUrl    String?  // /equipment/{category-slug}-1.jpg
-  imageUrl2   String?  // /equipment/{category-slug}-2.jpg (gym-in-use shot)
-  specsJson   String?  // key specs as display string
-  isHighlight Boolean  @default(false) // included in baseline model gym setup
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  category         String
+  series           String?  // FLOW | FLUX | FUEL | FORCE (for strength selectorized machines)
+  imageUrl         String?  // /equipment/{category-slug}-1.jpg
+  imageUrl2        String?  // /equipment/{category-slug}-2.jpg (gym-in-use shot)
+  specsJson        String?  // key specs as display string
+  isHighlight      Boolean  @default(false) // included in baseline model gym setup
+  // Pricing & versioning
+  minPricePerUnit  Int?     // paise — minimum price CF Admin can quote per unit
+  version          Int      @default(1)
+  isLatestVersion  Boolean  @default(true)
+  supersedesSku    String?  // SKU of the NEWER model that replaces this item
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
