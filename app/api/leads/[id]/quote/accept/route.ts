@@ -28,7 +28,7 @@ async function registerInCenterService(formData: {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        X_USER_ID: CENTER_SERVICE_USER_ID,
+        "X-User-ID": CENTER_SERVICE_USER_ID,
       },
       body: JSON.stringify({
         name: formData.name,
