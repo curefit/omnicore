@@ -1,5 +1,8 @@
 import { CenterModuleKey, type CenterModuleKey as ModuleKey } from "@/lib/constants/enums"
 import { type StepperStep } from "@/components/shared/Stepper"
+import { type GymSetupType } from "@/lib/equipment/catalog"
+
+export type { GymSetupType }
 
 export interface OnboardingStep extends StepperStep {
   id: string
@@ -31,7 +34,7 @@ const FIXED_END: OnboardingStep[] = [
 ]
 
 // Conditional steps — appear only when the corresponding module is selected
-const CONDITIONAL_STEPS: Record<ModuleKey, OnboardingStep> = {
+const CONDITIONAL_STEPS_BASE: Record<ModuleKey, OnboardingStep> = {
   [CenterModuleKey.TRAINERS]: {
     id: "trainer-setup",
     label: "Trainer Setup",
@@ -66,6 +69,21 @@ const CONDITIONAL_STEPS: Record<ModuleKey, OnboardingStep> = {
   },
 }
 
+// Equipment-specific override steps based on gymSetupType
+const ASSET_STEP_NEW_GYM: OnboardingStep = {
+  id: "equipment-selection",
+  label: "Equipment Setup",
+  description: "Recommended equipment for your new gym",
+  moduleKey: CenterModuleKey.ASSETS,
+}
+
+const ASSET_STEP_EXISTING_GYM: OnboardingStep = {
+  id: "services-needed",
+  label: "Services Needed",
+  description: "Select equipment upgrades for your existing gym",
+  moduleKey: CenterModuleKey.ASSETS,
+}
+
 // Order in which conditional steps appear in the flow
 const CONDITIONAL_ORDER: ModuleKey[] = [
   CenterModuleKey.TRAINERS,
@@ -75,10 +93,22 @@ const CONDITIONAL_ORDER: ModuleKey[] = [
   CenterModuleKey.BRANDING,
 ]
 
-export function deriveOnboardingSteps(selectedModules: ModuleKey[]): OnboardingStep[] {
+export function deriveOnboardingSteps(
+  selectedModules: ModuleKey[],
+  gymSetupType?: GymSetupType
+): OnboardingStep[] {
   const conditionalSteps = CONDITIONAL_ORDER
     .filter((key) => selectedModules.includes(key))
-    .map((key) => CONDITIONAL_STEPS[key])
+    .map((key) => {
+      // Replace the ASSETS step based on gymSetupType
+      if (key === CenterModuleKey.ASSETS && gymSetupType === "NEW_GYM") {
+        return ASSET_STEP_NEW_GYM
+      }
+      if (key === CenterModuleKey.ASSETS && gymSetupType === "EXISTING_GYM") {
+        return ASSET_STEP_EXISTING_GYM
+      }
+      return CONDITIONAL_STEPS_BASE[key]
+    })
 
   return [...FIXED_START, ...conditionalSteps, ...FIXED_END]
 }

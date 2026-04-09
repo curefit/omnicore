@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client"
+import { EQUIPMENT_CATALOG, MODEL_GYM_SETUPS, getModelGymItems } from "../lib/equipment/catalog"
 
 const prisma = new PrismaClient()
 
@@ -16,6 +17,7 @@ async function main() {
   await prisma.lead.deleteMany()
   await prisma.servicePricingConfig.deleteMany()
   await prisma.equipmentRecommendation.deleteMany()
+  await prisma.equipmentCatalogItem.deleteMany()
   await prisma.serviceRequest.deleteMany()
   await prisma.amenityBooking.deleteMany()
   await prisma.pTSession.deleteMany()
@@ -668,44 +670,46 @@ async function main() {
     ],
   })
 
-  // ─── EquipmentRecommendation — lookup table ───────────────────────────────────
-  await prisma.equipmentRecommendation.createMany({
-    data: [
-      {
-        sizeCategory: "SMALL",
-        items: JSON.stringify([
-          { name: "Treadmill", quantity: 2 },
-          { name: "Upright Cycle", quantity: 1 },
-          { name: "Dumbbell Rack (5–25 kg)", quantity: 1 },
-        ]),
-      },
-      {
-        sizeCategory: "MEDIUM",
-        items: JSON.stringify([
-          { name: "Treadmill", quantity: 4 },
-          { name: "Upright Cycle", quantity: 2 },
-          { name: "Elliptical", quantity: 2 },
-          { name: "Free Weight Rack", quantity: 1 },
-          { name: "Resistance Machine", quantity: 3 },
-        ]),
-      },
-      {
-        sizeCategory: "LARGE",
-        items: JSON.stringify([
-          { name: "Commercial Treadmill", quantity: 8 },
-          { name: "Elliptical", quantity: 4 },
-          { name: "Upright Cycle", quantity: 4 },
-          { name: "Rowing Machine", quantity: 2 },
-          { name: "Full Free Weight Suite", quantity: 1 },
-          { name: "Resistance Machine", quantity: 6 },
-          { name: "Functional Training Rig", quantity: 1 },
-          { name: "Boxing Station", quantity: 1 },
-        ]),
-      },
-    ],
+  // ─── EquipmentCatalogItem — Cultsport Commercial Catalog 2025 ────────────────
+  await prisma.equipmentCatalogItem.createMany({
+    data: EQUIPMENT_CATALOG.map((item) => ({
+      sku: item.sku,
+      name: item.name,
+      category: item.category,
+      series: item.series ?? null,
+      imageUrl: item.imageUrl ?? null,
+      imageUrl2: item.imageUrl2 ?? null,
+      specsJson: item.specs ?? null,
+      isHighlight: item.isHighlight ?? false,
+    })),
   })
+  console.log(`✓ Equipment catalog seeded (${EQUIPMENT_CATALOG.length} items)`)
+
+  // ─── EquipmentRecommendation — model gym setups per tier ─────────────────────
+  // Items reference EquipmentCatalogItem.sku and include resolved name/category for display.
+  await prisma.equipmentRecommendation.createMany({
+    data: (["SMALL", "MEDIUM", "LARGE"] as const).map((tier) => ({
+      sizeCategory: tier,
+      items: JSON.stringify(getModelGymItems(tier)),
+    })),
+  })
+  console.log("✓ Equipment recommendations seeded (SMALL / MEDIUM / LARGE)")
 
   // ─── Sample leads (for demo) ──────────────────────────────────────────────────
+  // DEMO-TOKEN-2026 — predictable URL for hackathon demo: /rwa/setup/DEMO-TOKEN-2026
+  // All wizard fields pre-filled; RWA Admin can click through without typing.
+  await prisma.lead.create({
+    data: {
+      societyName: "Prestige Greenview",
+      contactName: "Anand Krishnamurthy",
+      contactEmail: "anand.k@prestigegreenview.com",
+      contactPhone: "9844155678",
+      status: "INVITED",
+      inviteToken: "DEMO-TOKEN-2026",
+      inviteExpiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+    },
+  })
+
   // Lead 1: INVITED (not yet acted on)
   await prisma.lead.create({
     data: {
@@ -730,6 +734,7 @@ async function main() {
       inviteToken: "demo-token-submitted-sobha-001",
       inviteExpiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       formData: JSON.stringify({
+        gymSetupType: "NEW_GYM",
         name: "Sobha Dream Gym",
         code: "SOBHA-DRM-01",
         address: "Sobha Dream Acres, Panathur Road",
@@ -744,6 +749,7 @@ async function main() {
         contactPersonEmail: "priya@sobhadream.in",
         selectedModules: ["TRAINERS", "ASSETS", "MYGATE"],
         trainerIds: [],
+        selectedEquipment: getModelGymItems("MEDIUM"),
       }),
     },
   })
@@ -799,7 +805,7 @@ async function main() {
     },
   })
 
-  console.log("Seeded: 5 pricing configs, 3 equipment recs, 3 leads, 1 quote")
+  console.log(`✓ Seeded: ${EQUIPMENT_CATALOG.length} catalog items, 3 model gym tiers, 4+ leads (DEMO-TOKEN-2026 + 3 pipeline), 1 quote`)
   console.log("\n✅ Seed complete!")
   console.log(`   Centers: 3 (2 active, 1 onboarding)`)
   console.log(`   Center Modules: seeded per center (Trainers, Assets, MyGate, Branding, VMs)`)

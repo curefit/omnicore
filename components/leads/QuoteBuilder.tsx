@@ -25,7 +25,14 @@ interface Props {
   leadId: string
   selectedModules: string[]
   pricingConfigs: PricingConfig[]
-  existingQuote: { id: string; status: string; notes: string | null; lineItems: LineItem[] } | null
+  existingQuote: {
+    id: string
+    status: string
+    notes: string | null
+    lineItems: LineItem[]
+    quoteMode?: string
+    totalAmount?: number | null
+  } | null
 }
 
 export function QuoteBuilder({ leadId, selectedModules, pricingConfigs, existingQuote }: Props) {
@@ -34,6 +41,12 @@ export function QuoteBuilder({ leadId, selectedModules, pricingConfigs, existing
   const [sending, setSending] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [notes, setNotes] = useState(existingQuote?.notes ?? "")
+  const [quoteMode, setQuoteMode] = useState<"ITEMIZED" | "TOTAL">(
+    (existingQuote?.quoteMode as "ITEMIZED" | "TOTAL") ?? "ITEMIZED"
+  )
+  const [totalAmount, setTotalAmount] = useState<number>(
+    existingQuote?.totalAmount ? existingQuote.totalAmount / 100 : 0
+  )
 
   const configByModule = Object.fromEntries(pricingConfigs.map((c) => [c.moduleKey, c]))
 
@@ -72,6 +85,8 @@ export function QuoteBuilder({ leadId, selectedModules, pricingConfigs, existing
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           notes,
+          quoteMode,
+          totalAmount: quoteMode === "TOTAL" ? Math.round(totalAmount * 100) : undefined,
           lineItems: lineItems.map((li) => ({
             moduleKey: li.moduleKey,
             pricingType: li.pricingType,
@@ -116,14 +131,54 @@ export function QuoteBuilder({ leadId, selectedModules, pricingConfigs, existing
         </div>
       )}
 
+      {/* Pricing mode toggle */}
+      <div className="bg-[#111111] rounded-xl border border-[#1f2937] p-4">
+        <p className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider mb-3">Pricing Mode</p>
+        <div className="flex gap-3">
+          {(["ITEMIZED", "TOTAL"] as const).map((mode) => (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => setQuoteMode(mode)}
+              className={`flex-1 py-2.5 text-sm font-medium rounded-lg border transition-colors ${
+                quoteMode === mode
+                  ? "bg-[#f97316]/10 border-[#f97316] text-[#f97316]"
+                  : "bg-transparent border-[#1f2937] text-[#6b7280] hover:border-[#374151]"
+              }`}
+            >
+              {mode === "ITEMIZED" ? "Per Item" : "Agreed Total Amount"}
+            </button>
+          ))}
+        </div>
+        {quoteMode === "TOTAL" && (
+          <div className="mt-3 space-y-1">
+            <label className="text-xs text-[#9ca3af]">Total agreed amount (₹)</label>
+            <input
+              type="number"
+              className="form-input"
+              value={totalAmount}
+              min={0}
+              step={1000}
+              onChange={(e) => setTotalAmount(parseFloat(e.target.value || "0"))}
+              placeholder="e.g. 750000"
+            />
+            <p className="text-[11px] text-[#6b7280]">
+              Individual module prices will be hidden in the RWA quote — only this total will be shown.
+            </p>
+          </div>
+        )}
+      </div>
+
       <div className="bg-[#111111] rounded-xl border border-[#1f2937] overflow-hidden">
         <div className="px-6 py-4 border-b border-[#1f2937]">
-          <h2 className="text-sm font-medium text-[#e5e7eb]">Line Items</h2>
+          <h2 className="text-sm font-medium text-[#e5e7eb]">
+            {quoteMode === "TOTAL" ? "Modules Included (amounts hidden from RWA)" : "Line Items"}
+          </h2>
         </div>
 
         <div className="divide-y divide-[#1f2937]">
           {lineItems.map((li) => (
-            <QuoteLineItemRow key={li.moduleKey} item={li} onUpdate={updateItem} />
+            <QuoteLineItemRow key={li.moduleKey} item={li} onUpdate={updateItem} readOnly={quoteMode === "TOTAL"} />
           ))}
         </div>
 
@@ -183,9 +238,10 @@ interface QuoteLineItemRowProps {
     takeRatePct: number | null
   }
   onUpdate: (moduleKey: string, field: string, value: number) => void
+  readOnly?: boolean
 }
 
-function QuoteLineItemRow({ item, onUpdate }: QuoteLineItemRowProps) {
+function QuoteLineItemRow({ item, onUpdate, readOnly }: QuoteLineItemRowProps) {
   const label = MODULE_PRICING_LABEL[item.moduleKey as keyof typeof MODULE_PRICING_LABEL] ?? item.moduleKey
 
   return (
@@ -195,7 +251,7 @@ function QuoteLineItemRow({ item, onUpdate }: QuoteLineItemRowProps) {
         <p className="text-xs text-[#6b7280]">{label}</p>
       </div>
 
-      {(item.pricingType === "ONE_TIME" || item.pricingType === "ONE_TIME_PLUS_TAKE_RATE") && (
+      {!readOnly && (item.pricingType === "ONE_TIME" || item.pricingType === "ONE_TIME_PLUS_TAKE_RATE") && (
         <div className="space-y-0.5">
           <label className="text-xs text-[#6b7280]">One-time (₹)</label>
           <input
@@ -207,7 +263,7 @@ function QuoteLineItemRow({ item, onUpdate }: QuoteLineItemRowProps) {
         </div>
       )}
 
-      {(item.pricingType === "MONTHLY" || item.pricingType === "ONE_TIME_PLUS_TAKE_RATE") && (
+      {!readOnly && (item.pricingType === "MONTHLY" || item.pricingType === "ONE_TIME_PLUS_TAKE_RATE") && (
         <div className="space-y-0.5">
           <label className="text-xs text-[#6b7280]">Monthly (₹)</label>
           <input
@@ -219,7 +275,7 @@ function QuoteLineItemRow({ item, onUpdate }: QuoteLineItemRowProps) {
         </div>
       )}
 
-      {item.pricingType === "ONE_TIME_PLUS_TAKE_RATE" && (
+      {!readOnly && item.pricingType === "ONE_TIME_PLUS_TAKE_RATE" && (
         <div className="space-y-0.5">
           <label className="text-xs text-[#6b7280]">Take Rate (%)</label>
           <input
@@ -232,6 +288,10 @@ function QuoteLineItemRow({ item, onUpdate }: QuoteLineItemRowProps) {
             onChange={(e) => onUpdate(item.moduleKey, "takeRatePct", parseFloat(e.target.value || "0"))}
           />
         </div>
+      )}
+
+      {readOnly && (
+        <span className="text-xs text-[#374151] italic">included in total</span>
       )}
     </div>
   )

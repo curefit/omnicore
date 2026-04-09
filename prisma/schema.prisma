@@ -244,17 +244,22 @@ model Lead {
 }
 
 model Quote {
-  id         String          @id @default(cuid())
-  leadId     String          @unique
-  lead       Lead            @relation(fields: [leadId], references: [id])
+  id          String          @id @default(cuid())
+  leadId      String          @unique
+  lead        Lead            @relation(fields: [leadId], references: [id])
   // status: DRAFT | SENT | ACCEPTED | REJECTED
-  status     String          @default("DRAFT")
-  notes      String?
-  sentAt     DateTime?
-  acceptedAt DateTime?
-  lineItems  QuoteLineItem[]
-  createdAt  DateTime        @default(now())
-  updatedAt  DateTime        @updatedAt
+  status      String          @default("DRAFT")
+  notes       String?
+  sentAt      DateTime?
+  acceptedAt  DateTime?
+  lineItems   QuoteLineItem[]
+  // quoteMode: ITEMIZED | TOTAL
+  // ITEMIZED = per-module line items; TOTAL = single agreed total amount
+  quoteMode   String          @default("ITEMIZED")
+  // totalAmount in paise — only used when quoteMode = TOTAL
+  totalAmount Int?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
 }
 
 model QuoteLineItem {
@@ -289,8 +294,27 @@ model EquipmentRecommendation {
   id           String   @id @default(cuid())
   // sizeCategory: SMALL | MEDIUM | LARGE
   sizeCategory String   @unique
-  // JSON: [{ name: string, quantity: number }]
+  // JSON: [{ sku, name, category, qty }] — references EquipmentCatalogItem.sku
   items        String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+// Master catalog of Cultsport commercial equipment (from Commercial Catalog 2025 PDF).
+// Seeded once and used for recommendations, wizard selection, and CF Admin quote builder.
+model EquipmentCatalogItem {
+  id          String   @id @default(cuid())
+  sku         String   @unique
+  name        String
+  // category: TREADMILL | ELLIPTICAL | BIKE | HIGH_INTENSITY | STRENGTH_FLOW | STRENGTH_FLUX |
+  //           STRENGTH_FUEL | STRENGTH_FORCE | CABLE_FUNCTIONAL | BENCH | FREE_WEIGHTS |
+  //           KETTLEBELL | ACCESSORIES
+  category    String
+  series      String?  // FLOW | FLUX | FUEL | FORCE (for strength selectorized machines)
+  imageUrl    String?  // /equipment/{category-slug}-1.jpg
+  imageUrl2   String?  // /equipment/{category-slug}-2.jpg (gym-in-use shot)
+  specsJson   String?  // key specs as display string
+  isHighlight Boolean  @default(false) // included in baseline model gym setup
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

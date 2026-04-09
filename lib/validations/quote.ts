@@ -27,6 +27,8 @@ export type QuoteLineItemInput = z.infer<typeof QuoteLineItemSchema>
 
 export const CreateQuoteSchema = z.object({
   notes: z.string().optional(),
+  quoteMode: z.enum(["ITEMIZED", "TOTAL"]).optional().default("ITEMIZED"),
+  totalAmount: z.number().int().min(0).optional(),
   lineItems: z.array(QuoteLineItemSchema).min(1, "At least one line item is required"),
 })
 export type CreateQuoteInput = z.infer<typeof CreateQuoteSchema>

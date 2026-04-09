@@ -37,6 +37,8 @@ export async function POST(
           leadId: id,
           status: "DRAFT",
           notes: data.notes ?? null,
+          quoteMode: data.quoteMode ?? "ITEMIZED",
+          totalAmount: data.quoteMode === "TOTAL" ? (data.totalAmount ?? null) : null,
           lineItems: {
             create: data.lineItems.map((item) => ({
               moduleKey: item.moduleKey,

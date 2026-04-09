@@ -6,8 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { CENTER_MODULE_META } from "@/lib/constants/enums"
 import { MODULE_PRICING_LABEL } from "@/lib/constants/enums"
+import { StepEquipmentSelection, type SelectedEquipmentItem } from "@/components/onboarding/StepEquipmentSelection"
+import { StepServicesNeeded } from "@/components/onboarding/StepServicesNeeded"
+import { getModelGymItems, computeGymTier, type GymSetupType } from "@/lib/equipment/catalog"
 
 const GymDetailsSchema = z.object({
+  gymSetupType: z.enum(["NEW_GYM", "EXISTING_GYM"]),
   name: z.string().min(2, "Gym name is required"),
   code: z
     .string()
@@ -29,7 +33,24 @@ const GymDetailsSchema = z.object({
 })
 type GymDetailsInput = z.infer<typeof GymDetailsSchema>
 
-const STEPS = ["Gym Details", "Services", "Confirm"]
+// Pre-filled demo defaults — all fields filled so demo needs only clicks.
+const DEMO_DEFAULTS: GymDetailsInput = {
+  gymSetupType: "NEW_GYM",
+  name: "Prestige Greenview Gym",
+  code: "PGV-004",
+  address: "Prestige Greenview, Sarjapur Road",
+  city: "Bengaluru",
+  pincode: "560102",
+  capacity: 35,
+  gymSqFt: 1800,
+  rwaName: "Prestige Greenview Residents Association",
+  totalUnits: 420,
+  contactPersonName: "Anand Krishnamurthy",
+  contactPersonPhone: "9844155678",
+  contactPersonEmail: "anand.k@prestigegreenview.com",
+}
+
+const STEPS = ["Gym Details", "Services", "Equipment", "Confirm"]
 
 interface Props {
   leadId: string
@@ -39,7 +60,8 @@ interface Props {
 
 export function RWASetupShell({ leadId, token, societyName }: Props) {
   const [step, setStep] = useState(0)
-  const [selectedModules, setSelectedModules] = useState<string[]>([])
+  const [selectedModules, setSelectedModules] = useState<string[]>(["TRAINERS", "ASSETS", "MYGATE"])
+  const [selectedEquipment, setSelectedEquipment] = useState<SelectedEquipmentItem[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -49,11 +71,15 @@ export function RWASetupShell({ leadId, token, societyName }: Props) {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm<GymDetailsInput>({
-    // z.coerce fields have `unknown` input type in Zod v4; cast is safe since the
-    // schema's output type matches GymDetailsInput exactly.
     resolver: zodResolver(GymDetailsSchema) as unknown as Resolver<GymDetailsInput>,
+    defaultValues: DEMO_DEFAULTS,
   })
+
+  const gymSetupType = watch("gymSetupType") as "NEW_GYM" | "EXISTING_GYM"
+  const gymSqFt = watch("gymSqFt") as number | undefined
+  const totalUnits = watch("totalUnits") as number | undefined
 
   const toggleModule = (key: string) => {
     setSelectedModules((prev) =>
@@ -63,8 +89,20 @@ export function RWASetupShell({ leadId, token, societyName }: Props) {
 
   const onGymDetailsSubmit = (data: GymDetailsInput) => {
     setGymData(data)
+    // Pre-populate equipment from model gym if NEW_GYM and ASSETS module selected
+    if (data.gymSetupType === "NEW_GYM" && selectedModules.includes("ASSETS") && selectedEquipment.length === 0) {
+      const tier = computeGymTier(
+        data.gymSqFt === "" ? undefined : data.gymSqFt,
+        data.totalUnits
+      )
+      const modelItems = getModelGymItems(tier)
+      setSelectedEquipment(modelItems.map(i => ({ ...i, qty: i.qty })))
+    }
     setStep(1)
   }
+
+  // Determine whether equipment step is needed
+  const hasEquipmentStep = selectedModules.includes("ASSETS")
 
   const handleFinalSubmit = async () => {
     if (!gymData) return
@@ -79,6 +117,8 @@ export function RWASetupShell({ leadId, token, societyName }: Props) {
           ...gymData,
           gymSqFt: gymData.gymSqFt === "" ? undefined : gymData.gymSqFt,
           selectedModules,
+          gymSetupType: gymData.gymSetupType,
+          selectedEquipment,
         }),
       })
       const json = await res.json()
@@ -107,9 +147,9 @@ export function RWASetupShell({ leadId, token, societyName }: Props) {
 
   return (
     <div className="space-y-6">
-      {/* Step indicator */}
+      {/* Step indicator — dynamic based on whether equipment step is active */}
       <div className="flex items-center gap-2">
-        {STEPS.map((label, i) => (
+        {STEPS.filter(s => s !== "Equipment" || hasEquipmentStep).map((label, i) => (
           <div key={label} className="flex items-center gap-2">
             <div
               className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium ${
@@ -129,7 +169,9 @@ export function RWASetupShell({ leadId, token, societyName }: Props) {
             >
               {label}
             </span>
-            {i < STEPS.length - 1 && <div className="flex-1 h-px bg-[#1f2937] min-w-[20px]" />}
+            {i < STEPS.filter(s => s !== "Equipment" || hasEquipmentStep).length - 1 && (
+              <div className="flex-1 h-px bg-[#1f2937] min-w-[20px]" />
+            )}
           </div>
         ))}
       </div>
@@ -149,6 +191,16 @@ export function RWASetupShell({ leadId, token, societyName }: Props) {
           <h2 className="text-sm font-medium text-[#e5e7eb]">Gym Details</h2>
 
           <div className="grid grid-cols-2 gap-4">
+            {/* Gym setup type — mandatory first field */}
+            <div className="col-span-2 space-y-1">
+              <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">Gym Setup Type *</label>
+              <select {...register("gymSetupType")} className="form-input">
+                <option value="NEW_GYM">New Gym Setup — full equipment recommendation</option>
+                <option value="EXISTING_GYM">Existing Gym Registration — equipment upgrade</option>
+              </select>
+              {errors.gymSetupType && <p className="text-xs text-red-400">{errors.gymSetupType.message}</p>}
+            </div>
+
             <div className="col-span-2 space-y-1">
               <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">Gym Name *</label>
               <input {...register("name")} className="form-input" placeholder={`${societyName} Gym`} />
@@ -287,18 +339,42 @@ export function RWASetupShell({ leadId, token, societyName }: Props) {
               ← Back
             </button>
             <button
-              onClick={() => setStep(2)}
+              onClick={() => setStep(hasEquipmentStep ? 2 : 3)}
               disabled={selectedModules.length === 0}
               className="flex-1 py-2.5 bg-[#f97316] text-white text-sm font-medium rounded-lg hover:bg-[#ea6c0c] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              Next: Review & Submit →
+              {hasEquipmentStep ? "Next: Equipment →" : "Next: Review & Submit →"}
             </button>
           </div>
         </div>
       )}
 
-      {/* Step 2: Confirm */}
-      {step === 2 && gymData && (
+      {/* Step 2: Equipment Selection (only if ASSETS module selected) */}
+      {step === 2 && hasEquipmentStep && gymData && gymData.gymSetupType === "NEW_GYM" && (
+        <StepEquipmentSelection
+          gymSqFt={gymData.gymSqFt === "" ? undefined : gymData.gymSqFt}
+          totalUnits={gymData.totalUnits}
+          selectedEquipment={selectedEquipment}
+          onChange={setSelectedEquipment}
+          onNext={() => setStep(3)}
+          onBack={() => setStep(1)}
+        />
+      )}
+
+      {step === 2 && hasEquipmentStep && gymData && gymData.gymSetupType === "EXISTING_GYM" && (
+        <StepServicesNeeded
+          selectedEquipment={selectedEquipment}
+          onChange={setSelectedEquipment}
+          onNext={() => setStep(3)}
+          onBack={() => setStep(1)}
+        />
+      )}
+
+      {/* Skip equipment step if ASSETS not selected */}
+      {step === 2 && !hasEquipmentStep && gymData && (() => { setStep(3); return null })()}
+
+      {/* Step 3: Confirm */}
+      {step === 3 && gymData && (
         <div className="bg-[#111111] rounded-xl border border-[#1f2937] p-6 space-y-4">
           <h2 className="text-sm font-medium text-[#e5e7eb]">Review & Submit</h2>
 
@@ -324,9 +400,25 @@ export function RWASetupShell({ leadId, token, societyName }: Props) {
             </div>
           </div>
 
+          {selectedEquipment.length > 0 && (
+            <div className="rounded-lg border border-[#1f2937] p-3">
+              <p className="text-xs text-[#6b7280] mb-1.5">Equipment Request</p>
+              <div className="flex flex-wrap gap-1.5">
+                {selectedEquipment.slice(0, 5).map(e => (
+                  <span key={e.sku} className="text-[11px] bg-cyan-500/10 text-cyan-400 px-2 py-0.5 rounded border border-cyan-500/20">
+                    {e.qty}× {e.name.split("(")[0].trim()}
+                  </span>
+                ))}
+                {selectedEquipment.length > 5 && (
+                  <span className="text-[11px] text-[#6b7280]">+{selectedEquipment.length - 5} more</span>
+                )}
+              </div>
+            </div>
+          )}
+
           <div className="flex gap-3 pt-2">
             <button
-              onClick={() => setStep(1)}
+              onClick={() => setStep(hasEquipmentStep ? 2 : 1)}
               className="px-4 py-2 bg-[#1f2937] text-[#e5e7eb] text-sm font-medium rounded-lg hover:bg-[#374151] transition-colors"
             >
               ← Back
