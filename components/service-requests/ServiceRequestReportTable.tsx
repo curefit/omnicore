@@ -14,14 +14,14 @@ function statusClass(status: string) {
 function priorityClass(priority: string) {
   if (priority === "CRITICAL") return "text-red-400   font-semibold"
   if (priority === "HIGH")     return "text-amber-400 font-semibold"
-  if (priority === "MEDIUM")   return "text-[#9ca3af]"
-  return "text-[#6b7280]"
+  if (priority === "MEDIUM")   return "text-oc-fg-muted"
+  return "text-oc-fg-dim"
 }
 
 function roleClass(role: ServiceRequestReportRow["raisedByRole"]) {
   if (role === "TRAINER")   return "bg-purple-500/10 text-purple-400 border-purple-500/20"
   if (role === "RWA_ADMIN") return "bg-cyan-500/10   text-cyan-400   border-cyan-500/20"
-  return "bg-[#1f2937] text-[#9ca3af] border-[#374151]"
+  return "bg-oc-border text-oc-fg-muted border-oc-muted"
 }
 
 // ─── Empty / error state ───────────────────────────────────────────────────────
@@ -29,12 +29,12 @@ function roleClass(role: ServiceRequestReportRow["raisedByRole"]) {
 function EmptyState({ meta }: { meta: ServiceRequestReportMeta }) {
   if (!meta.trinoEnabled) {
     return (
-      <div className="rounded-2xl border border-dashed border-[#1f2937] p-16 flex flex-col items-center gap-3 text-center">
-        <Database className="w-8 h-8 text-[#374151]" />
-        <p className="text-sm font-semibold text-[#9ca3af]">Trino not configured</p>
-        <p className="text-xs text-[#6b7280] max-w-sm">
+      <div className="rounded-2xl border border-dashed border-oc-border p-16 flex flex-col items-center gap-3 text-center">
+        <Database className="w-8 h-8 text-oc-muted" />
+        <p className="text-sm font-semibold text-oc-fg-muted">Trino not configured</p>
+        <p className="text-xs text-oc-fg-dim max-w-sm">
           Add{" "}
-          <code className="font-mono bg-[#1f2937] px-1.5 py-0.5 rounded text-[11px]">
+          <code className="font-mono bg-oc-border px-1.5 py-0.5 rounded text-[11px]">
             TRINO_HOST / TRINO_USER / TRINO_PASSWORD
           </code>{" "}
           to your <code className="font-mono text-[11px]">.env</code> to pull live AMS data.
@@ -48,17 +48,17 @@ function EmptyState({ meta }: { meta: ServiceRequestReportMeta }) {
       <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-16 flex flex-col items-center gap-3 text-center">
         <AlertCircle className="w-8 h-8 text-red-400" />
         <p className="text-sm font-semibold text-red-300">Query error</p>
-        <p className="text-xs font-mono text-[#9ca3af] max-w-xl">{meta.error}</p>
+        <p className="text-xs font-mono text-oc-fg-muted max-w-xl">{meta.error}</p>
       </div>
     )
   }
 
   return (
-    <div className="rounded-2xl border border-dashed border-[#1f2937] p-16 flex flex-col items-center gap-3 text-center">
-      <AlertCircle className="w-8 h-8 text-[#374151]" />
-      <p className="text-sm font-semibold text-[#9ca3af]">No service requests found</p>
+    <div className="rounded-2xl border border-dashed border-oc-border p-16 flex flex-col items-center gap-3 text-center">
+      <AlertCircle className="w-8 h-8 text-oc-muted" />
+      <p className="text-sm font-semibold text-oc-fg-muted">No service requests found</p>
       {meta.centerIds.length > 0 && (
-        <p className="text-xs text-[#6b7280]">
+        <p className="text-xs text-oc-fg-dim">
           Center IDs: <span className="font-mono">{meta.centerIds.join(", ")}</span>
         </p>
       )}
@@ -93,11 +93,11 @@ export async function ServiceRequestReportTable({
   )
 
   return (
-    <div className="rounded-2xl border border-[#1f2937] overflow-hidden">
+    <div className="rounded-2xl border border-oc-border overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full min-w-[960px] text-sm">
-          <thead className="bg-[#111827] border-b border-[#1f2937]">
-            <tr className="text-left text-[11px] uppercase tracking-wider text-[#6b7280]">
+          <thead className="bg-oc-card border-b border-oc-border">
+            <tr className="text-left text-[11px] uppercase tracking-wider text-oc-fg-dim">
               <th className="px-4 py-3 font-medium">Center</th>
               <th className="px-4 py-3 font-medium">Request</th>
               <th className="px-4 py-3 font-medium">Status</th>
@@ -106,25 +106,25 @@ export async function ServiceRequestReportTable({
               <th className="px-4 py-3 font-medium text-center">QR</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#1f2937] bg-[#0a0d14]">
+          <tbody className="divide-y divide-oc-border bg-oc-base">
             {rows.map((row) => (
-              <tr key={row.requestId} className="align-top hover:bg-[#111827]/60 transition-colors">
+              <tr key={row.requestId} className="align-top hover:bg-oc-card/60 transition-colors">
 
                 {/* Center */}
                 <td className="px-4 py-3 whitespace-nowrap">
-                  <p className="font-semibold text-white leading-tight">{row.centerName}</p>
-                  <p className="text-[11px] text-[#6b7280] font-mono mt-0.5">#{row.centerId}</p>
+                  <p className="font-semibold text-oc-fg leading-tight">{row.centerName}</p>
+                  <p className="text-[11px] text-oc-fg-dim font-mono mt-0.5">#{row.centerId}</p>
                 </td>
 
                 {/* Request */}
                 <td className="px-4 py-3 max-w-[280px]">
-                  <p className="font-medium text-white leading-snug">{row.title}</p>
+                  <p className="font-medium text-oc-fg leading-snug">{row.title}</p>
                   {row.description && (
-                    <p className="text-[11px] text-[#6b7280] mt-1 leading-relaxed line-clamp-2">
+                    <p className="text-[11px] text-oc-fg-dim mt-1 leading-relaxed line-clamp-2">
                       {row.description}
                     </p>
                   )}
-                  <p className="text-[10px] text-[#4b5563] font-mono mt-1">
+                  <p className="text-[10px] text-oc-placeholder font-mono mt-1">
                     {row.requestId.slice(0, 16)}…
                     {" · "}
                     {new Date(row.createdAt).toLocaleDateString("en-IN", {
@@ -145,14 +145,14 @@ export async function ServiceRequestReportTable({
 
                 {/* Equipment */}
                 <td className="px-4 py-3">
-                  <p className="font-medium text-white leading-snug">{row.equipmentName}</p>
-                  <p className="text-[11px] text-[#6b7280] mt-0.5">{row.equipmentCategory}</p>
-                  <p className="text-[11px] font-mono text-[#4b5563] mt-0.5">{row.equipmentSerial}</p>
+                  <p className="font-medium text-oc-fg leading-snug">{row.equipmentName}</p>
+                  <p className="text-[11px] text-oc-fg-dim mt-0.5">{row.equipmentCategory}</p>
+                  <p className="text-[11px] font-mono text-oc-placeholder mt-0.5">{row.equipmentSerial}</p>
                 </td>
 
                 {/* Raised by */}
                 <td className="px-4 py-3 whitespace-nowrap">
-                  <p className="text-white leading-snug">{row.raisedBy}</p>
+                  <p className="text-oc-fg leading-snug">{row.raisedBy}</p>
                   <span className={`inline-flex mt-1 px-2 py-0.5 rounded-full border text-[10px] font-semibold ${roleClass(row.raisedByRole)}`}>
                     {row.raisedByRole.replace("_", " ")}
                   </span>
@@ -160,7 +160,7 @@ export async function ServiceRequestReportTable({
 
                 {/* QR */}
                 <td className="px-4 py-3 text-center">
-                  <div className="inline-block w-14 h-14 rounded-md border border-[#1f2937] bg-white/95 p-1">
+                  <div className="inline-block w-14 h-14 rounded-md border border-oc-border bg-white/95 p-1">
                     <img
                       src={qrMap.get(row.requestId) ?? ""}
                       alt={`QR ${row.requestId}`}
@@ -168,7 +168,7 @@ export async function ServiceRequestReportTable({
                     />
                   </div>
                   {!readonly && (
-                    <p className="text-[9px] text-[#4b5563] mt-1">AMS ref</p>
+                    <p className="text-[9px] text-oc-placeholder mt-1">AMS ref</p>
                   )}
                 </td>
 

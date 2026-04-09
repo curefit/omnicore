@@ -9,7 +9,7 @@ const ACCENT_DOT: Record<TimelineAccent, string> = {
   amber: "bg-amber-400 border-amber-400/30",
   red: "bg-red-400 border-red-400/30",
   purple: "bg-purple-400 border-purple-400/30",
-  default: "bg-[#374151] border-[#374151]",
+  default: "bg-oc-muted border-oc-muted",
 }
 
 const ACCENT_BADGE: Record<TimelineAccent, string> = {
@@ -18,7 +18,7 @@ const ACCENT_BADGE: Record<TimelineAccent, string> = {
   amber: "bg-amber-500/10 text-amber-400 border-amber-500/20",
   red: "bg-red-500/10 text-red-400 border-red-500/20",
   purple: "bg-purple-500/10 text-purple-400 border-purple-500/20",
-  default: "bg-[#1f2937] text-[#9ca3af] border-[#374151]",
+  default: "bg-oc-border text-oc-fg-muted border-oc-muted",
 }
 
 export interface TimelineItem {
@@ -51,7 +51,7 @@ export function Timeline({ items, emptyMessage = "No events", className }: Timel
   if (items.length === 0) {
     return (
       <div className={cn("py-10 text-center", className)}>
-        <p className="text-sm text-[#6b7280]">{emptyMessage}</p>
+        <p className="text-sm text-oc-fg-dim">{emptyMessage}</p>
       </div>
     )
   }
@@ -67,7 +67,7 @@ export function Timeline({ items, emptyMessage = "No events", className }: Timel
           <li key={item.id} className="relative flex gap-3 pb-0">
             {/* Connector line */}
             {!isLast && (
-              <div className="absolute left-[11px] top-6 bottom-0 w-px bg-[#1f2937]" />
+              <div className="absolute left-[11px] top-6 bottom-0 w-px bg-oc-border" />
             )}
 
             {/* Dot / Icon */}
@@ -95,17 +95,17 @@ export function Timeline({ items, emptyMessage = "No events", className }: Timel
             <div className="flex-1 pb-4 min-w-0">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="text-sm text-[#f9fafb] font-medium leading-snug">
+                  <p className="text-sm text-oc-fg font-medium leading-snug">
                     {item.title}
                   </p>
                   {item.description && (
-                    <p className="text-xs text-[#9ca3af] mt-0.5 leading-relaxed">
+                    <p className="text-xs text-oc-fg-muted mt-0.5 leading-relaxed">
                       {item.description}
                     </p>
                   )}
                 </div>
                 <div className="flex flex-col items-end gap-1 shrink-0">
-                  <span className="font-mono-metric text-[11px] text-[#6b7280]">
+                  <span className="font-mono-metric text-[11px] text-oc-fg-dim">
                     {formatTimestamp(item.timestamp)}
                   </span>
                   {item.badge && (
@@ -121,7 +121,7 @@ export function Timeline({ items, emptyMessage = "No events", className }: Timel
                 </div>
               </div>
               {item.meta && (
-                <p className="text-[11px] text-[#6b7280] mt-1">{item.meta}</p>
+                <p className="text-[11px] text-oc-fg-dim mt-1">{item.meta}</p>
               )}
             </div>
           </li>

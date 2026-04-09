@@ -45,9 +45,9 @@ export function StepMyGateConfig({ data, onChange, onNext, onBack }: Props) {
           <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
             <Wifi className="w-4 h-4 text-cyan-400" />
           </div>
-          <h2 className="text-base font-semibold text-white">MyGate Integration</h2>
+          <h2 className="text-base font-semibold text-oc-fg">MyGate Integration</h2>
         </div>
-        <p className="text-sm text-[#9ca3af] mt-1">
+        <p className="text-sm text-oc-fg-muted mt-1">
           Connect MyGate to enable automatic footfall tracking and trainer attendance
           via gate scans. Get credentials from the MyGate society admin.
         </p>

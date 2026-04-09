@@ -92,27 +92,27 @@ export function QuoteRevisionForm({ leadId, currentEquipment }: Props) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-[#1f2937] bg-[#111111] hover:bg-[#1a2235] transition-colors text-left"
+        className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-oc-border bg-oc-void hover:bg-oc-hover transition-colors text-left"
       >
         <div>
-          <p className="text-sm font-semibold text-[#e5e7eb]">Request Equipment Changes</p>
-          <p className="text-xs text-[#6b7280] mt-0.5">
+          <p className="text-sm font-semibold text-oc-fg-soft">Request Equipment Changes</p>
+          <p className="text-xs text-oc-fg-dim mt-0.5">
             Add or remove equipment from your selection, then send back to CF Admin for re-pricing
           </p>
         </div>
-        {open ? <ChevronUp className="w-4 h-4 text-[#6b7280]" /> : <ChevronDown className="w-4 h-4 text-[#6b7280]" />}
+        {open ? <ChevronUp className="w-4 h-4 text-oc-fg-dim" /> : <ChevronDown className="w-4 h-4 text-oc-fg-dim" />}
       </button>
 
       {open && (
-        <div className="rounded-xl border border-[#1f2937] bg-[#111111] overflow-hidden space-y-0">
+        <div className="rounded-xl border border-oc-border bg-oc-void overflow-hidden space-y-0">
           {error && (
             <div className="text-sm text-red-400 bg-red-500/10 border-b border-red-500/20 px-4 py-3">{error}</div>
           )}
 
           {/* Current selection summary */}
           {selection.length > 0 && (
-            <div className="px-4 py-3 border-b border-[#1f2937] bg-[#0d1117]">
-              <p className="text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
+            <div className="px-4 py-3 border-b border-oc-border bg-oc-deep">
+              <p className="text-xs font-semibold text-oc-fg-dim uppercase tracking-wider mb-2">
                 Selected ({selection.length} items)
               </p>
               <div className="flex flex-wrap gap-1.5">
@@ -129,10 +129,10 @@ export function QuoteRevisionForm({ leadId, currentEquipment }: Props) {
           )}
 
           {/* Category list */}
-          <div className="max-h-80 overflow-y-auto divide-y divide-[#1a2030]">
+          <div className="max-h-80 overflow-y-auto divide-y divide-oc-divide">
             {Array.from(catalogByCategory.entries()).map(([cat, items]) => (
               <div key={cat}>
-                <p className="px-4 py-2 text-[10px] font-bold text-[#6b7280] uppercase tracking-wider bg-[#0d1117]">
+                <p className="px-4 py-2 text-[10px] font-bold text-oc-fg-dim uppercase tracking-wider bg-oc-deep">
                   {CATEGORY_DISPLAY_NAMES[cat] ?? cat}
                 </p>
                 {items.map((item) => {
@@ -144,23 +144,23 @@ export function QuoteRevisionForm({ leadId, currentEquipment }: Props) {
                       onClick={() => toggleItem(item.sku, item.name, item.category, item.imageUrl)}
                       className={cn(
                         "flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors",
-                        checked ? "bg-cyan-500/5" : "hover:bg-[#0f1623]"
+                        checked ? "bg-cyan-500/5" : "hover:bg-oc-row-alt"
                       )}
                     >
-                      {checked ? <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0" /> : <Circle className="w-4 h-4 text-[#374151] shrink-0" />}
+                      {checked ? <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0" /> : <Circle className="w-4 h-4 text-oc-muted shrink-0" />}
                       {item.imageUrl && (
-                        <img src={item.imageUrl} alt={item.name} className="w-9 h-7 rounded object-cover border border-[#1f2937] shrink-0" />
+                        <img src={item.imageUrl} alt={item.name} className="w-9 h-7 rounded-xl object-cover ring-1 ring-white/10 shadow-md shrink-0" />
                       )}
-                      <span className={cn("text-xs flex-1 truncate", checked ? "text-white" : "text-[#9ca3af]")}>
+                      <span className={cn("text-xs flex-1 truncate", checked ? "text-oc-fg" : "text-oc-fg-muted")}>
                         {item.name}
                       </span>
                       {checked && (
                         <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
                           <button onClick={() => changeQty(item.sku, Math.max(1, (sel?.qty ?? 1) - 1))}
-                            className="w-5 h-5 rounded border border-[#374151] text-[#9ca3af] hover:text-white flex items-center justify-center">
+                            className="w-5 h-5 rounded border border-oc-muted text-oc-fg-muted hover:text-oc-fg flex items-center justify-center">
                             <Minus className="w-2.5 h-2.5" />
                           </button>
-                          <span className="w-6 text-center text-xs text-white">{sel?.qty}</span>
+                          <span className="w-6 text-center text-xs text-oc-fg">{sel?.qty}</span>
                           <button onClick={() => changeQty(item.sku, (sel?.qty ?? 1) + 1)}
                             className="w-5 h-5 rounded border border-cyan-500/40 text-cyan-400 hover:bg-cyan-500/10 flex items-center justify-center">
                             <Plus className="w-2.5 h-2.5" />
@@ -175,7 +175,7 @@ export function QuoteRevisionForm({ leadId, currentEquipment }: Props) {
           </div>
 
           {/* Notes + send */}
-          <div className="p-4 border-t border-[#1f2937] space-y-3 bg-[#0d1117]">
+          <div className="p-4 border-t border-oc-border space-y-3 bg-oc-deep">
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -188,14 +188,14 @@ export function QuoteRevisionForm({ leadId, currentEquipment }: Props) {
               <button
                 onClick={handleRevision}
                 disabled={submitting}
-                className="flex-1 py-2 bg-[#f97316] text-white text-sm font-medium rounded-lg hover:bg-[#ea6c0c] disabled:opacity-50 transition-colors"
+                className="btn-primary flex-1"
               >
                 {submitting ? "Sending…" : "Send Revision Request →"}
               </button>
               <button
                 onClick={handleCancel}
                 disabled={cancelling}
-                className="px-4 py-2 text-xs text-[#6b7280] hover:text-red-400 border border-[#1f2937] rounded-lg hover:border-red-500/30 transition-colors"
+                className="px-4 py-2 text-xs text-oc-fg-dim hover:text-red-400 border border-oc-border rounded-lg hover:border-red-500/30 transition-colors"
               >
                 {cancelling ? "Cancelling…" : "Cancel Negotiation"}
               </button>

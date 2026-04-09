@@ -19,15 +19,15 @@ export default async function RWAAdminServiceRequestsPage() {
           </span>
         }
         action={
-          <div className="text-xs text-[#6b7280] text-right space-y-0.5">
+          <div className="text-xs text-oc-fg-dim text-right space-y-0.5">
             {meta.trinoEnabled && rows.length > 0 ? (
               <>
                 <p>
-                  <span className="text-white font-semibold">{rows.length}</span> requests ·{" "}
+                  <span className="text-oc-fg font-semibold">{rows.length}</span> requests ·{" "}
                   <span className="text-amber-400 font-semibold">{openCount}</span> open
                 </p>
                 <p className="text-[10px]">
-                  Centers: <span className="font-mono text-[#9ca3af]">{getDemoCenterIds().join(", ")}</span>
+                  Centers: <span className="font-mono text-oc-fg-muted">{getDemoCenterIds().join(", ")}</span>
                 </p>
               </>
             ) : null}

@@ -12,11 +12,14 @@ describe("Sidebar", () => {
     it("renders all CF Admin nav items", () => {
       render(<Sidebar role="cf-admin" currentPath="/cf-admin" />)
       expect(screen.getByText("Overview")).toBeInTheDocument()
+      expect(screen.getByText("Leads")).toBeInTheDocument()
       expect(screen.getByText("Onboarding")).toBeInTheDocument()
+      expect(screen.getByText("Pricing")).toBeInTheDocument()
       expect(screen.getByText("Trainers")).toBeInTheDocument()
       expect(screen.getByText("Assets")).toBeInTheDocument()
       expect(screen.getByText("Service Requests")).toBeInTheDocument()
-      expect(screen.getByText("Payroll")).toBeInTheDocument()
+      expect(screen.queryByText("Payroll")).not.toBeInTheDocument()
+      expect(screen.queryByText("Settings")).not.toBeInTheDocument()
     })
 
     it("does not show READ ONLY badge for CF Admin", () => {

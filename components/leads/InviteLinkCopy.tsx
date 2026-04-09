@@ -8,9 +8,9 @@ export function InviteLinkCopy({ url }: { url: string }) {
 
   return (
     <div className="space-y-2">
-      <p className="text-xs text-[#6b7280]">Invite Link</p>
-      <div className="flex items-start gap-3 bg-[#0a0a0a] rounded-lg border border-[#1f2937] p-3">
-        <span className="text-xs text-[#e5e7eb] font-mono break-all flex-1 min-w-0">{url}</span>
+      <p className="text-xs text-oc-fg-dim">Invite Link</p>
+      <div className="flex items-start gap-3 bg-oc-inset rounded-lg border border-oc-border p-3">
+        <span className="text-xs text-oc-fg-soft font-mono break-all flex-1 min-w-0">{url}</span>
         <button
           type="button"
           onClick={async () => {

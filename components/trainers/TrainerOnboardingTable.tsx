@@ -49,7 +49,7 @@ export function TrainerOnboardingTable({ onboardings }: { onboardings: TrainerOn
 
   if (onboardings.length === 0) {
     return (
-      <div className="rounded-xl border border-[#1f2937] bg-[#111827]/50 px-6 py-10 text-center text-sm text-[#6b7280]">
+      <div className="rounded-xl border border-oc-border bg-oc-card/50 px-6 py-10 text-center text-sm text-oc-fg-dim">
         No candidates in the hiring pipeline yet.
       </div>
     )
@@ -62,18 +62,18 @@ export function TrainerOnboardingTable({ onboardings }: { onboardings: TrainerOn
         const title = TRAINER_ONBOARDING_STAGE_LABELS[stage]
         const blurb = TRAINER_ONBOARDING_STAGE_DESCRIPTIONS[stage]
         return (
-          <section key={stage} className="rounded-xl border border-[#1f2937] overflow-hidden bg-[#0d1117]/40">
-            <div className="px-4 py-3 border-b border-[#1f2937] bg-[#111827]/80">
+          <section key={stage} className="rounded-xl border border-oc-border overflow-hidden bg-oc-deep/40">
+            <div className="px-4 py-3 border-b border-oc-border bg-oc-card/80">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <h2 className="text-sm font-semibold text-[#e5e7eb] tracking-tight">{title}</h2>
-                <span className="text-[11px] text-[#6b7280] tabular-nums">{rows.length} candidate{rows.length === 1 ? "" : "s"}</span>
+                <h2 className="text-sm font-semibold text-oc-fg-soft tracking-tight">{title}</h2>
+                <span className="text-[11px] text-oc-fg-dim tabular-nums">{rows.length} candidate{rows.length === 1 ? "" : "s"}</span>
               </div>
-              <p className="text-[11px] text-[#6b7280] mt-1.5 leading-relaxed max-w-4xl">{blurb}</p>
+              <p className="text-[11px] text-oc-fg-dim mt-1.5 leading-relaxed max-w-4xl">{blurb}</p>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm min-w-[820px]">
                 <thead>
-                  <tr className="border-b border-[#1f2937] bg-[#0d1117] text-left text-[11px] font-semibold uppercase tracking-wider text-[#6b7280]">
+                  <tr className="border-b border-oc-border bg-oc-deep text-left text-[11px] font-semibold uppercase tracking-wider text-oc-fg-dim">
                     <th className="px-4 py-2.5">Name</th>
                     <th className="px-4 py-2.5">Ref</th>
                     <th className="px-4 py-2.5">Phone</th>
@@ -87,7 +87,7 @@ export function TrainerOnboardingTable({ onboardings }: { onboardings: TrainerOn
                 <tbody>
                   {rows.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="px-4 py-6 text-center text-xs text-[#4b5563]">
+                      <td colSpan={8} className="px-4 py-6 text-center text-xs text-oc-placeholder">
                         No one in this stage.
                       </td>
                     </tr>
@@ -95,7 +95,7 @@ export function TrainerOnboardingTable({ onboardings }: { onboardings: TrainerOn
                     rows.map((o) => (
                       <tr
                         key={o.id}
-                        className="border-b border-[#1f2937]/80 hover:bg-[#141c2e]/60 transition-colors"
+                        className="border-b border-oc-border/80 hover:bg-oc-row/60 transition-colors"
                       >
                         <td className="px-4 py-3 align-top font-medium">
                           <Link
@@ -105,21 +105,21 @@ export function TrainerOnboardingTable({ onboardings }: { onboardings: TrainerOn
                             {o.name}
                           </Link>
                         </td>
-                        <td className="px-4 py-3 align-top text-[#9ca3af] tabular-nums">{o.employeeRef ?? "—"}</td>
-                        <td className="px-4 py-3 align-top text-[#9ca3af] tabular-nums whitespace-nowrap">{o.phone}</td>
-                        <td className="px-4 py-3 align-top text-[#9ca3af] max-w-[200px] truncate" title={o.email ?? ""}>
+                        <td className="px-4 py-3 align-top text-oc-fg-muted tabular-nums">{o.employeeRef ?? "—"}</td>
+                        <td className="px-4 py-3 align-top text-oc-fg-muted tabular-nums whitespace-nowrap">{o.phone}</td>
+                        <td className="px-4 py-3 align-top text-oc-fg-muted max-w-[200px] truncate" title={o.email ?? ""}>
                           {o.email ?? "—"}
                         </td>
-                        <td className="px-4 py-3 align-top text-[#9ca3af] max-w-[140px] truncate" title={o.areaLocality ?? ""}>
+                        <td className="px-4 py-3 align-top text-oc-fg-muted max-w-[140px] truncate" title={o.areaLocality ?? ""}>
                           {o.areaLocality ?? "—"}
                         </td>
-                        <td className="px-4 py-3 align-top text-[#6b7280] max-w-[180px] truncate" title={languagesToDisplay(o.languagesKnown)}>
+                        <td className="px-4 py-3 align-top text-oc-fg-dim max-w-[180px] truncate" title={languagesToDisplay(o.languagesKnown)}>
                           {languagesToDisplay(o.languagesKnown) || "—"}
                         </td>
-                        <td className="px-4 py-3 align-top text-[#9ca3af] tabular-nums whitespace-nowrap">
+                        <td className="px-4 py-3 align-top text-oc-fg-muted tabular-nums whitespace-nowrap">
                           {fmt(o.tentativeStartDate)}
                         </td>
-                        <td className="px-4 py-3 align-top text-[#9ca3af] tabular-nums whitespace-nowrap">
+                        <td className="px-4 py-3 align-top text-oc-fg-muted tabular-nums whitespace-nowrap">
                           {fmt(o.joinedOn)}
                         </td>
                       </tr>

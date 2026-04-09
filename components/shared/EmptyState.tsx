@@ -21,9 +21,9 @@ export function EmptyState({
       {mascot !== false ? (
         <OmniMascot variant={mascot} size="lg" className="mb-2 opacity-90" />
       ) : null}
-      <p className="text-sm font-medium text-[#f9fafb] mb-1">{title}</p>
+      <p className="text-sm font-medium text-oc-fg mb-1">{title}</p>
       {description && (
-        <p className="text-xs text-[#6b7280] max-w-xs mb-4">{description}</p>
+        <p className="text-xs text-oc-fg-dim max-w-xs mb-4">{description}</p>
       )}
       {action}
     </div>

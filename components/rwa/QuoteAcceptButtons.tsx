@@ -55,13 +55,13 @@ export function QuoteAcceptButtons({ leadId, inviteToken }: Props) {
         <div className="w-14 h-14 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto">
           <span className="text-emerald-400 text-xl">✓</span>
         </div>
-        <p className="text-[#e5e7eb] font-medium">Quote accepted!</p>
-        <p className="text-sm text-[#6b7280]">
+        <p className="text-oc-fg-soft font-medium">Quote accepted!</p>
+        <p className="text-sm text-oc-fg-dim">
           Your gym setup is confirmed. The CultSport team will be in touch soon.
         </p>
         <Link
           href="/rwa-admin"
-          className="inline-flex mt-4 px-4 py-2.5 bg-[#f97316] text-white text-sm font-medium rounded-lg hover:bg-[#ea6c0c] transition-colors"
+          className="btn-primary mt-4"
         >
           Open your dashboard
         </Link>
@@ -72,7 +72,7 @@ export function QuoteAcceptButtons({ leadId, inviteToken }: Props) {
   if (done === "rejected") {
     return (
       <div className="text-center space-y-3">
-        <p className="text-[#6b7280] text-sm">
+        <p className="text-oc-fg-dim text-sm">
           You have declined this quote. The CultSport team will reach out if you change your mind.
         </p>
       </div>
@@ -86,21 +86,21 @@ export function QuoteAcceptButtons({ leadId, inviteToken }: Props) {
           {error}
         </div>
       )}
-      <p className="text-sm text-[#6b7280] text-center">
+      <p className="text-sm text-oc-fg-dim text-center">
         By accepting, you agree to the pricing above and authorize CultSport to proceed with setup.
       </p>
       <div className="flex gap-3">
         <button
           onClick={handleReject}
           disabled={rejecting || accepting}
-          className="flex-1 py-2.5 bg-[#1f2937] text-[#e5e7eb] text-sm font-medium rounded-lg hover:bg-[#374151] disabled:opacity-50 transition-colors"
+          className="btn-secondary flex-1"
         >
           {rejecting ? "Declining…" : "Decline"}
         </button>
         <button
           onClick={handleAccept}
           disabled={accepting || rejecting}
-          className="flex-1 py-2.5 bg-[#f97316] text-white text-sm font-medium rounded-lg hover:bg-[#ea6c0c] disabled:opacity-50 transition-colors"
+          className="btn-primary flex-1"
         >
           {accepting ? "Accepting…" : "Accept Quote & Confirm"}
         </button>

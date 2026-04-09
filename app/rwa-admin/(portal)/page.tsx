@@ -78,17 +78,16 @@ export default async function RWAAdminDashboardPage() {
   return (
     <div className="p-8 space-y-6">
       {/* RWA Welcome banner */}
-      <div className="relative rounded-2xl overflow-hidden border border-cyan-500/10 bg-gradient-to-r from-[#0d1117] via-cyan-950/20 to-[#0d1117] px-8 py-6">
-        <div className="absolute right-0 bottom-0 h-full w-56 pointer-events-none select-none flex items-end justify-end">
-          <OmniMascot variant="empty" size="xl" className="translate-y-4 translate-x-4 opacity-60" />
-        </div>
-        <div className="relative z-10">
-          <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-cyan-500 mb-1">RWA Admin</p>
-          <h1 className="text-2xl font-display font-bold text-white mb-1">Live Dashboard</h1>
-          <p className="text-sm text-[#6b7280]">
+      <div className="relative rounded-2xl overflow-hidden border border-cyan-500/10 bg-gradient-to-r from-oc-deep via-cyan-950/20 to-oc-deep oc-shadow-lg">
+        <OmniMascot variant="empty" asBackground bgOpacity={8} />
+        <div className="hero-overlay-h" />
+        <div className="relative z-10 px-8 py-8">
+          <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-cyan-400 mb-2">RWA Admin</p>
+          <h1 className="text-3xl font-display font-bold text-oc-fg tracking-[-0.02em] mb-2">Live Dashboard</h1>
+          <p className="text-sm text-oc-fg-dim leading-relaxed">
             Live footfall, trainer attendance, asset health, and facility status.
           </p>
-          <span className="mt-2 inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 tracking-wide">
+          <span className="mt-3 inline-block text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 tracking-wide">
             READ ONLY
           </span>
         </div>
@@ -96,22 +95,22 @@ export default async function RWAAdminDashboardPage() {
 
       {/* Gym hero card — shown when center exists */}
       {center ? (
-        <div className="rounded-2xl border border-[#1f2937] bg-[#111827] overflow-hidden">
+        <div className="rounded-2xl border border-oc-border bg-oc-card overflow-hidden oc-shadow">
           <div className="px-6 py-5 flex items-start gap-5">
-            <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-[#1f2937] border border-[#374151] shrink-0">
+            <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-oc-border border border-oc-muted shrink-0">
               <Building2 className="w-6 h-6 text-cyan-400" />
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-3 flex-wrap">
-                <h2 className="text-lg font-bold text-white">{center.name}</h2>
+                <h2 className="text-lg font-bold text-oc-fg">{center.name}</h2>
                 <StatusBadge status={center.status} showDot />
               </div>
               <div className="flex items-center gap-1.5 mt-1">
-                <MapPin className="w-3 h-3 text-[#6b7280]" />
-                <p className="text-xs text-[#6b7280]">{center.city} · {center.pincode}</p>
+                <MapPin className="w-3 h-3 text-oc-fg-dim" />
+                <p className="text-xs text-oc-fg-dim">{center.city} · {center.pincode}</p>
               </div>
               {center.residentialDetails && (
-                <p className="text-xs text-[#6b7280] mt-0.5">
+                <p className="text-xs text-oc-fg-dim mt-0.5">
                   {center.residentialDetails.rwaName} · {center.residentialDetails.totalUnits.toLocaleString()} units
                 </p>
               )}
@@ -125,15 +124,15 @@ export default async function RWAAdminDashboardPage() {
             </div>
             {center.gymSqFt && (
               <div className="text-right shrink-0">
-                <p className="text-xl font-bold text-white font-mono-metric">{center.gymSqFt.toLocaleString()}</p>
-                <p className="text-[11px] text-[#6b7280]">sq ft</p>
+                <p className="text-xl font-bold text-oc-fg font-mono-metric">{center.gymSqFt.toLocaleString()}</p>
+                <p className="text-[11px] text-oc-fg-dim">sq ft</p>
               </div>
             )}
           </div>
         </div>
       ) : (
-        <div className="rounded-xl border border-dashed border-[#1f2937] bg-[#111827]/50 px-5 py-4">
-          <p className="text-sm text-[#6b7280]">
+        <div className="rounded-xl border border-dashed border-oc-border bg-oc-card/50 px-5 py-4">
+          <p className="text-sm text-oc-fg-dim">
             Your gym setup is in progress. Once your quote is accepted, your gym details will appear here.
           </p>
         </div>
@@ -165,8 +164,8 @@ export default async function RWAAdminDashboardPage() {
         <StatCard label="Open Requests" value={stats.openRequests} icon={Ticket} accent={stats.openRequests > 0 ? "red" : "emerald"} description={stats.openRequests > 0 ? "needs attention" : "all clear"} />
       </div>
 
-      <div className="rounded-xl border border-dashed border-[#1f2937] bg-[#111827]/50 p-8 text-center">
-        <p className="text-[#6b7280] text-sm">
+      <div className="rounded-xl border border-dashed border-oc-border bg-oc-card/50 p-8 text-center">
+        <p className="text-oc-fg-dim text-sm">
           Live footfall feed, trainer table, and asset widgets coming in Phase 4.
         </p>
       </div>

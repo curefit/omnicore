@@ -24,9 +24,9 @@ export default async function RWAAdminAttendancePage() {
       {center ? (
         <TrainerAttendanceCard centerId={center.id} />
       ) : (
-        <div className="rounded-xl border border-dashed border-[#1f2937] bg-[#111827]/50 px-6 py-12 text-center">
-          <p className="text-sm text-[#9ca3af]">No center is linked to your account yet.</p>
-          <p className="text-xs text-[#6b7280] mt-2 max-w-md mx-auto">
+        <div className="rounded-xl border border-dashed border-oc-border bg-oc-card/50 px-6 py-12 text-center">
+          <p className="text-sm text-oc-fg-muted">No center is linked to your account yet.</p>
+          <p className="text-xs text-oc-fg-dim mt-2 max-w-md mx-auto">
             After your quote is accepted, trainer attendance for your society gym will appear here.
           </p>
         </div>

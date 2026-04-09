@@ -103,6 +103,9 @@ export function QuoteBuilder({ leadId, selectedModules, pricingConfigs, selected
   const totalOneTime = lineItems.reduce((sum, li) => sum + (li.oneTimeFee ?? 0), 0)
   const totalMonthly = lineItems.reduce((sum, li) => sum + (li.monthlyFee ?? 0), 0)
 
+  const assetsItem = lineItems.find((li) => li.moduleKey === "ASSETS")
+  const assetsOneTimeBelowMin = assetsItem && catalogMinimumForAssets > 0 && (assetsItem.oneTimeFee ?? 0) < catalogMinimumForAssets
+
   const handleSave = async () => {
     setLoading(true)
     setError(null)
@@ -159,8 +162,8 @@ export function QuoteBuilder({ leadId, selectedModules, pricingConfigs, selected
       )}
 
       {/* Pricing mode toggle */}
-      <div className="bg-[#111111] rounded-xl border border-[#1f2937] p-4">
-        <p className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider mb-3">Pricing Mode</p>
+      <div className="bg-oc-void rounded-xl border border-oc-border p-4">
+        <p className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider mb-3">Pricing Mode</p>
         <div className="flex gap-3">
           {(["ITEMIZED", "TOTAL"] as const).map((mode) => (
             <button
@@ -170,7 +173,7 @@ export function QuoteBuilder({ leadId, selectedModules, pricingConfigs, selected
               className={`flex-1 py-2.5 text-sm font-medium rounded-lg border transition-colors ${
                 quoteMode === mode
                   ? "bg-[#f97316]/10 border-[#f97316] text-[#f97316]"
-                  : "bg-transparent border-[#1f2937] text-[#6b7280] hover:border-[#374151]"
+                  : "bg-transparent border-oc-border text-oc-fg-dim hover:border-oc-muted"
               }`}
             >
               {mode === "ITEMIZED" ? "Per Item" : "Agreed Total Amount"}
@@ -179,7 +182,7 @@ export function QuoteBuilder({ leadId, selectedModules, pricingConfigs, selected
         </div>
         {quoteMode === "TOTAL" && (
           <div className="mt-3 space-y-1">
-            <label className="text-xs text-[#9ca3af]">Total agreed amount (₹)</label>
+            <label className="text-xs text-oc-fg-muted">Total agreed amount (₹)</label>
             <input
               type="number"
               className="form-input"
@@ -189,19 +192,19 @@ export function QuoteBuilder({ leadId, selectedModules, pricingConfigs, selected
               onChange={(e) => setTotalAmount(parseFloat(e.target.value || "0"))}
               placeholder="e.g. 750000"
             />
-            <p className="text-[11px] text-[#6b7280]">
+            <p className="text-[11px] text-oc-fg-dim">
               RWA still sees a per-service price breakdown; use this field when you want a single agreed lump sum on file (e.g. package deals).
             </p>
           </div>
         )}
       </div>
 
-      <div className="bg-[#111111] rounded-xl border border-[#1f2937] overflow-hidden">
-        <div className="px-6 py-4 border-b border-[#1f2937]">
-          <h2 className="text-sm font-medium text-[#e5e7eb]">Line Items</h2>
+      <div className="bg-oc-void rounded-xl border border-oc-border overflow-hidden">
+        <div className="px-6 py-4 border-b border-oc-border">
+          <h2 className="text-sm font-medium text-oc-fg-soft">Line Items</h2>
         </div>
 
-        <div className="divide-y divide-[#1f2937]">
+        <div className="divide-y divide-oc-border">
           {lineItems.map((li) => (
             <div key={li.moduleKey}>
               <QuoteLineItemRow item={li} onUpdate={updateItem} readOnly={quoteMode === "TOTAL"} />
@@ -218,24 +221,24 @@ export function QuoteBuilder({ leadId, selectedModules, pricingConfigs, selected
           ))}
         </div>
 
-        <div className="px-6 py-4 border-t border-[#1f2937] bg-[#0a0a0a] space-y-1">
+        <div className="px-6 py-4 border-t border-oc-border bg-oc-inset space-y-1">
           {quoteMode === "TOTAL" && totalAmount > 0 ? (
             <div className="flex justify-between text-sm">
-              <span className="text-[#6b7280]">Total Agreed Amount</span>
-              <span className="text-[#e5e7eb] font-semibold">{formatPaise(Math.round(totalAmount * 100))}</span>
+              <span className="text-oc-fg-dim">Total Agreed Amount</span>
+              <span className="text-oc-fg-soft font-semibold">{formatPaise(Math.round(totalAmount * 100))}</span>
             </div>
           ) : (
             <>
               {totalOneTime > 0 && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-[#6b7280]">Total One-time</span>
-                  <span className="text-[#e5e7eb] font-medium">{formatPaise(totalOneTime)}</span>
+                  <span className="text-oc-fg-dim">Total One-time</span>
+                  <span className="text-oc-fg-soft font-medium">{formatPaise(totalOneTime)}</span>
                 </div>
               )}
               {totalMonthly > 0 && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-[#6b7280]">Total Monthly</span>
-                  <span className="text-[#e5e7eb] font-medium">{formatPaise(totalMonthly)}</span>
+                  <span className="text-oc-fg-dim">Total Monthly</span>
+                  <span className="text-oc-fg-soft font-medium">{formatPaise(totalMonthly)}</span>
                 </div>
               )}
             </>
@@ -244,7 +247,7 @@ export function QuoteBuilder({ leadId, selectedModules, pricingConfigs, selected
       </div>
 
       <div className="space-y-1">
-        <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">Notes (optional)</label>
+        <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">Notes (optional)</label>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
@@ -254,18 +257,28 @@ export function QuoteBuilder({ leadId, selectedModules, pricingConfigs, selected
         />
       </div>
 
+      {assetsOneTimeBelowMin && (
+        <div className="text-sm text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-lg px-4 py-3 flex items-start gap-2">
+          <span className="shrink-0 mt-0.5">⚠</span>
+          <span>
+            ASSETS one-time fee is below the catalog minimum of{" "}
+            <strong>{formatPaise(catalogMinimumForAssets)}</strong>. The quote cannot be saved until the fee meets or exceeds this floor.
+          </span>
+        </div>
+      )}
+
       <div className="flex gap-3">
         <button
           onClick={handleSave}
-          disabled={loading}
-          className="px-4 py-2 bg-[#1f2937] text-[#e5e7eb] text-sm font-medium rounded-lg hover:bg-[#374151] disabled:opacity-50 transition-colors"
+          disabled={loading || !!assetsOneTimeBelowMin}
+          className="px-4 py-2 bg-oc-border text-oc-fg-soft text-sm font-medium rounded-lg hover:bg-oc-muted disabled:opacity-50 transition-colors"
         >
           {loading ? "Saving…" : "Save Draft"}
         </button>
         <button
           onClick={handleSend}
-          disabled={sending || loading}
-          className="px-4 py-2 bg-[#f97316] text-white text-sm font-medium rounded-lg hover:bg-[#ea6c0c] disabled:opacity-50 transition-colors"
+          disabled={sending || loading || !!assetsOneTimeBelowMin}
+          className="btn-primary"
         >
           {sending ? "Sending…" : "Send Quote to RWA Admin"}
         </button>
@@ -303,13 +316,13 @@ function QuoteLineItemRow({ item, onUpdate, readOnly }: QuoteLineItemRowProps) {
   return (
     <div className="px-6 py-4 flex flex-wrap items-center gap-4">
       <div className="flex-1 min-w-[120px]">
-        <p className="text-sm font-medium text-[#e5e7eb]">{item.moduleKey}</p>
-        <p className="text-xs text-[#6b7280]">{label}</p>
+        <p className="text-sm font-medium text-oc-fg-soft">{item.moduleKey}</p>
+        <p className="text-xs text-oc-fg-dim">{label}</p>
       </div>
 
       {!readOnly && (item.pricingType === "ONE_TIME" || item.pricingType === "ONE_TIME_PLUS_TAKE_RATE") && (
         <div className="space-y-0.5">
-          <label className="text-xs text-[#6b7280]">One-time (₹)</label>
+          <label className="text-xs text-oc-fg-dim">One-time (₹)</label>
           <input
             type="number"
             className="form-input w-32 text-sm"
@@ -321,7 +334,7 @@ function QuoteLineItemRow({ item, onUpdate, readOnly }: QuoteLineItemRowProps) {
 
       {!readOnly && (item.pricingType === "MONTHLY" || item.pricingType === "ONE_TIME_PLUS_TAKE_RATE") && (
         <div className="space-y-0.5">
-          <label className="text-xs text-[#6b7280]">Monthly (₹)</label>
+          <label className="text-xs text-oc-fg-dim">Monthly (₹)</label>
           <input
             type="number"
             className="form-input w-32 text-sm"
@@ -333,7 +346,7 @@ function QuoteLineItemRow({ item, onUpdate, readOnly }: QuoteLineItemRowProps) {
 
       {!readOnly && item.pricingType === "ONE_TIME_PLUS_TAKE_RATE" && (
         <div className="space-y-0.5">
-          <label className="text-xs text-[#6b7280]">Take Rate (%)</label>
+          <label className="text-xs text-oc-fg-dim">Take Rate (%)</label>
           <input
             type="number"
             className="form-input w-24 text-sm"
@@ -349,15 +362,15 @@ function QuoteLineItemRow({ item, onUpdate, readOnly }: QuoteLineItemRowProps) {
       {readOnly && (
         <div className="text-right space-y-0.5 min-w-[140px]">
           {showRoOneTime && (
-            <p className="text-sm text-[#e5e7eb]">{formatPaise(item.oneTimeFee!)} one-time</p>
+            <p className="text-sm text-oc-fg-soft">{formatPaise(item.oneTimeFee!)} one-time</p>
           )}
           {showRoMonthly && (
-            <p className="text-sm text-[#e5e7eb]">{formatPaise(item.monthlyFee!)}/month</p>
+            <p className="text-sm text-oc-fg-soft">{formatPaise(item.monthlyFee!)}/month</p>
           )}
           {showRoTake && (
-            <p className="text-xs text-[#6b7280]">{item.takeRatePct}% revenue share</p>
+            <p className="text-xs text-oc-fg-dim">{item.takeRatePct}% revenue share</p>
           )}
-          {!hasReadOnlyAmounts && <span className="text-xs text-[#6b7280]">—</span>}
+          {!hasReadOnlyAmounts && <span className="text-xs text-oc-fg-dim">—</span>}
         </div>
       )}
     </div>

@@ -24,9 +24,16 @@ export type CreateLeadInput = z.infer<typeof CreateLeadSchema>
 
 // Shape of the JSON stored in Lead.formData after RWA Admin completes the wizard.
 // Mirrors OnboardingPayloadSchema in app/api/onboarding/route.ts.
+const SelectedEquipmentItemSchema = z.object({
+  sku: z.string(),
+  name: z.string(),
+  category: z.string(),
+  qty: z.number().int().min(1),
+  imageUrl: z.string().optional(),
+})
+
 export const LeadFormSubmitSchema = z.object({
   name: z.string().min(2),
-  // code is auto-generated server-side — not collected from RWA Admin
   address: z.string().min(5),
   city: z.string().min(2),
   pincode: z.string().regex(/^\d{6}$/),
@@ -40,6 +47,7 @@ export const LeadFormSubmitSchema = z.object({
     .regex(/^(\+91\s?)?[6-9]\d{9}$/, "Enter a valid Indian mobile number"),
   contactPersonEmail: z.string().email(),
   selectedModules: z.array(z.enum(VALID_MODULE_KEYS)),
+  selectedEquipment: z.array(SelectedEquipmentItemSchema).optional().default([]),
   trainerIds: z.array(z.string()).optional(),
   myGateSocietyId: z.string().optional(),
   myGateApiKey: z.string().optional(),

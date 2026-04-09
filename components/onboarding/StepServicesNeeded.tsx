@@ -36,29 +36,29 @@ export function StepServicesNeeded({ selectedEquipment, onChange, onNext, onBack
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="text-base font-semibold text-white mb-1">Equipment Upgrade</h2>
-        <p className="text-sm text-[#9ca3af]">
+        <h2 className="text-base font-semibold text-oc-fg mb-1">Equipment Upgrade</h2>
+        <p className="text-sm text-oc-fg-muted">
           Select the equipment you'd like to add or upgrade. CultSport will include pricing in the quote.
         </p>
       </div>
 
       <div className="space-y-4">
         {UPGRADE_SECTIONS.map(({ label, items }) => (
-          <div key={label} className="rounded-xl border border-[#1f2937] bg-[#111827] overflow-hidden">
-            <div className="px-4 py-3 border-b border-[#1f2937] bg-[#0d1117]">
+          <div key={label} className="rounded-xl border border-oc-border bg-oc-card overflow-hidden">
+            <div className="px-4 py-3 border-b border-oc-border bg-oc-deep">
               <div className="flex items-center gap-3">
                 {items[0]?.imageUrl ? (
                   <img src={items[0].imageUrl} alt={label}
-                    className="w-8 h-8 rounded-md object-cover shrink-0" />
+                    className="w-8 h-8 rounded-xl object-cover ring-1 ring-white/10 shadow-md shrink-0" />
                 ) : (
-                  <div className="w-8 h-8 rounded-md bg-[#1f2937] flex items-center justify-center shrink-0">
-                    <Wrench className="w-3.5 h-3.5 text-[#6b7280]" />
+                  <div className="w-8 h-8 rounded-xl bg-oc-border flex items-center justify-center shrink-0">
+                    <Wrench className="w-3.5 h-3.5 text-oc-fg-dim" />
                   </div>
                 )}
-                <p className="text-sm font-semibold text-white">{label}</p>
+                <p className="text-sm font-semibold text-oc-fg">{label}</p>
               </div>
             </div>
-            <div className="divide-y divide-[#1f2937]">
+            <div className="divide-y divide-oc-border">
               {items.map(item => {
                 const checked = selSet.has(item.sku)
                 return (
@@ -66,23 +66,23 @@ export function StepServicesNeeded({ selectedEquipment, onChange, onNext, onBack
                     onClick={() => toggleItem(item.sku, item.name, item.category, item.imageUrl)}
                     className={cn(
                       "flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors",
-                      checked ? "bg-cyan-500/5" : "hover:bg-[#0f1623]"
+                      checked ? "bg-cyan-500/5" : "hover:bg-oc-row-alt"
                     )}>
                     {checked
                       ? <CheckSquare className="w-4 h-4 text-cyan-400 shrink-0" />
-                      : <Square className="w-4 h-4 text-[#374151] shrink-0" />}
+                      : <Square className="w-4 h-4 text-oc-muted shrink-0" />}
 
                     {item.imageUrl && (
                       <img src={item.imageUrl} alt={item.name}
-                        className="w-10 h-10 rounded-lg object-cover shrink-0 opacity-80" />
+                        className="w-10 h-10 rounded-xl object-cover shrink-0 ring-1 ring-white/10 shadow-lg" />
                     )}
 
                     <div className="flex-1 min-w-0">
-                      <p className={cn("text-sm truncate", checked ? "text-white" : "text-[#9ca3af]")}>
+                      <p className={cn("text-sm truncate", checked ? "text-oc-fg" : "text-oc-fg-muted")}>
                         {item.name}
                       </p>
                       {item.specs && (
-                        <p className="text-[11px] text-[#6b7280] truncate">{item.specs}</p>
+                        <p className="text-[11px] text-oc-fg-dim truncate">{item.specs}</p>
                       )}
                     </div>
                   </div>

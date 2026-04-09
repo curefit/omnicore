@@ -44,23 +44,23 @@ export async function FootfallCard({ centerId }: Props) {
   const deltaSign = delta >= 0 ? "+" : ""
 
   return (
-    <div className="bg-[#111111] rounded-xl border border-[#1f2937] p-6 space-y-5">
+    <div className="bg-oc-void rounded-xl border border-oc-border p-6 space-y-5">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs font-medium text-[#6b7280] uppercase tracking-wider">Today&apos;s Footfall</p>
-          <p className="text-3xl font-semibold text-[#e5e7eb] mt-1">{bookings.length}</p>
-          <p className="text-xs text-[#6b7280] mt-1">
+          <p className="text-xs font-medium text-oc-fg-dim uppercase tracking-wider">Today&apos;s Footfall</p>
+          <p className="text-3xl font-semibold text-oc-fg-soft mt-1">{bookings.length}</p>
+          <p className="text-xs text-oc-fg-dim mt-1">
             <span className={delta >= 0 ? "text-emerald-400" : "text-red-400"}>
               {deltaSign}{delta}
             </span>
             {" vs yesterday"}
           </p>
         </div>
-        <div className="text-xs text-[#6b7280]">Gym bookings</div>
+        <div className="text-xs text-oc-fg-dim">Gym bookings</div>
       </div>
 
       <div>
-        <p className="text-xs text-[#6b7280] mb-3">Bookings by hour</p>
+        <p className="text-xs text-oc-fg-dim mb-3">Bookings by hour</p>
         <div className="flex items-end gap-1 h-20">
           {slots.map((slot) => {
             const heightPct = maxCount > 0 ? (slot.count / maxCount) * 100 : 0
@@ -73,12 +73,12 @@ export async function FootfallCard({ centerId }: Props) {
                       ? "bg-[#f97316]"
                       : slot.count > 0
                       ? "bg-[#f97316]/40"
-                      : "bg-[#1f2937]"
+                      : "bg-oc-border"
                   }`}
                   style={{ height: `${Math.max(heightPct, 4)}%` }}
                 />
                 {slot.count > 0 && (
-                  <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-[#1f2937] text-[#e5e7eb] text-xs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none">
+                  <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-oc-border text-oc-fg-soft text-xs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none">
                     {slot.count}
                   </div>
                 )}
@@ -90,7 +90,7 @@ export async function FootfallCard({ centerId }: Props) {
           {slots.map((slot, i) => (
             <div key={slot.hour} className="flex-1 text-center">
               {i % 3 === 0 && (
-                <span className="text-[10px] text-[#4b5563]">{slot.label}</span>
+                <span className="text-[10px] text-oc-placeholder">{slot.label}</span>
               )}
             </div>
           ))}

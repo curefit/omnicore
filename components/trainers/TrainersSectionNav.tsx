@@ -41,12 +41,12 @@ export function TrainersSectionNav() {
   const pathname = usePathname()
 
   return (
-    <div className="border-b border-[#1f2937] mb-8">
-      <p className="text-xs text-[#6b7280] mb-3 max-w-3xl">
-        <strong className="text-[#9ca3af]">Hiring</strong> ends at offer acceptance.{" "}
-        <strong className="text-[#9ca3af]">L0</strong> is post-offer training.{" "}
-        <strong className="text-[#9ca3af]">Roster / assignments</strong> are the live{" "}
-        <code className="text-[#6b7280]">Trainer</code> pool and center mappings — not part of hiring or L0.
+    <div className="border-b border-oc-border mb-8">
+      <p className="text-xs text-oc-fg-dim mb-3 max-w-3xl">
+        <strong className="text-oc-fg-muted">Hiring</strong> ends at offer acceptance.{" "}
+        <strong className="text-oc-fg-muted">L0</strong> is post-offer training.{" "}
+        <strong className="text-oc-fg-muted">Roster / assignments</strong> are the live{" "}
+        <code className="text-oc-fg-dim">Trainer</code> pool and center mappings — not part of hiring or L0.
       </p>
       <nav className="flex flex-wrap gap-1" aria-label="Trainers sections">
         {TABS.map((tab) => {
@@ -59,7 +59,7 @@ export function TrainersSectionNav() {
                 "px-3 py-2 rounded-md text-sm font-medium transition-colors",
                 isActive
                   ? "bg-cyan-500/10 text-cyan-400 border border-cyan-500/25"
-                  : "text-[#9ca3af] hover:text-[#e5e7eb] hover:bg-[#1a2235]"
+                  : "text-oc-fg-muted hover:text-oc-fg-soft hover:bg-oc-hover"
               )}
             >
               {tab.label}

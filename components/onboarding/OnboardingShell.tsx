@@ -171,18 +171,18 @@ export function OnboardingShell({ availableTrainers }: OnboardingShellProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0d14]">
+    <div className="min-h-screen bg-oc-base">
       {/* Header */}
-      <div className="border-b border-[#1f2937] bg-[#0d1117] px-8 py-5">
+      <div className="border-b border-oc-border bg-oc-deep px-8 py-5">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="font-display text-lg font-bold text-white">
+              <h1 className="font-display text-lg font-bold text-oc-fg">
                 New Center Onboarding
               </h1>
-              <p className="text-xs text-[#6b7280] mt-0.5">
+              <p className="text-xs text-oc-fg-dim mt-0.5">
                 Step {currentStep + 1} of {steps.length} —{" "}
-                <span className="text-[#9ca3af]">{currentStepDef.label}</span>
+                <span className="text-oc-fg-muted">{currentStepDef.label}</span>
               </p>
             </div>
             <Button

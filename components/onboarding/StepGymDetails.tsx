@@ -46,7 +46,7 @@ export function StepGymDetails({ data, onChange, onNext }: Props) {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       {/* Gym / Center Info */}
       <section>
-        <h2 className="text-sm font-semibold text-[#9ca3af] uppercase tracking-wider mb-4">
+        <h2 className="text-sm font-semibold text-oc-fg-muted uppercase tracking-wider mb-4">
           Gym Details
         </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -114,7 +114,7 @@ export function StepGymDetails({ data, onChange, onNext }: Props) {
 
       {/* RWA / Society Info */}
       <section>
-        <h2 className="text-sm font-semibold text-[#9ca3af] uppercase tracking-wider mb-4">
+        <h2 className="text-sm font-semibold text-oc-fg-muted uppercase tracking-wider mb-4">
           Society / Residential Details
         </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -139,7 +139,7 @@ export function StepGymDetails({ data, onChange, onNext }: Props) {
 
       {/* Contact Person */}
       <section>
-        <h2 className="text-sm font-semibold text-[#9ca3af] uppercase tracking-wider mb-4">
+        <h2 className="text-sm font-semibold text-oc-fg-muted uppercase tracking-wider mb-4">
           RWA Contact Person
         </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

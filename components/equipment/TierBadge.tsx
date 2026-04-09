@@ -32,7 +32,7 @@ export function TierBadge({ tier, reason, categoryCount, className }: TierBadgeP
 
   return (
     <div className={cn(
-      "flex items-start gap-4 rounded-xl border border-[#1f2937] bg-[#111827] p-4",
+      "flex items-start gap-4 rounded-xl border border-oc-border bg-oc-card p-4",
       styles.glow,
       className
     )}>
@@ -51,13 +51,13 @@ export function TierBadge({ tier, reason, categoryCount, className }: TierBadgeP
             {TIER_LABEL[tier]}
           </span>
           {categoryCount !== undefined && (
-            <span className="text-[11px] text-[#6b7280]">
+            <span className="text-[11px] text-oc-fg-dim">
               {categoryCount} equipment {categoryCount === 1 ? "category" : "categories"}
             </span>
           )}
         </div>
         {reason && (
-          <p className="text-xs text-[#6b7280] mt-1">{reason}</p>
+          <p className="text-xs text-oc-fg-dim mt-1">{reason}</p>
         )}
       </div>
     </div>

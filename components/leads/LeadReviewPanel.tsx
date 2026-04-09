@@ -35,8 +35,8 @@ export function LeadReviewPanel({ lead, formData }: Props) {
   const inviteLink = `${process.env.NEXT_PUBLIC_BASE_URL ?? ""}/rwa/setup/${lead.inviteToken}`
 
   return (
-    <div className="bg-[#111111] rounded-xl border border-[#1f2937] p-6 space-y-4">
-      <h2 className="text-sm font-medium text-[#e5e7eb]">Lead Details</h2>
+    <div className="bg-oc-void rounded-xl border border-oc-border p-6 space-y-4">
+      <h2 className="text-sm font-medium text-oc-fg-soft">Lead Details</h2>
 
       <div className="space-y-3">
         <Row label="Contact" value={`${lead.contactName} — ${lead.contactEmail}`} />
@@ -46,8 +46,8 @@ export function LeadReviewPanel({ lead, formData }: Props) {
 
       {formData && (
         <>
-          <hr className="border-[#1f2937]" />
-          <h2 className="text-sm font-medium text-[#e5e7eb]">Submitted Info</h2>
+          <hr className="border-oc-border" />
+          <h2 className="text-sm font-medium text-oc-fg-soft">Submitted Info</h2>
           <div className="space-y-3">
             {formData.name && <Row label="Gym Name" value={formData.name} />}
             {formData.code && <Row label="Code" value={formData.code} />}
@@ -61,10 +61,10 @@ export function LeadReviewPanel({ lead, formData }: Props) {
             )}
             {formData.selectedModules && (
               <div>
-                <span className="text-xs text-[#6b7280]">Requested Modules</span>
+                <span className="text-xs text-oc-fg-dim">Requested Modules</span>
                 <div className="flex flex-wrap gap-2 mt-1">
                   {formData.selectedModules.map((m) => (
-                    <span key={m} className="text-xs bg-[#1f2937] text-[#9ca3af] px-2 py-0.5 rounded">
+                    <span key={m} className="text-xs bg-oc-border text-oc-fg-muted px-2 py-0.5 rounded">
                       {m}
                     </span>
                   ))}
@@ -77,7 +77,7 @@ export function LeadReviewPanel({ lead, formData }: Props) {
 
       {lead.status === "INVITED" && (
         <>
-          <hr className="border-[#1f2937]" />
+          <hr className="border-oc-border" />
           <InviteLinkCopy url={inviteLink} />
         </>
       )}
@@ -88,8 +88,8 @@ export function LeadReviewPanel({ lead, formData }: Props) {
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between gap-4">
-      <span className="text-xs text-[#6b7280]">{label}</span>
-      <span className="text-xs text-[#e5e7eb] text-right">{value}</span>
+      <span className="text-xs text-oc-fg-dim">{label}</span>
+      <span className="text-xs text-oc-fg-soft text-right">{value}</span>
     </div>
   )
 }

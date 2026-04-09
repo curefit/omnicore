@@ -12,7 +12,7 @@ function getDaysUntil(date: Date | null): number | null {
 
 function MaintenanceTimer({ nextServiceDue }: { nextServiceDue: Date | null }) {
   const days = getDaysUntil(nextServiceDue)
-  if (days === null) return <span className="text-[11px] text-[#6b7280]">No schedule</span>
+  if (days === null) return <span className="text-[11px] text-oc-fg-dim">No schedule</span>
 
   if (days < 0) {
     return (
@@ -62,10 +62,10 @@ export default async function RWAAdminAssetsPage() {
           description="Equipment installed at your gym facility."
           badge={<span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">READ ONLY</span>}
         />
-        <div className="rounded-xl border border-dashed border-[#1f2937] p-12 flex flex-col items-center text-center mt-6 gap-2">
+        <div className="rounded-xl border border-dashed border-oc-border p-12 flex flex-col items-center text-center mt-6 gap-2">
           <OmniMascot variant="empty" size="lg" />
-          <p className="text-sm font-medium text-[#9ca3af]">No equipment installed yet</p>
-          <p className="text-xs text-[#6b7280]">Equipment will appear here after your quote is accepted.</p>
+          <p className="text-sm font-medium text-oc-fg-muted">No equipment installed yet</p>
+          <p className="text-xs text-oc-fg-dim">Equipment will appear here after your quote is accepted.</p>
         </div>
       </div>
     )
@@ -113,7 +113,7 @@ export default async function RWAAdminAssetsPage() {
             <p className="text-sm font-bold text-red-400">
               {overdueCount} equipment item{overdueCount !== 1 ? "s" : ""} overdue for maintenance
             </p>
-            <p className="text-xs text-[#6b7280] mt-0.5">
+            <p className="text-xs text-oc-fg-dim mt-0.5">
               Please raise a service request or contact CultSport support.
             </p>
           </div>
@@ -122,17 +122,17 @@ export default async function RWAAdminAssetsPage() {
 
       {/* Summary stats */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="rounded-xl border border-[#1f2937] bg-[#111827] px-4 py-3 text-center">
-          <p className="text-2xl font-bold text-white">{totalAssets}</p>
-          <p className="text-xs text-[#6b7280] mt-0.5">Total Equipment</p>
+        <div className="rounded-xl border border-oc-border bg-oc-card px-4 py-3 text-center">
+          <p className="text-2xl font-bold text-oc-fg">{totalAssets}</p>
+          <p className="text-xs text-oc-fg-dim mt-0.5">Total Equipment</p>
         </div>
-        <div className={`rounded-xl border px-4 py-3 text-center ${overdueCount > 0 ? "border-red-500/20 bg-red-500/5" : "border-[#1f2937] bg-[#111827]"}`}>
-          <p className={`text-2xl font-bold ${overdueCount > 0 ? "text-red-400" : "text-white"}`}>{overdueCount}</p>
-          <p className="text-xs text-[#6b7280] mt-0.5">Maintenance Overdue</p>
+        <div className={`rounded-xl border px-4 py-3 text-center ${overdueCount > 0 ? "border-red-500/20 bg-red-500/5" : "border-oc-border bg-oc-card"}`}>
+          <p className={`text-2xl font-bold ${overdueCount > 0 ? "text-red-400" : "text-oc-fg"}`}>{overdueCount}</p>
+          <p className="text-xs text-oc-fg-dim mt-0.5">Maintenance Overdue</p>
         </div>
-        <div className={`rounded-xl border px-4 py-3 text-center ${openSRCount > 0 ? "border-amber-500/20 bg-amber-500/5" : "border-[#1f2937] bg-[#111827]"}`}>
-          <p className={`text-2xl font-bold ${openSRCount > 0 ? "text-amber-400" : "text-white"}`}>{openSRCount}</p>
-          <p className="text-xs text-[#6b7280] mt-0.5">Open Tickets</p>
+        <div className={`rounded-xl border px-4 py-3 text-center ${openSRCount > 0 ? "border-amber-500/20 bg-amber-500/5" : "border-oc-border bg-oc-card"}`}>
+          <p className={`text-2xl font-bold ${openSRCount > 0 ? "text-amber-400" : "text-oc-fg"}`}>{openSRCount}</p>
+          <p className="text-xs text-oc-fg-dim mt-0.5">Open Tickets</p>
         </div>
       </div>
 
@@ -146,23 +146,25 @@ export default async function RWAAdminAssetsPage() {
           const displayName = CATEGORY_DISPLAY_NAMES[category] ?? category
 
           return (
-            <div key={category} className="rounded-2xl border border-[#1f2937] overflow-hidden">
-              {/* Category header */}
-              <div className="relative h-20 overflow-hidden bg-[#0d1117]">
+            <div key={category} className="rounded-2xl border border-oc-border overflow-hidden">
+              {/* Category header — cinematic hero */}
+              <div className="relative h-32 overflow-hidden bg-oc-deep">
                 {heroImage && (
-                  <img src={heroImage} alt={displayName} className="w-full h-full object-cover opacity-50" />
+                  <img src={heroImage} alt="" aria-hidden className="absolute inset-0 w-full h-full object-cover object-center opacity-20" />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-r from-[#0a0d14]/95 via-[#0a0d14]/70 to-transparent flex items-center px-5 gap-3">
-                  <Wrench className="w-4 h-4 text-cyan-400 shrink-0" />
+                <div className="hero-overlay-h" />
+                <div className="hero-overlay-v" />
+                <div className="absolute inset-0 flex items-end px-5 pb-4 gap-3">
+                  <Wrench className="w-4 h-4 text-cyan-400 shrink-0 mb-0.5" />
                   <div>
-                    <h3 className="text-sm font-bold text-white">{displayName}</h3>
-                    <p className="text-[11px] text-[#6b7280]">{assets.length} unit{assets.length !== 1 ? "s" : ""}</p>
+                    <h3 className="text-sm font-bold text-oc-fg">{displayName}</h3>
+                    <p className="text-[11px] text-oc-fg-dim">{assets.length} unit{assets.length !== 1 ? "s" : ""}</p>
                   </div>
                 </div>
               </div>
 
               {/* Individual assets */}
-              <div className="divide-y divide-[#1a2030] bg-[#0a0d14]">
+              <div className="divide-y divide-oc-divide bg-oc-base">
                 {assets.map((asset) => {
                   const catalogItem = asset.catalogItemSku ? catalogMap.get(asset.catalogItemSku) : null
                   const hasUpgrade = catalogItem && !catalogItem.isLatestVersion && catalogItem.supersedesSku
@@ -170,23 +172,28 @@ export default async function RWAAdminAssetsPage() {
                   const openSRs = asset.serviceRequests.length
 
                   return (
-                    <div key={asset.id} className="px-5 py-4 space-y-2">
+                    <div key={asset.id} className="relative px-5 py-4 space-y-2 overflow-hidden">
                       <div className="flex items-start gap-4">
-                        {/* Asset image */}
-                        {(catalogItem?.imageUrl) && (
-                          <img
-                            src={catalogItem.imageUrl}
-                            alt={asset.name}
-                            className="w-14 h-10 rounded-lg object-cover border border-[#1f2937] shrink-0"
+                        {/* Edge-bleed image instead of boxed thumbnail */}
+                        {catalogItem?.imageUrl && (
+                          <div
+                            className="absolute left-0 top-0 w-32 h-full opacity-20 pointer-events-none"
+                            style={{
+                              backgroundImage: `url(${catalogItem.imageUrl})`,
+                              backgroundSize: "cover",
+                              backgroundPosition: "center",
+                              maskImage: "linear-gradient(to right, transparent, black 50%, transparent)",
+                              WebkitMaskImage: "linear-gradient(to right, transparent, black 50%, transparent)",
+                            }}
                           />
                         )}
 
                         {/* Details */}
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-white truncate">{asset.name}</p>
-                          <p className="text-[11px] text-[#6b7280] font-mono">{asset.catalogItemSku ?? asset.model ?? "—"}</p>
+                          <p className="text-sm font-semibold text-oc-fg truncate">{asset.name}</p>
+                          <p className="text-[11px] text-oc-fg-dim font-mono">{asset.catalogItemSku ?? asset.model ?? "—"}</p>
                           {asset.installationDate && (
-                            <p className="text-[11px] text-[#4b5563] mt-0.5">
+                            <p className="text-[11px] text-oc-placeholder mt-0.5">
                               Installed {new Date(asset.installationDate).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
                             </p>
                           )}

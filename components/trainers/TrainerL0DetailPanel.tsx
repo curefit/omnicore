@@ -84,28 +84,28 @@ export function TrainerL0DetailPanel({ enrollment }: { enrollment: ClientTrainer
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="bg-[#111111] rounded-xl border border-[#1f2937] p-6 space-y-4 max-w-2xl"
+        className="bg-oc-void rounded-xl border border-oc-border p-6 space-y-4 max-w-2xl"
       >
         <div className="space-y-1">
-          <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">Full name *</label>
+          <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">Full name *</label>
           <input {...register("name")} className="form-input" />
           {errors.name && <p className="text-xs text-red-400">{errors.name.message}</p>}
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1">
-            <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">Phone *</label>
+            <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">Phone *</label>
             <input {...register("phone")} className="form-input" />
             {errors.phone && <p className="text-xs text-red-400">{errors.phone.message}</p>}
           </div>
           <div className="space-y-1">
-            <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">Email</label>
+            <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">Email</label>
             <input {...register("email")} type="email" className="form-input" />
           </div>
         </div>
 
         <div className="space-y-1">
-          <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">
+          <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">
             Internal / employee ID
           </label>
           <input {...register("employeeRef")} className="form-input" />
@@ -113,24 +113,24 @@ export function TrainerL0DetailPanel({ enrollment }: { enrollment: ClientTrainer
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1">
-            <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">L0 start date</label>
+            <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">L0 start date</label>
             <input {...register("startDate")} type="date" className="form-input" />
-            <p className="text-[11px] text-[#6b7280]">Program or cohort start</p>
+            <p className="text-[11px] text-oc-fg-dim">Program or cohort start</p>
           </div>
           <div className="space-y-1">
-            <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">L0 end date</label>
+            <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">L0 end date</label>
             <input {...register("endDate")} type="date" className="form-input" />
-            <p className="text-[11px] text-[#6b7280]">Scheduled finish or actual completion</p>
+            <p className="text-[11px] text-oc-fg-dim">Scheduled finish or actual completion</p>
           </div>
         </div>
 
         <div className="space-y-1">
-          <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">Notes</label>
+          <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">Notes</label>
           <textarea {...register("notes")} className="form-input min-h-[80px]" rows={3} />
         </div>
 
         <div className="space-y-1">
-          <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">L0 stage</label>
+          <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">L0 stage</label>
           <select {...register("l0Stage")} className="form-input">
             {L0_STAGES.map((s) => (
               <option key={s} value={s}>
@@ -141,9 +141,9 @@ export function TrainerL0DetailPanel({ enrollment }: { enrollment: ClientTrainer
         </div>
 
         {enrollment.sourceOnboardingId && (
-          <p className="text-[11px] text-[#6b7280]">
+          <p className="text-[11px] text-oc-fg-dim">
             Linked hiring record:{" "}
-            <span className="font-mono text-[#9ca3af]">{enrollment.sourceOnboardingId}</span>
+            <span className="font-mono text-oc-fg-muted">{enrollment.sourceOnboardingId}</span>
           </p>
         )}
 
@@ -151,7 +151,7 @@ export function TrainerL0DetailPanel({ enrollment }: { enrollment: ClientTrainer
           <button
             type="submit"
             disabled={loading}
-            className="px-4 py-2 bg-amber-500/90 text-[#0a0d14] text-sm font-medium rounded-lg hover:bg-amber-400 transition-colors disabled:opacity-50"
+            className="px-4 py-2 bg-amber-500/90 text-oc-base text-sm font-medium rounded-lg hover:bg-amber-400 transition-colors disabled:opacity-50"
           >
             {loading ? "Saving…" : "Save"}
           </button>

@@ -56,17 +56,17 @@ export default async function LeadDetailPage({ params }: Props) {
   const showRwaBaseUrlHint = !rwaQuoteUrl.startsWith("http")
 
   return (
-    <div className="space-y-6">
+    <div className="p-8 space-y-6">
       <div className="flex items-center gap-4">
-        <Link href="/cf-admin/leads" className="text-[#6b7280] hover:text-[#e5e7eb] text-sm">
+        <Link href="/cf-admin/leads" className="text-oc-fg-dim hover:text-oc-fg-soft text-sm">
           ← Back to Leads
         </Link>
       </div>
 
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-[#e5e7eb]">{lead.societyName}</h1>
-          <p className="text-sm text-[#6b7280] mt-1">{lead.contactEmail}</p>
+          <h1 className="text-2xl font-display font-bold tracking-[-0.02em] text-oc-fg-soft">{lead.societyName}</h1>
+          <p className="text-sm text-oc-fg-dim mt-1">{lead.contactEmail}</p>
         </div>
         <StatusBadge status={lead.status} />
       </div>
@@ -81,18 +81,18 @@ export default async function LeadDetailPage({ params }: Props) {
             </p>
           </div>
           {lead.quote?.revisionNotes && (
-            <p className="text-sm text-[#9ca3af] pl-6">&ldquo;{lead.quote.revisionNotes}&rdquo;</p>
+            <p className="text-sm text-oc-fg-muted pl-6">&ldquo;{lead.quote.revisionNotes}&rdquo;</p>
           )}
           {revisionEquipment && Array.isArray(revisionEquipment) && (
             <div className="pl-6">
-              <p className="text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
+              <p className="text-xs font-semibold text-oc-fg-dim uppercase tracking-wider mb-2">
                 Updated equipment selection ({revisionEquipment.length} items):
               </p>
               <div className="flex flex-wrap gap-1.5">
                 {revisionEquipment.map((item: { sku: string; name: string; qty: number }) => (
                   <span
                     key={item.sku}
-                    className="text-xs bg-[#1f2937] text-[#e5e7eb] border border-[#374151] px-2 py-0.5 rounded"
+                    className="text-xs bg-oc-border text-oc-fg-soft border border-oc-muted px-2 py-0.5 rounded"
                   >
                     {item.qty}× {item.name.split(" CS-")[0].trim()}
                   </span>
@@ -103,7 +103,7 @@ export default async function LeadDetailPage({ params }: Props) {
           <div className="pl-6">
             <Link
               href={`/cf-admin/leads/${lead.id}/quote`}
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#f97316] text-white text-sm font-medium rounded-lg hover:bg-[#ea6c0c] transition-colors"
+              className="btn-primary"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               Revise Quote →
@@ -136,7 +136,7 @@ export default async function LeadDetailPage({ params }: Props) {
         <div className="flex gap-3">
           <Link
             href={`/cf-admin/leads/${lead.id}/quote`}
-            className="px-4 py-2 bg-[#f97316] text-white text-sm font-medium rounded-lg hover:bg-[#ea6c0c] transition-colors"
+            className="btn-primary"
           >
             Build Quote →
           </Link>
@@ -146,7 +146,7 @@ export default async function LeadDetailPage({ params }: Props) {
       {lead.quote && lead.quote.status === "DRAFT" && (
         <Link
           href={`/cf-admin/leads/${lead.id}/quote`}
-          className="inline-block px-4 py-2 bg-[#f97316] text-white text-sm font-medium rounded-lg hover:bg-[#ea6c0c] transition-colors"
+          className="btn-primary"
         >
           Continue Quote →
         </Link>
@@ -154,7 +154,7 @@ export default async function LeadDetailPage({ params }: Props) {
 
       {/* Quote history timeline */}
       {lead.quote?.historyJson && (
-        <div className="rounded-xl border border-[#1f2937] bg-[#111111] p-5">
+        <div className="rounded-xl border border-oc-border bg-oc-void p-5">
           <QuoteHistoryTimeline historyJson={lead.quote.historyJson} />
         </div>
       )}

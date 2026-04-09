@@ -43,15 +43,15 @@ export default async function QuotePage({ params }: Props) {
     : []
 
   return (
-    <div className="max-w-3xl space-y-6">
+    <div className="p-8 max-w-3xl space-y-6">
       <div className="flex items-center gap-4">
-        <Link href={`/cf-admin/leads/${id}`} className="text-[#6b7280] hover:text-[#e5e7eb] text-sm">
+        <Link href={`/cf-admin/leads/${id}`} className="text-oc-fg-dim hover:text-oc-fg-soft text-sm">
           ← Back to Lead
         </Link>
       </div>
       <div>
-        <h1 className="text-2xl font-semibold text-[#e5e7eb]">Quote Builder</h1>
-        <p className="text-sm text-[#6b7280] mt-1">{lead.societyName}</p>
+        <h1 className="text-2xl font-display font-bold tracking-[-0.02em] text-oc-fg-soft">Quote Builder</h1>
+        <p className="text-sm text-oc-fg-dim mt-1">{lead.societyName}</p>
         {lead.quote?.revisionRound != null && lead.quote.revisionRound > 0 && (
           <p className="text-xs text-amber-400 mt-1">
             Revision round {lead.quote.revisionRound} — RWA Admin updated equipment selection

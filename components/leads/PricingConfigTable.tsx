@@ -53,7 +53,7 @@ export function PricingConfigTable({ configs }: Props) {
   }
 
   return (
-    <div className="bg-[#111111] rounded-xl border border-[#1f2937] overflow-hidden">
+    <div className="bg-oc-void rounded-xl border border-oc-border overflow-hidden">
       {error && (
         <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 px-6 py-3">
           {error}
@@ -61,25 +61,25 @@ export function PricingConfigTable({ configs }: Props) {
       )}
       <table className="w-full">
         <thead>
-          <tr className="border-b border-[#1f2937]">
-            <th className="text-left text-xs font-medium text-[#6b7280] uppercase tracking-wider px-6 py-3">Module</th>
-            <th className="text-left text-xs font-medium text-[#6b7280] uppercase tracking-wider px-6 py-3">Type</th>
-            <th className="text-left text-xs font-medium text-[#6b7280] uppercase tracking-wider px-6 py-3">One-time (₹)</th>
-            <th className="text-left text-xs font-medium text-[#6b7280] uppercase tracking-wider px-6 py-3">Monthly (₹)</th>
-            <th className="text-left text-xs font-medium text-[#6b7280] uppercase tracking-wider px-6 py-3">Take Rate (%)</th>
+          <tr className="border-b border-oc-border">
+            <th className="text-left text-xs font-medium text-oc-fg-dim uppercase tracking-wider px-6 py-3">Module</th>
+            <th className="text-left text-xs font-medium text-oc-fg-dim uppercase tracking-wider px-6 py-3">Type</th>
+            <th className="text-left text-xs font-medium text-oc-fg-dim uppercase tracking-wider px-6 py-3">One-time (₹)</th>
+            <th className="text-left text-xs font-medium text-oc-fg-dim uppercase tracking-wider px-6 py-3">Monthly (₹)</th>
+            <th className="text-left text-xs font-medium text-oc-fg-dim uppercase tracking-wider px-6 py-3">Take Rate (%)</th>
             <th className="px-6 py-3" />
           </tr>
         </thead>
-        <tbody className="divide-y divide-[#1f2937]">
+        <tbody className="divide-y divide-oc-border">
           {localConfigs.map((config) => (
             <tr key={config.moduleKey}>
               <td className="px-6 py-4">
-                <p className="text-sm font-medium text-[#e5e7eb]">{config.moduleKey}</p>
-                <p className="text-xs text-[#6b7280]">
+                <p className="text-sm font-medium text-oc-fg-soft">{config.moduleKey}</p>
+                <p className="text-xs text-oc-fg-dim">
                   {MODULE_PRICING_LABEL[config.moduleKey as keyof typeof MODULE_PRICING_LABEL]}
                 </p>
               </td>
-              <td className="px-6 py-4 text-sm text-[#6b7280]">{config.pricingType}</td>
+              <td className="px-6 py-4 text-sm text-oc-fg-dim">{config.pricingType}</td>
               <td className="px-6 py-4">
                 {config.pricingType !== "MONTHLY" ? (
                   <div className="space-y-1">
@@ -91,10 +91,10 @@ export function PricingConfigTable({ configs }: Props) {
                         updateLocal(config.moduleKey, "defaultOneTimeFee", Math.round(parseFloat(e.target.value || "0") * 100))
                       }
                     />
-                    <p className="text-xs text-[#6b7280]">{formatPaise(config.defaultOneTimeFee ?? 0)}</p>
+                    <p className="text-xs text-oc-fg-dim">{formatPaise(config.defaultOneTimeFee ?? 0)}</p>
                   </div>
                 ) : (
-                  <span className="text-[#6b7280]">—</span>
+                  <span className="text-oc-fg-dim">—</span>
                 )}
               </td>
               <td className="px-6 py-4">
@@ -108,10 +108,10 @@ export function PricingConfigTable({ configs }: Props) {
                         updateLocal(config.moduleKey, "defaultMonthlyFee", Math.round(parseFloat(e.target.value || "0") * 100))
                       }
                     />
-                    <p className="text-xs text-[#6b7280]">{formatPaise(config.defaultMonthlyFee ?? 0)}</p>
+                    <p className="text-xs text-oc-fg-dim">{formatPaise(config.defaultMonthlyFee ?? 0)}</p>
                   </div>
                 ) : (
-                  <span className="text-[#6b7280]">—</span>
+                  <span className="text-oc-fg-dim">—</span>
                 )}
               </td>
               <td className="px-6 py-4">
@@ -128,7 +128,7 @@ export function PricingConfigTable({ configs }: Props) {
                     }
                   />
                 ) : (
-                  <span className="text-[#6b7280]">—</span>
+                  <span className="text-oc-fg-dim">—</span>
                 )}
               </td>
               <td className="px-6 py-4 text-right">

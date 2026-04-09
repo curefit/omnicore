@@ -28,9 +28,9 @@ export function StepBrandingSetup({ data, onChange, onNext, onBack }: Props) {
           <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-purple-500/10 border border-purple-500/20">
             <Palette className="w-4 h-4 text-purple-400" />
           </div>
-          <h2 className="text-base font-semibold text-white">Branding</h2>
+          <h2 className="text-base font-semibold text-oc-fg">Branding</h2>
         </div>
-        <p className="text-sm text-[#9ca3af] mt-1">
+        <p className="text-sm text-oc-fg-muted mt-1">
           Configure the public-facing display name for this center.
         </p>
       </div>

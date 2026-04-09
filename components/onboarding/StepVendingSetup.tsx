@@ -19,16 +19,16 @@ export function StepVendingSetup({ data, onChange, onNext, onBack }: Props) {
           <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-purple-500/10 border border-purple-500/20">
             <Package className="w-4 h-4 text-purple-400" />
           </div>
-          <h2 className="text-base font-semibold text-white">Vending Machines</h2>
+          <h2 className="text-base font-semibold text-oc-fg">Vending Machines</h2>
         </div>
-        <p className="text-sm text-[#9ca3af] mt-1">
+        <p className="text-sm text-oc-fg-muted mt-1">
           Vending machine setup and management will be available post-onboarding
           in the center detail view.
         </p>
       </div>
 
-      <div className="rounded-xl border border-dashed border-[#1f2937] bg-[#111827]/50 p-8 text-center">
-        <p className="text-xs text-[#6b7280]">
+      <div className="rounded-xl border border-dashed border-oc-border bg-oc-card/50 p-8 text-center">
+        <p className="text-xs text-oc-fg-dim">
           Coming in a future update — machine IDs, locations, and restocking schedules.
         </p>
       </div>

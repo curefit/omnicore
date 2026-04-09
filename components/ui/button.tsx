@@ -4,20 +4,20 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-1 focus-visible:ring-offset-[#0a0d14] disabled:pointer-events-none disabled:opacity-40 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-1 focus-visible:ring-offset-oc-base disabled:pointer-events-none disabled:opacity-40 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
         default:
-          "bg-cyan-500 text-[#0a0d14] font-semibold hover:bg-cyan-400",
+          "bg-cyan-500 text-slate-950 font-semibold hover:bg-cyan-400",
         secondary:
-          "bg-[#1f2937] text-[#f9fafb] border border-[#374151] hover:bg-[#1a2235] hover:border-[#4b5563]",
+          "bg-oc-border text-oc-fg border border-oc-muted hover:bg-oc-hover hover:border-oc-placeholder",
         ghost:
-          "text-[#9ca3af] hover:bg-[#1a2235] hover:text-[#f9fafb]",
+          "text-oc-fg-muted hover:bg-oc-hover hover:text-oc-fg",
         destructive:
           "bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20",
         outline:
-          "border border-[#374151] text-[#f9fafb] hover:bg-[#1a2235]",
+          "border border-oc-muted text-oc-fg hover:bg-oc-hover",
         link:
           "text-cyan-400 underline-offset-4 hover:underline p-0 h-auto",
       },

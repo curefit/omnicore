@@ -12,7 +12,7 @@ function handlePasteText(setter: (value: string) => void) {
   }
 }
 
-/** Hackathon UI: simulate “MyGate calls CureFit” then show resident QR; test verify below. */
+/** Hackathon UI: simulate "MyGate calls CureFit" then show resident QR; test verify below. */
 export default function DemoCheckinFlowPage() {
   const [centerId, setCenterId] = useState("")
   const [memberName, setMemberName] = useState("Demo Resident")
@@ -103,11 +103,11 @@ export default function DemoCheckinFlowPage() {
   }
 
   return (
-    <div className="mx-auto max-w-lg space-y-8 p-6 text-[#e5e7eb]">
+    <div className="mx-auto max-w-lg space-y-8 p-6 text-oc-fg-soft">
       <div>
         <h1 className="text-xl font-semibold">Demo: MyGate proxy → QR → kiosk</h1>
-        <p className="mt-2 text-sm text-[#9ca3af]">
-          1) Choose a <code className="text-[#a5b4fc]">centerId</code> from the dropdown (loaded from this server’s DB) or paste one that exists after{" "}
+        <p className="mt-2 text-sm text-oc-fg-muted">
+          1) Choose a <code className="text-[#a5b4fc]">centerId</code> from the dropdown (loaded from this server&apos;s DB) or paste one that exists after{" "}
           <code className="text-[#a5b4fc]">npm run db:seed</code> — ids change each seed, so an old id from docs or another machine will fail. 2) Create booking + QR. 3) Verify below.
         </p>
       </div>
@@ -118,10 +118,10 @@ export default function DemoCheckinFlowPage() {
           <p className="text-xs text-amber-400">{centersError}</p>
         ) : null}
         {centers && centers.length > 0 ? (
-          <label className="block text-xs text-[#9ca3af]">
+          <label className="block text-xs text-oc-fg-muted">
             Center (seeded in this database)
             <select
-              className="mt-1 w-full rounded border border-white/10 bg-[#0a0a0a] px-2 py-1.5 text-sm"
+              className="mt-1 w-full rounded border border-white/10 bg-oc-inset px-2 py-1.5 text-sm"
               value={centerId}
               onChange={(e) => setCenterId(e.target.value)}
               name="demo-center-pick"
@@ -134,10 +134,10 @@ export default function DemoCheckinFlowPage() {
             </select>
           </label>
         ) : null}
-        <label className="block text-xs text-[#9ca3af]">
+        <label className="block text-xs text-oc-fg-muted">
           centerId (must match a row in the DB this server uses)
           <input
-            className="mt-1 w-full rounded border border-white/10 bg-[#0a0a0a] px-2 py-1.5 text-sm font-mono"
+            className="mt-1 w-full rounded border border-white/10 bg-oc-inset px-2 py-1.5 text-sm font-mono"
             value={centerId}
             onChange={(e) => setCenterId(e.target.value.trim())}
             onPaste={handlePasteText(setCenterId)}
@@ -147,10 +147,10 @@ export default function DemoCheckinFlowPage() {
             name="demo-center-id"
           />
         </label>
-        <label className="block text-xs text-[#9ca3af]">
+        <label className="block text-xs text-oc-fg-muted">
           Optional: x-demo-secret (if DEMO_MYGATE_PROXY_SECRET is set in .env)
           <input
-            className="mt-1 w-full rounded border border-white/10 bg-[#0a0a0a] px-2 py-1.5 text-sm"
+            className="mt-1 w-full rounded border border-white/10 bg-oc-inset px-2 py-1.5 text-sm"
             value={secret}
             onChange={(e) => setSecret(e.target.value)}
             onPaste={handlePasteText(setSecret)}
@@ -159,35 +159,35 @@ export default function DemoCheckinFlowPage() {
             name="demo-proxy-secret"
           />
         </label>
-        <label className="block text-xs text-[#9ca3af]">
+        <label className="block text-xs text-oc-fg-muted">
           memberName
           <input
-            className="mt-1 w-full rounded border border-white/10 bg-[#0a0a0a] px-2 py-1.5 text-sm"
+            className="mt-1 w-full rounded border border-white/10 bg-oc-inset px-2 py-1.5 text-sm"
             value={memberName}
             onChange={(e) => setMemberName(e.target.value)}
           />
         </label>
-        <label className="block text-xs text-[#9ca3af]">
+        <label className="block text-xs text-oc-fg-muted">
           memberFlat
           <input
-            className="mt-1 w-full rounded border border-white/10 bg-[#0a0a0a] px-2 py-1.5 text-sm"
+            className="mt-1 w-full rounded border border-white/10 bg-oc-inset px-2 py-1.5 text-sm"
             value={memberFlat}
             onChange={(e) => setMemberFlat(e.target.value)}
           />
         </label>
-        <label className="block text-xs text-[#9ca3af]">
+        <label className="block text-xs text-oc-fg-muted">
           slotDate
           <input
-            className="mt-1 w-full rounded border border-white/10 bg-[#0a0a0a] px-2 py-1.5 text-sm"
+            className="mt-1 w-full rounded border border-white/10 bg-oc-inset px-2 py-1.5 text-sm"
             type="date"
             value={slotDate}
             onChange={(e) => setSlotDate(e.target.value)}
           />
         </label>
-        <label className="block text-xs text-[#9ca3af]">
+        <label className="block text-xs text-oc-fg-muted">
           slotHour (5–21)
           <input
-            className="mt-1 w-full rounded border border-white/10 bg-[#0a0a0a] px-2 py-1.5 text-sm"
+            className="mt-1 w-full rounded border border-white/10 bg-oc-inset px-2 py-1.5 text-sm"
             type="number"
             min={5}
             max={21}
@@ -226,13 +226,13 @@ export default function DemoCheckinFlowPage() {
 
       <section className="space-y-3 rounded-lg border border-white/10 bg-[#111] p-4">
         <h2 className="text-sm font-medium text-white">Kiosk: POST /api/kiosk/verify-checkin</h2>
-        <p className="text-[11px] text-[#6b7280]">
-          Response JSON appears here after <strong className="text-[#9ca3af]">Verify check-in</strong> — not from Create booking.
+        <p className="text-[11px] text-oc-fg-dim">
+          Response JSON appears here after <strong className="text-oc-fg-muted">Verify check-in</strong> — not from Create booking.
         </p>
-        <label className="block text-xs text-[#9ca3af]">
+        <label className="block text-xs text-oc-fg-muted">
           Scanned / pasted raw string
           <textarea
-            className="mt-1 w-full rounded border border-white/10 bg-[#0a0a0a] px-2 py-1.5 font-mono text-sm"
+            className="mt-1 w-full rounded border border-white/10 bg-oc-inset px-2 py-1.5 font-mono text-sm"
             rows={3}
             value={verifyRaw}
             onChange={(e) => setVerifyRaw(e.target.value)}
@@ -251,7 +251,7 @@ export default function DemoCheckinFlowPage() {
           Verify check-in
         </button>
         {verifyResult ? (
-          <pre className="overflow-x-auto rounded bg-[#0a0a0a] p-3 text-xs text-[#d1d5db]">{verifyResult}</pre>
+          <pre className="overflow-x-auto rounded bg-oc-inset p-3 text-xs text-oc-fg-hint">{verifyResult}</pre>
         ) : null}
       </section>
     </div>

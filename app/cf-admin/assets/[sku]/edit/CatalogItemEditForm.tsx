@@ -70,12 +70,12 @@ export function CatalogItemEditForm({ item, sameCategoryItems }: Props) {
       )}
 
       {/* Min price */}
-      <div className="bg-[#111827] rounded-xl border border-[#1f2937] p-5 space-y-3">
+      <div className="bg-oc-card rounded-xl border border-oc-border p-5 space-y-3">
         <div>
-          <label className="block text-xs font-semibold text-[#9ca3af] uppercase tracking-wider mb-1.5">
+          <label className="block text-xs font-semibold text-oc-fg-muted uppercase tracking-wider mb-1.5">
             Minimum Price per Unit (₹)
           </label>
-          <p className="text-[11px] text-[#6b7280] mb-2">
+          <p className="text-[11px] text-oc-fg-dim mb-2">
             Quote Builder will warn CF Admin if they quote below this price. Leave blank for no minimum.
           </p>
           <input
@@ -96,8 +96,8 @@ export function CatalogItemEditForm({ item, sameCategoryItems }: Props) {
       </div>
 
       {/* Specs */}
-      <div className="bg-[#111827] rounded-xl border border-[#1f2937] p-5 space-y-2">
-        <label className="block text-xs font-semibold text-[#9ca3af] uppercase tracking-wider">
+      <div className="bg-oc-card rounded-xl border border-oc-border p-5 space-y-2">
+        <label className="block text-xs font-semibold text-oc-fg-muted uppercase tracking-wider">
           Specifications (display text)
         </label>
         <input
@@ -110,22 +110,22 @@ export function CatalogItemEditForm({ item, sameCategoryItems }: Props) {
       </div>
 
       {/* Version / superseded */}
-      <div className="bg-[#111827] rounded-xl border border-[#1f2937] p-5 space-y-4">
+      <div className="bg-oc-card rounded-xl border border-oc-border p-5 space-y-4">
         <div>
-          <label className="block text-xs font-semibold text-[#9ca3af] uppercase tracking-wider mb-1.5">
+          <label className="block text-xs font-semibold text-oc-fg-muted uppercase tracking-wider mb-1.5">
             Version Status
           </label>
-          <p className="text-[11px] text-[#6b7280] mb-3">
+          <p className="text-[11px] text-oc-fg-dim mb-3">
             If a newer model exists in the same category, mark this as superseded. Centers using this item will see an upgrade ad in their Assets page.
           </p>
           <label className="flex items-center gap-3 cursor-pointer">
             <div
               onClick={() => setIsLatest(!isLatest)}
-              className={`relative w-10 h-5 rounded-full transition-colors ${isLatest ? "bg-cyan-500" : "bg-[#374151]"}`}
+              className={`relative w-10 h-5 rounded-full transition-colors ${isLatest ? "bg-cyan-500" : "bg-oc-muted"}`}
             >
               <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform ${isLatest ? "translate-x-5" : "translate-x-0"}`} />
             </div>
-            <span className="text-sm text-white">
+            <span className="text-sm text-oc-fg">
               {isLatest ? "Latest version" : "Superseded (older model)"}
             </span>
           </label>
@@ -133,7 +133,7 @@ export function CatalogItemEditForm({ item, sameCategoryItems }: Props) {
 
         {!isLatest && sameCategoryItems.length > 0 && (
           <div>
-            <label className="block text-xs font-semibold text-[#9ca3af] uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-semibold text-oc-fg-muted uppercase tracking-wider mb-1.5">
               Superseded by (newer model SKU)
             </label>
             <select
@@ -155,14 +155,14 @@ export function CatalogItemEditForm({ item, sameCategoryItems }: Props) {
       <div className="flex gap-3 pt-2">
         <button
           onClick={() => router.push("/cf-admin/assets")}
-          className="px-4 py-2 text-sm text-[#9ca3af] hover:text-white border border-[#1f2937] rounded-lg hover:border-[#374151] transition-colors"
+          className="px-4 py-2 text-sm text-oc-fg-muted hover:text-oc-fg border border-oc-border rounded-lg hover:border-oc-muted transition-colors"
         >
           Cancel
         </button>
         <button
           onClick={handleSave}
           disabled={saving}
-          className="px-5 py-2 bg-[#f97316] text-white text-sm font-medium rounded-lg hover:bg-[#ea6c0c] disabled:opacity-50 transition-colors"
+          className="btn-primary"
         >
           {saving ? "Saving…" : "Save Changes"}
         </button>

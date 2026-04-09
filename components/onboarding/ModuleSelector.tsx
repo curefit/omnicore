@@ -47,7 +47,7 @@ export function ModuleSelector({ selected, onChange, disabled }: ModuleSelectorP
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500",
               isSelected
                 ? "border-cyan-500/40 bg-cyan-500/5 shadow-[0_0_0_1px_rgba(6,182,212,0.2)]"
-                : "border-[#1f2937] bg-[#111827] hover:border-[#374151] hover:bg-[#1a2235]",
+                : "border-oc-border bg-oc-card hover:border-oc-muted hover:bg-oc-hover",
               disabled && "opacity-50 cursor-not-allowed"
             )}
           >
@@ -57,12 +57,12 @@ export function ModuleSelector({ selected, onChange, disabled }: ModuleSelectorP
                 "mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors",
                 isSelected
                   ? "border-cyan-500 bg-cyan-500"
-                  : "border-[#374151] bg-[#1f2937]"
+                  : "border-oc-muted bg-oc-border"
               )}
             >
               {isSelected && (
                 <svg
-                  className="h-2.5 w-2.5 text-[#0a0d14]"
+                  className="h-2.5 w-2.5 text-oc-base"
                   fill="none"
                   viewBox="0 0 10 10"
                 >
@@ -83,7 +83,7 @@ export function ModuleSelector({ selected, onChange, disabled }: ModuleSelectorP
                 "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border",
                 isSelected
                   ? "border-cyan-500/30 bg-cyan-500/10 text-cyan-400"
-                  : "border-[#374151] bg-[#1f2937] text-[#6b7280]"
+                  : "border-oc-muted bg-oc-border text-oc-fg-dim"
               )}
             >
               <Icon className="h-4 w-4" />
@@ -91,18 +91,13 @@ export function ModuleSelector({ selected, onChange, disabled }: ModuleSelectorP
 
             {/* Text */}
             <div className="min-w-0">
-              <p
-                className={cn(
-                  "text-sm font-semibold leading-tight",
-                  isSelected ? "text-white" : "text-[#f9fafb]"
-                )}
-              >
+              <p className="text-sm font-semibold leading-tight text-oc-fg">
                 {module.label}
               </p>
-              <p className="mt-0.5 text-xs text-[#9ca3af] leading-relaxed">
+              <p className="mt-0.5 text-xs text-oc-fg-muted leading-relaxed">
                 {module.description}
               </p>
-              <span className="text-xs text-[#6b7280] mt-1">
+              <span className="text-xs text-oc-fg-dim mt-1">
                 {MODULE_PRICING_LABEL[module.key as keyof typeof MODULE_PRICING_LABEL]}
               </span>
             </div>

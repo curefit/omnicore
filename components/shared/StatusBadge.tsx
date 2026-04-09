@@ -73,8 +73,8 @@ const STATUS_CONFIG: Record<string, StatusConfig> = {
   },
   INACTIVE: {
     label: "Inactive",
-    className: "bg-[#1f2937]/80 text-[#6b7280] border-[#374151]",
-    dotClassName: "bg-[#6b7280]",
+    className: "bg-oc-border/80 text-oc-fg-dim border-oc-muted",
+    dotClassName: "bg-oc-fg-dim",
   },
   // Lead funnel status
   INVITED: {
@@ -105,8 +105,8 @@ const STATUS_CONFIG: Record<string, StatusConfig> = {
   // Quote status
   DRAFT: {
     label: "Draft",
-    className: "bg-[#1f2937]/80 text-[#9ca3af] border-[#374151]",
-    dotClassName: "bg-[#9ca3af]",
+    className: "bg-oc-border/80 text-oc-fg-muted border-oc-muted",
+    dotClassName: "bg-oc-fg-muted",
   },
   SENT: {
     label: "Sent",
@@ -135,12 +135,12 @@ const STATUS_CONFIG: Record<string, StatusConfig> = {
   },
   MANUAL: {
     label: "Manual",
-    className: "bg-[#1f2937]/80 text-[#9ca3af] border-[#374151]",
+    className: "bg-oc-border/80 text-oc-fg-muted border-oc-muted",
   },
   // Priority
   LOW: {
     label: "Low",
-    className: "bg-[#1f2937]/80 text-[#9ca3af] border-[#374151]",
+    className: "bg-oc-border/80 text-oc-fg-muted border-oc-muted",
   },
   MEDIUM: {
     label: "Medium",
@@ -171,7 +171,7 @@ export function StatusBadge({
 }: StatusBadgeProps) {
   const config = STATUS_CONFIG[status]
   const label = config?.label ?? status
-  const badgeClass = config?.className ?? "bg-[#1f2937] text-[#9ca3af] border-[#374151]"
+  const badgeClass = config?.className ?? "bg-oc-border text-oc-fg-muted border-oc-muted"
   const dotClass = config?.dotClassName
 
   return (

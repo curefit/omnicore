@@ -23,35 +23,35 @@ export function LeadPipelineTable({ leads }: Props) {
     return (
       <div className="flex flex-col items-center py-16 gap-3 text-center">
         <OmniMascot variant="empty" size="lg" />
-        <p className="text-sm font-medium text-[#9ca3af]">No leads yet</p>
-        <p className="text-xs text-[#6b7280]">Invite a society to get started.</p>
+        <p className="text-sm font-medium text-oc-fg-muted">No leads yet</p>
+        <p className="text-xs text-oc-fg-dim">Invite a society to get started.</p>
       </div>
     )
   }
 
   return (
-    <div className="bg-[#111111] rounded-xl border border-[#1f2937] overflow-hidden">
+    <div className="bg-oc-void rounded-xl border border-oc-border overflow-hidden">
       <table className="w-full">
         <thead>
-          <tr className="border-b border-[#1f2937]">
-            <th className="text-left text-xs font-medium text-[#6b7280] uppercase tracking-wider px-6 py-3">Society</th>
-            <th className="text-left text-xs font-medium text-[#6b7280] uppercase tracking-wider px-6 py-3">Contact</th>
-            <th className="text-left text-xs font-medium text-[#6b7280] uppercase tracking-wider px-6 py-3">Status</th>
-            <th className="text-left text-xs font-medium text-[#6b7280] uppercase tracking-wider px-6 py-3">Quote</th>
-            <th className="text-left text-xs font-medium text-[#6b7280] uppercase tracking-wider px-6 py-3">Created</th>
+          <tr className="border-b border-oc-border">
+            <th className="text-left text-xs font-medium text-oc-fg-dim uppercase tracking-wider px-6 py-3">Society</th>
+            <th className="text-left text-xs font-medium text-oc-fg-dim uppercase tracking-wider px-6 py-3">Contact</th>
+            <th className="text-left text-xs font-medium text-oc-fg-dim uppercase tracking-wider px-6 py-3">Status</th>
+            <th className="text-left text-xs font-medium text-oc-fg-dim uppercase tracking-wider px-6 py-3">Quote</th>
+            <th className="text-left text-xs font-medium text-oc-fg-dim uppercase tracking-wider px-6 py-3">Created</th>
             <th className="px-6 py-3" />
           </tr>
         </thead>
-        <tbody className="divide-y divide-[#1f2937]">
+        <tbody className="divide-y divide-oc-border">
           {leads.map((lead) => (
-            <tr key={lead.id} className="hover:bg-[#1a1a1a] transition-colors">
+            <tr key={lead.id} className="hover:bg-oc-void-alt transition-colors">
               <td className="px-6 py-4">
-                <span className="text-sm font-medium text-[#e5e7eb]">{lead.societyName}</span>
+                <span className="text-sm font-medium text-oc-fg-soft">{lead.societyName}</span>
               </td>
               <td className="px-6 py-4">
                 <div>
-                  <p className="text-sm text-[#e5e7eb]">{lead.contactName}</p>
-                  <p className="text-xs text-[#6b7280]">{lead.contactEmail}</p>
+                  <p className="text-sm text-oc-fg-soft">{lead.contactName}</p>
+                  <p className="text-xs text-oc-fg-dim">{lead.contactEmail}</p>
                 </div>
               </td>
               <td className="px-6 py-4">
@@ -61,10 +61,10 @@ export function LeadPipelineTable({ leads }: Props) {
                 {lead.quote ? (
                   <StatusBadge status={lead.quote.status} />
                 ) : (
-                  <span className="text-xs text-[#6b7280]">—</span>
+                  <span className="text-xs text-oc-fg-dim">—</span>
                 )}
               </td>
-              <td className="px-6 py-4 text-sm text-[#6b7280]">
+              <td className="px-6 py-4 text-sm text-oc-fg-dim">
                 {new Date(lead.createdAt).toLocaleDateString("en-IN", {
                   day: "numeric",
                   month: "short",

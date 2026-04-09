@@ -34,25 +34,25 @@ export function DataTable<T extends Record<string, unknown>>({
 
   if (data.length === 0) {
     return (
-      <div className={cn("rounded-xl border border-[#1f2937] bg-[#111827]", className)}>
+      <div className={cn("rounded-xl border border-oc-border bg-oc-card", className)}>
         <div className="flex items-center justify-center py-14">
-          <p className="text-sm text-[#6b7280]">{emptyMessage}</p>
+          <p className="text-sm text-oc-fg-dim">{emptyMessage}</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className={cn("rounded-xl border border-[#1f2937] bg-[#111827] overflow-hidden", className)}>
+    <div className={cn("rounded-xl border border-oc-border bg-oc-card overflow-hidden", className)}>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-[#1f2937]">
+            <tr className="border-b border-oc-border">
               {columns.map((col) => (
                 <th
                   key={col.key}
                   className={cn(
-                    "px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-[#6b7280]",
+                    "px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-oc-fg-dim",
                     alignClass[col.align ?? "left"],
                     col.headerClassName
                   )}
@@ -62,15 +62,15 @@ export function DataTable<T extends Record<string, unknown>>({
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#1f2937]">
+          <tbody className="divide-y divide-oc-border">
             {data.map((row) => (
               <tr
                 key={keyExtractor(row)}
                 className={cn(
                   "transition-colors",
                   onRowClick
-                    ? "cursor-pointer hover:bg-[#1a2235]"
-                    : "hover:bg-[#111827]/80"
+                    ? "cursor-pointer hover:bg-oc-hover"
+                    : "hover:bg-oc-card/80"
                 )}
                 onClick={() => onRowClick?.(row)}
               >
@@ -78,7 +78,7 @@ export function DataTable<T extends Record<string, unknown>>({
                   <td
                     key={col.key}
                     className={cn(
-                      "px-4 py-3 text-[#f9fafb]",
+                      "px-4 py-3 text-oc-fg",
                       alignClass[col.align ?? "left"],
                       col.className
                     )}

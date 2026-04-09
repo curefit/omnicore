@@ -1,10 +1,12 @@
 import type { Metadata } from "next"
-import { DM_Sans, DM_Mono, Syne } from "next/font/google"
+import { Inter, DM_Mono, Space_Grotesk } from "next/font/google"
+import { ThemeProvider } from "@/components/theme/ThemeProvider"
+import { GlobalThemeToggle } from "@/components/theme/GlobalThemeToggle"
 import "./globals.css"
 
-const dmSans = DM_Sans({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-dm-sans",
+  variable: "--font-inter",
   display: "swap",
 })
 
@@ -15,9 +17,9 @@ const dmMono = DM_Mono({
   display: "swap",
 })
 
-const syne = Syne({
+const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
-  variable: "--font-syne",
+  variable: "--font-space-grotesk",
   display: "swap",
 })
 
@@ -35,10 +37,15 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`dark ${dmSans.variable} ${dmMono.variable} ${syne.variable}`}
+      className={`${inter.variable} ${dmMono.variable} ${spaceGrotesk.variable}`}
       suppressHydrationWarning
     >
-      <body>{children}</body>
+      <body>
+        <ThemeProvider>
+          {children}
+          <GlobalThemeToggle />
+        </ThemeProvider>
+      </body>
     </html>
   )
 }

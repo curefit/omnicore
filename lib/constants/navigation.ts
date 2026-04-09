@@ -5,7 +5,6 @@ import {
   Wrench,
   Ticket,
   DollarSign,
-  Settings,
   Activity,
   ClipboardList,
   Filter,
@@ -28,8 +27,6 @@ export const CF_ADMIN_NAV: NavItem[] = [
   { label: "Trainers", href: "/cf-admin/trainers", icon: Users },
   { label: "Assets", href: "/cf-admin/assets", icon: Wrench },
   { label: "Service Requests", href: "/cf-admin/service-requests", icon: Ticket },
-  { label: "Payroll", href: "/cf-admin/payroll", icon: DollarSign },
-  { label: "Settings", href: "/cf-admin/settings", icon: Settings },
 ]
 
 export const RWA_ADMIN_NAV: NavItem[] = [

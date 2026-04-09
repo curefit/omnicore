@@ -55,7 +55,7 @@ export const ACTION_LABEL: Record<QuoteAction, string> = {
 }
 
 export const ACTION_COLOR: Record<QuoteAction, string> = {
-  CF_DRAFT_SAVED: "text-[#6b7280]",
+  CF_DRAFT_SAVED: "text-oc-fg-dim",
   CF_QUOTE_SENT: "text-[#f97316]",
   CF_QUOTE_REVISED: "text-cyan-400",
   RWA_REVISION_REQUESTED: "text-amber-400",
@@ -65,7 +65,7 @@ export const ACTION_COLOR: Record<QuoteAction, string> = {
 }
 
 export const ACTION_DOT: Record<QuoteAction, string> = {
-  CF_DRAFT_SAVED: "bg-[#6b7280]",
+  CF_DRAFT_SAVED: "bg-oc-fg-dim",
   CF_QUOTE_SENT: "bg-[#f97316]",
   CF_QUOTE_REVISED: "bg-cyan-400",
   RWA_REVISION_REQUESTED: "bg-amber-400",

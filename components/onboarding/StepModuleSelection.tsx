@@ -35,10 +35,10 @@ export function StepModuleSelection({ data, onChange, onNext, onBack }: Props) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-base font-semibold text-white mb-1">
+        <h2 className="text-base font-semibold text-oc-fg mb-1">
           What services will this center provide?
         </h2>
-        <p className="text-sm text-[#9ca3af]">
+        <p className="text-sm text-oc-fg-muted">
           Select the modules you want to enable. This determines which setup
           steps follow and which features are available for this center.
         </p>
@@ -51,8 +51,8 @@ export function StepModuleSelection({ data, onChange, onNext, onBack }: Props) {
       )}
 
       {selected.length > 0 && (
-        <div className="rounded-lg border border-[#1f2937] bg-[#111827] p-3">
-          <p className="text-xs text-[#6b7280] mb-2">Setup steps that will appear:</p>
+        <div className="rounded-lg border border-oc-border bg-oc-card p-3">
+          <p className="text-xs text-oc-fg-dim mb-2">Setup steps that will appear:</p>
           <div className="flex flex-wrap gap-1.5">
             {selected.map((key) => (
               <span

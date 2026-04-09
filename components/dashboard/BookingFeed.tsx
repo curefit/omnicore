@@ -26,26 +26,26 @@ export async function BookingFeed({ centerId }: Props) {
   }
 
   return (
-    <div className="bg-[#111111] rounded-xl border border-[#1f2937] p-6 space-y-4">
+    <div className="bg-oc-void rounded-xl border border-oc-border p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-[#e5e7eb]">Today&apos;s Bookings</p>
-        <span className="text-xs text-[#6b7280]">{bookings.length} booked</span>
+        <p className="text-sm font-medium text-oc-fg-soft">Today&apos;s Bookings</p>
+        <span className="text-xs text-oc-fg-dim">{bookings.length} booked</span>
       </div>
 
       {bookings.length === 0 ? (
-        <p className="text-sm text-[#6b7280] text-center py-4">No bookings yet today</p>
+        <p className="text-sm text-oc-fg-dim text-center py-4">No bookings yet today</p>
       ) : (
         <div className="space-y-2">
           {bookings.map((b) => (
-            <div key={b.id} className="flex items-center justify-between py-2 border-b border-[#1f2937] last:border-0">
+            <div key={b.id} className="flex items-center justify-between py-2 border-b border-oc-border last:border-0">
               <div className="flex items-center gap-3">
-                <div className="w-7 h-7 rounded-full bg-[#1f2937] flex items-center justify-center text-xs text-[#9ca3af] font-medium flex-shrink-0">
+                <div className="w-7 h-7 rounded-full bg-oc-border flex items-center justify-center text-xs text-oc-fg-muted font-medium flex-shrink-0">
                   {b.memberName.charAt(0)}
                 </div>
                 <div>
-                  <p className="text-sm text-[#e5e7eb]">{b.memberName}</p>
+                  <p className="text-sm text-oc-fg-soft">{b.memberName}</p>
                   {b.memberFlat && (
-                    <p className="text-xs text-[#6b7280]">{b.memberFlat}</p>
+                    <p className="text-xs text-oc-fg-dim">{b.memberFlat}</p>
                   )}
                 </div>
               </div>

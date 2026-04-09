@@ -25,20 +25,20 @@ export default async function EditCatalogItemPage({ params }: Props) {
   return (
     <div className="p-8 max-w-2xl space-y-6">
       <div>
-        <Link href="/cf-admin/assets" className="text-[#6b7280] hover:text-[#e5e7eb] text-sm">
+        <Link href="/cf-admin/assets" className="text-oc-fg-dim hover:text-oc-fg-soft text-sm">
           ← Back to Catalog
         </Link>
       </div>
 
       <div>
-        <h1 className="text-2xl font-semibold text-[#e5e7eb]">{item.name}</h1>
-        <p className="text-sm text-[#6b7280] mt-1 font-mono">{item.sku} · {CATEGORY_DISPLAY_NAMES[item.category] ?? item.category}</p>
+        <h1 className="text-2xl font-display font-bold tracking-[-0.02em] text-oc-fg-soft">{item.name}</h1>
+        <p className="text-sm text-oc-fg-dim mt-1 font-mono">{item.sku} · {CATEGORY_DISPLAY_NAMES[item.category] ?? item.category}</p>
       </div>
 
       {item.imageUrl && (
-        <div className="relative h-40 rounded-xl overflow-hidden border border-[#1f2937]">
+        <div className="relative h-40 rounded-xl overflow-hidden border border-oc-border">
           <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0d14]/80 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-oc-base/80 to-transparent" />
         </div>
       )}
 

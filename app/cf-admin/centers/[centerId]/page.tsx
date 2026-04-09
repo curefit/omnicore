@@ -21,7 +21,7 @@ function getDaysUntil(date: Date | null) {
 
 function MaintenanceTimer({ nextServiceDue }: { nextServiceDue: Date | null }) {
   const days = getDaysUntil(nextServiceDue)
-  if (days === null) return <span className="text-[11px] text-[#6b7280]">No schedule</span>
+  if (days === null) return <span className="text-[11px] text-oc-fg-dim">No schedule</span>
   if (days < 0) return (
     <span className="flex items-center gap-1 text-[11px] font-semibold text-red-400 animate-pulse">
       <AlertCircle className="w-3 h-3" />Overdue {Math.abs(days)}d
@@ -99,11 +99,11 @@ export default async function CFAdminCenterDetailPage({ params }: Props) {
     <div className="p-8 space-y-6 max-w-5xl">
       {/* Nav */}
       <div className="flex items-center gap-3">
-        <Link href="/cf-admin" className="flex items-center gap-1.5 text-sm text-[#6b7280] hover:text-[#e5e7eb] transition-colors">
+        <Link href="/cf-admin" className="flex items-center gap-1.5 text-sm text-oc-fg-dim hover:text-oc-fg-soft transition-colors">
           <ChevronLeft className="w-4 h-4" />Back to Overview
         </Link>
-        <span className="text-[#374151]">/</span>
-        <span className="text-sm text-[#e5e7eb]">{center.name}</span>
+        <span className="text-oc-muted">/</span>
+        <span className="text-sm text-oc-fg-soft">{center.name}</span>
         {center.lead && (
           <Link href={`/cf-admin/leads/${center.lead.id}`}
             className="ml-auto flex items-center gap-1.5 text-xs text-[#f97316] hover:text-[#ea6c0c] transition-colors">
@@ -113,22 +113,22 @@ export default async function CFAdminCenterDetailPage({ params }: Props) {
       </div>
 
       {/* Center hero */}
-      <div className="rounded-2xl border border-[#1f2937] bg-[#111827] overflow-hidden">
+      <div className="rounded-2xl border border-oc-border bg-oc-card overflow-hidden">
         <div className="px-6 py-5 flex items-start gap-5">
-          <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-[#1f2937] border border-[#374151] shrink-0">
+          <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-oc-border border border-oc-muted shrink-0">
             <Building2 className="w-6 h-6 text-cyan-400" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="text-xl font-bold text-white">{center.name}</h1>
+              <h1 className="text-xl font-bold text-oc-fg">{center.name}</h1>
               <StatusBadge status={center.status} showDot />
             </div>
             <div className="flex items-center gap-1.5 mt-1">
-              <MapPin className="w-3 h-3 text-[#6b7280]" />
-              <p className="text-xs text-[#6b7280]">{center.address}, {center.city} — {center.pincode}</p>
+              <MapPin className="w-3 h-3 text-oc-fg-dim" />
+              <p className="text-xs text-oc-fg-dim">{center.address}, {center.city} — {center.pincode}</p>
             </div>
             {center.residentialDetails && (
-              <p className="text-xs text-[#6b7280] mt-0.5">
+              <p className="text-xs text-oc-fg-dim mt-0.5">
                 {center.residentialDetails.rwaName} · {center.residentialDetails.totalUnits.toLocaleString()} units ·{" "}
                 Contact: {center.residentialDetails.contactPersonName}
               </p>
@@ -143,8 +143,8 @@ export default async function CFAdminCenterDetailPage({ params }: Props) {
           </div>
           {center.gymSqFt && (
             <div className="text-right shrink-0">
-              <p className="text-2xl font-bold text-white font-mono-metric">{center.gymSqFt.toLocaleString()}</p>
-              <p className="text-[11px] text-[#6b7280]">sq ft</p>
+              <p className="text-2xl font-bold text-oc-fg font-mono-metric">{center.gymSqFt.toLocaleString()}</p>
+              <p className="text-[11px] text-oc-fg-dim">sq ft</p>
             </div>
           )}
         </div>
@@ -174,7 +174,7 @@ export default async function CFAdminCenterDetailPage({ params }: Props) {
       {/* Assets */}
       {center.equipmentAssets.length > 0 && (
         <section>
-          <h2 className="text-sm font-semibold text-[#9ca3af] uppercase tracking-wider mb-3">
+          <h2 className="text-sm font-semibold text-oc-fg-muted uppercase tracking-wider mb-3">
             Equipment ({center.equipmentAssets.length} units)
           </h2>
           <div className="space-y-4">
@@ -183,17 +183,20 @@ export default async function CFAdminCenterDetailPage({ params }: Props) {
               const heroImage = catItem.catalogItemSku ? catalogMap.get(catItem.catalogItemSku)?.imageUrl : null
 
               return (
-                <div key={category} className="rounded-2xl border border-[#1f2937] overflow-hidden">
-                  <div className="relative h-16 bg-[#0d1117] overflow-hidden">
-                    {heroImage && <img src={heroImage} alt={category} className="w-full h-full object-cover opacity-50" />}
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#0a0d14]/95 via-[#0a0d14]/70 to-transparent flex items-center px-4 gap-2">
-                      <Wrench className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                      <p className="text-sm font-bold text-white">{CATEGORY_DISPLAY_NAMES[category] ?? category}</p>
-                      <span className="text-[11px] text-[#6b7280]">· {assets.length} unit{assets.length !== 1 ? "s" : ""}</span>
+                <div key={category} className="rounded-2xl border border-oc-border overflow-hidden">
+                  {/* Cinematic hero */}
+                  <div className="relative h-28 bg-oc-deep overflow-hidden">
+                    {heroImage && <img src={heroImage} alt="" aria-hidden className="absolute inset-0 w-full h-full object-cover object-center opacity-20" />}
+                    <div className="hero-overlay-h" />
+                    <div className="hero-overlay-v" />
+                    <div className="absolute inset-0 flex items-end px-4 pb-3 gap-2">
+                      <Wrench className="w-3.5 h-3.5 text-cyan-400 shrink-0 mb-0.5" />
+                      <p className="text-sm font-bold text-oc-fg">{CATEGORY_DISPLAY_NAMES[category] ?? category}</p>
+                      <span className="text-[11px] text-oc-fg-dim">· {assets.length} unit{assets.length !== 1 ? "s" : ""}</span>
                     </div>
                   </div>
 
-                  <div className="divide-y divide-[#1a2030] bg-[#0a0d14]">
+                  <div className="divide-y divide-oc-divide bg-oc-base">
                     {assets.map((asset) => {
                       const catalogItem = asset.catalogItemSku ? catalogMap.get(asset.catalogItemSku) : null
                       const hasUpgrade = catalogItem && !catalogItem.isLatestVersion && catalogItem.supersedesSku
@@ -201,22 +204,31 @@ export default async function CFAdminCenterDetailPage({ params }: Props) {
                       const openSRCount = asset.serviceRequests.length
 
                       return (
-                        <div key={asset.id} className="px-4 py-3 space-y-2">
+                        <div key={asset.id} className="relative px-4 py-3 space-y-2 overflow-hidden">
                           <div className="flex items-start gap-3">
+                            {/* Edge-bleed instead of framed thumbnail */}
                             {catalogItem?.imageUrl && (
-                              <img src={catalogItem.imageUrl} alt={asset.name}
-                                className="w-12 h-9 rounded-lg object-cover border border-[#1f2937] shrink-0" />
+                              <div
+                                className="absolute left-0 top-0 w-28 h-full opacity-20 pointer-events-none"
+                                style={{
+                                  backgroundImage: `url(${catalogItem.imageUrl})`,
+                                  backgroundSize: "cover",
+                                  backgroundPosition: "center",
+                                  maskImage: "linear-gradient(to right, transparent, black 50%, transparent)",
+                                  WebkitMaskImage: "linear-gradient(to right, transparent, black 50%, transparent)",
+                                }}
+                              />
                             )}
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-white truncate">{asset.name}</p>
+                              <p className="text-sm font-medium text-oc-fg truncate">{asset.name}</p>
                               <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                                <span className="text-[11px] font-mono text-[#6b7280]">{asset.catalogItemSku ?? "—"}</span>
+                                <span className="text-[11px] font-mono text-oc-fg-dim">{asset.catalogItemSku ?? "—"}</span>
                                 {asset.condition === "POOR" && (
                                   <span className="text-[10px] bg-red-500/10 text-red-400 border border-red-500/20 px-1.5 py-0.5 rounded">Poor condition</span>
                                 )}
                               </div>
                               {asset.installationDate && (
-                                <p className="text-[11px] text-[#4b5563] mt-0.5">
+                                <p className="text-[11px] text-oc-placeholder mt-0.5">
                                   Installed {new Date(asset.installationDate).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
                                 </p>
                               )}
@@ -247,18 +259,18 @@ export default async function CFAdminCenterDetailPage({ params }: Props) {
       {/* Trainers */}
       {center.trainerMappings.length > 0 && (
         <section>
-          <h2 className="text-sm font-semibold text-[#9ca3af] uppercase tracking-wider mb-3">
+          <h2 className="text-sm font-semibold text-oc-fg-muted uppercase tracking-wider mb-3">
             Trainers ({center.trainerMappings.length})
           </h2>
-          <div className="rounded-xl border border-[#1f2937] overflow-hidden divide-y divide-[#1f2937]">
+          <div className="rounded-xl border border-oc-border overflow-hidden divide-y divide-oc-border">
             {center.trainerMappings.map((m) => (
               <div key={m.id} className="flex items-center gap-3 px-4 py-3">
-                <div className="w-8 h-8 rounded-full bg-[#1f2937] border border-[#374151] flex items-center justify-center shrink-0">
-                  <Users className="w-3.5 h-3.5 text-[#6b7280]" />
+                <div className="w-8 h-8 rounded-full bg-oc-border border border-oc-muted flex items-center justify-center shrink-0">
+                  <Users className="w-3.5 h-3.5 text-oc-fg-dim" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-[#e5e7eb]">{m.trainer.name}</p>
-                  <p className="text-[11px] text-[#6b7280]">{m.trainer.trainerType} · {m.trainer.specialization ?? "General"}</p>
+                  <p className="text-sm font-medium text-oc-fg-soft">{m.trainer.name}</p>
+                  <p className="text-[11px] text-oc-fg-dim">{m.trainer.trainerType} · {m.trainer.specialization ?? "General"}</p>
                 </div>
                 <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full border ${m.trainer.trainerType === "FULLTIME" ? "bg-cyan-500/10 text-cyan-400 border-cyan-500/20" : "bg-purple-500/10 text-purple-400 border-purple-500/20"}`}>
                   {m.trainer.trainerType}
@@ -272,8 +284,8 @@ export default async function CFAdminCenterDetailPage({ params }: Props) {
       {/* Quote history */}
       {center.lead?.quote?.historyJson && (
         <section>
-          <h2 className="text-sm font-semibold text-[#9ca3af] uppercase tracking-wider mb-3">Quote Journey</h2>
-          <div className="rounded-xl border border-[#1f2937] bg-[#111111] p-5">
+          <h2 className="text-sm font-semibold text-oc-fg-muted uppercase tracking-wider mb-3">Quote Journey</h2>
+          <div className="rounded-xl border border-oc-border bg-oc-void p-5">
             <QuoteHistoryTimeline historyJson={center.lead.quote.historyJson} />
           </div>
         </section>

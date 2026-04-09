@@ -95,22 +95,22 @@ export function TrainerOnboardingDetailPanel({ onboarding }: { onboarding: Clien
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="bg-[#111111] rounded-xl border border-[#1f2937] p-6 space-y-4 max-w-2xl"
+        className="bg-oc-void rounded-xl border border-oc-border p-6 space-y-4 max-w-2xl"
       >
         <div className="space-y-1">
-          <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">Full name *</label>
+          <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">Full name *</label>
           <input {...register("name")} className="form-input" />
           {errors.name && <p className="text-xs text-red-400">{errors.name.message}</p>}
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1">
-            <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">Phone *</label>
+            <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">Phone *</label>
             <input {...register("phone")} className="form-input" />
             {errors.phone && <p className="text-xs text-red-400">{errors.phone.message}</p>}
           </div>
           <div className="space-y-1">
-            <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">Email</label>
+            <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">Email</label>
             <input {...register("email")} type="email" className="form-input" />
             {errors.email && <p className="text-xs text-red-400">{errors.email.message}</p>}
           </div>
@@ -118,13 +118,13 @@ export function TrainerOnboardingDetailPanel({ onboarding }: { onboarding: Clien
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1">
-            <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">
+            <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">
               Internal / employee ID
             </label>
             <input {...register("employeeRef")} className="form-input" />
           </div>
           <div className="space-y-1">
-            <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">
+            <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">
               Govt. identity ID
             </label>
             <input {...register("govtIdentityId")} className="form-input" autoComplete="off" />
@@ -132,44 +132,47 @@ export function TrainerOnboardingDetailPanel({ onboarding }: { onboarding: Clien
         </div>
 
         <div className="space-y-1">
-          <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">Area / locality</label>
+          <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">Area / locality</label>
           <input {...register("areaLocality")} className="form-input" />
         </div>
 
         <div className="space-y-1">
-          <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">Experience</label>
+          <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">Experience</label>
           <input {...register("experience")} className="form-input" />
         </div>
 
         <div className="space-y-1">
-          <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">
+          <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">
             Languages known
           </label>
           <input {...register("languagesKnown")} className="form-input" />
         </div>
 
         <div className="space-y-1">
-          <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">Image URL</label>
+          <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">Image URL</label>
           <input {...register("imageUrl")} className="form-input" />
           {errors.imageUrl && <p className="text-xs text-red-400">{errors.imageUrl.message}</p>}
         </div>
 
         {onboarding.imageUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={onboarding.imageUrl}
-            alt=""
-            className="max-w-xs rounded-lg border border-[#1f2937] object-cover"
-          />
+          <div className="relative max-w-xs rounded-2xl overflow-hidden ring-1 ring-white/10 shadow-xl">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={onboarding.imageUrl}
+              alt=""
+              className="w-full object-cover"
+            />
+            <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-oc-base/70 to-transparent" />
+          </div>
         )}
 
         <div className="space-y-1">
-          <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">Address</label>
+          <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">Address</label>
           <textarea {...register("address")} className="form-input min-h-[80px]" rows={3} />
         </div>
 
         <div className="space-y-1">
-          <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">Pipeline stage</label>
+          <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">Pipeline stage</label>
           <select {...register("pipelineStage")} className="form-input">
             {TRAINER_ONBOARDING_STAGES.map((s) => (
               <option key={s} value={s}>
@@ -181,33 +184,33 @@ export function TrainerOnboardingDetailPanel({ onboarding }: { onboarding: Clien
 
         {(stage === "OFFER_ROLLED_OUT" || stage === "OFFER_ACCEPTED") && (
           <div className="space-y-1">
-            <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">
+            <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">
               Tentative start date
             </label>
             <input {...register("tentativeStartDate")} type="date" className="form-input" />
-            <p className="text-[11px] text-[#6b7280]">Expected employment or cohort start.</p>
+            <p className="text-[11px] text-oc-fg-dim">Expected employment or cohort start.</p>
           </div>
         )}
 
         {stage === "OFFER_ACCEPTED" && (
           <div className="space-y-1">
-            <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">Joined on</label>
+            <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">Joined on</label>
             <input {...register("joinedOn")} type="date" className="form-input" />
-            <p className="text-[11px] text-[#6b7280]">Actual join date as an employee.</p>
+            <p className="text-[11px] text-oc-fg-dim">Actual join date as an employee.</p>
           </div>
         )}
 
-        <p className="text-[11px] text-[#6b7280]">
+        <p className="text-[11px] text-oc-fg-dim">
           After offer acceptance, enroll them in{" "}
-          <span className="text-[#9ca3af]">L0 training</span> (separate tab). Center assignment uses{" "}
-          <span className="text-[#9ca3af]">Assigned to centers</span> once they are on the roster.
+          <span className="text-oc-fg-muted">L0 training</span> (separate tab). Center assignment uses{" "}
+          <span className="text-oc-fg-muted">Assigned to centers</span> once they are on the roster.
         </p>
 
         <div className="flex flex-wrap gap-3 pt-2">
           <button
             type="submit"
             disabled={loading}
-            className="px-4 py-2 bg-[#f97316] text-white text-sm font-medium rounded-lg hover:bg-[#ea6c0c] transition-colors disabled:opacity-50"
+            className="btn-primary"
           >
             {loading ? "Saving…" : "Save changes"}
           </button>

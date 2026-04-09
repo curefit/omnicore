@@ -12,7 +12,7 @@ export default function CFAdminLayout({
   const pathname = usePathname()
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#0a0d14]">
+    <div className="flex h-screen overflow-hidden bg-oc-base">
       <Sidebar role="cf-admin" currentPath={pathname} />
       <main className="relative flex-1 overflow-y-auto">
         <OmniGhostBackground opacity={5} />

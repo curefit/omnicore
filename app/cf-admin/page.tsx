@@ -152,15 +152,14 @@ export default async function CFAdminOverviewPage() {
 
   return (
     <div className="p-8 space-y-8">
-      {/* Hero banner with mascot */}
-      <div className="relative rounded-2xl overflow-hidden border border-[#1f2937] bg-gradient-to-r from-[#0d1117] via-[#111827] to-[#0d1117] px-8 py-6">
-        <div className="absolute right-0 bottom-0 h-full w-64 pointer-events-none select-none flex items-end justify-end">
-          <OmniMascot variant="success" size="xl" className="translate-y-4 translate-x-4 opacity-70" />
-        </div>
-        <div className="relative z-10 max-w-lg">
-          <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-cyan-500 mb-1">CF Admin</p>
-          <h1 className="text-2xl font-display font-bold text-white mb-1">Operations Hub</h1>
-          <p className="text-sm text-[#6b7280]">
+      {/* Hero banner with mascot as full-bleed background */}
+      <div className="relative rounded-2xl overflow-hidden border border-oc-border bg-gradient-to-r from-oc-deep via-oc-card to-oc-deep oc-shadow-lg">
+        <OmniMascot variant="success" asBackground bgOpacity={10} />
+        <div className="hero-overlay-h" />
+        <div className="relative z-10 px-8 py-8 max-w-lg">
+          <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-cyan-400 mb-2">CF Admin</p>
+          <h1 className="text-3xl font-display font-bold text-oc-fg tracking-[-0.02em] mb-2">Operations Hub</h1>
+          <p className="text-sm text-oc-fg-dim leading-relaxed">
             Manage centers, trainers, assets, and service workflows across all facilities.
           </p>
         </div>
@@ -177,27 +176,27 @@ export default async function CFAdminOverviewPage() {
 
       {/* Revenue row — 3 columns (from quote negotiation / billing) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="rounded-xl border border-[#1f2937] bg-[#111827] px-5 py-4">
-          <p className="text-[10px] font-semibold text-[#6b7280] uppercase tracking-wider mb-1">
+        <div className="rounded-xl border border-oc-border bg-oc-card px-5 py-4 oc-shadow">
+          <p className="text-[10px] font-semibold text-oc-fg-dim uppercase tracking-wider mb-1">
             Billed This Month
           </p>
-          <p className="text-2xl font-bold text-white font-mono-metric">
+          <p className="text-2xl font-bold text-oc-fg font-mono-metric">
             {billedThisMonth > 0 ? formatPaise(billedThisMonth) : "₹0"}
           </p>
-          <p className="text-[11px] text-[#6b7280] mt-0.5">
+          <p className="text-[11px] text-oc-fg-dim mt-0.5">
             {thisMonthQuotes.length} accepted {thisMonthQuotes.length === 1 ? "quote" : "quotes"}
           </p>
         </div>
 
-        <div className="rounded-xl border border-[#f97316]/20 bg-[#f97316]/5 px-5 py-4">
-          <p className="text-[10px] font-semibold text-[#6b7280] uppercase tracking-wider mb-1">
+        <div className="rounded-xl border border-[#f97316]/20 bg-[#f97316]/5 px-5 py-4 oc-shadow">
+          <p className="text-[10px] font-semibold text-oc-fg-dim uppercase tracking-wider mb-1">
             Lifetime Revenue
           </p>
           <p className="text-2xl font-bold text-[#f97316] font-mono-metric">
             {lifetimeRevenue > 0 ? formatPaise(lifetimeRevenue) : "₹0"}
           </p>
           {lifetimeMonthly > 0 && (
-            <p className="text-[11px] text-[#6b7280] mt-0.5">
+            <p className="text-[11px] text-oc-fg-dim mt-0.5">
               + {formatPaise(lifetimeMonthly)}/mo recurring
             </p>
           )}
@@ -215,42 +214,42 @@ export default async function CFAdminOverviewPage() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 px-5 py-4">
-          <p className="text-[10px] font-semibold text-[#6b7280] uppercase tracking-wider mb-1">
+        <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 px-5 py-4 oc-shadow">
+          <p className="text-[10px] font-semibold text-oc-fg-dim uppercase tracking-wider mb-1">
             Pipeline Estimate
           </p>
           <p className="text-2xl font-bold text-cyan-400 font-mono-metric">
             {estimatedRevenue > 0 ? formatPaise(estimatedRevenue) : "₹0"}
           </p>
           {estimatedMonthly > 0 && (
-            <p className="text-[11px] text-[#6b7280] mt-0.5">
+            <p className="text-[11px] text-oc-fg-dim mt-0.5">
               + {formatPaise(estimatedMonthly)}/mo if all close · {allPipelineQuotes.length} quotes
             </p>
           )}
           {estimatedMonthly === 0 && (
-            <p className="text-[11px] text-[#6b7280] mt-0.5">{allPipelineQuotes.length} quotes in pipeline</p>
+            <p className="text-[11px] text-oc-fg-dim mt-0.5">{allPipelineQuotes.length} quotes in pipeline</p>
           )}
         </div>
       </div>
 
       <div className="mb-4">
-        <h2 className="text-sm font-semibold text-[#e5e7eb] mb-3">Workspaces</h2>
+        <h2 className="text-sm font-semibold text-oc-fg-soft mb-3">Workspaces</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
           {WORKSPACE_LINKS.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="group rounded-xl border border-[#1f2937] bg-[#111827] p-4 hover:border-cyan-500/35 hover:bg-[#141c2e] transition-colors"
+              className="group rounded-xl border border-oc-border bg-oc-card p-4 hover:border-cyan-500/35 hover:bg-oc-row transition-colors oc-shadow"
             >
               <div className="flex items-start gap-3">
-                <div className="flex items-center justify-center w-9 h-9 rounded-lg border border-[#374151] bg-[#0d1117] text-cyan-400 group-hover:border-cyan-500/30 shrink-0">
+                <div className="flex items-center justify-center w-9 h-9 rounded-lg border border-oc-muted bg-oc-deep text-cyan-400 group-hover:border-cyan-500/30 shrink-0">
                   <item.icon className="w-4 h-4" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-white">{item.label}</p>
-                  <p className="text-xs text-[#6b7280] mt-0.5 leading-snug">{item.description}</p>
+                  <p className="text-sm font-medium text-oc-fg">{item.label}</p>
+                  <p className="text-xs text-oc-fg-dim mt-0.5 leading-snug">{item.description}</p>
                   {item.href === "/cf-admin/trainers" && (
-                    <p className="text-[11px] text-[#9ca3af] mt-2 tabular-nums leading-relaxed">
+                    <p className="text-[11px] text-oc-fg-muted mt-2 tabular-nums leading-relaxed">
                       Hiring {stats.trainerPipelineCount} · L0 {stats.l0EnrollmentCount} · Bench{" "}
                       {stats.trainersOnBench}
                     </p>
@@ -266,7 +265,7 @@ export default async function CFAdminOverviewPage() {
       {centers.length > 0 && (
         <section>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-[#9ca3af] uppercase tracking-wider">Centers</h2>
+            <h2 className="text-sm font-semibold text-oc-fg-muted uppercase tracking-wider">Centers</h2>
             <Link href="/cf-admin/onboarding" className="text-xs text-[#f97316] hover:text-[#ea6c0c] transition-colors">
               View all →
             </Link>
@@ -287,20 +286,20 @@ export default async function CFAdminOverviewPage() {
       {pipelineLeads.length > 0 && (
         <section>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-[#9ca3af] uppercase tracking-wider">Quote Pipeline</h2>
+            <h2 className="text-sm font-semibold text-oc-fg-muted uppercase tracking-wider">Quote Pipeline</h2>
             <Link href="/cf-admin/leads" className="text-xs text-[#f97316] hover:text-[#ea6c0c] transition-colors">
               Manage leads →
             </Link>
           </div>
-          <div className="rounded-xl border border-[#1f2937] overflow-hidden divide-y divide-[#1f2937]">
+          <div className="rounded-xl border border-oc-border overflow-hidden divide-y divide-oc-border">
             {pipelineLeads.map((lead) => {
               const q = lead.quote
-              const statusDot = !q ? "bg-[#6b7280]"
+              const statusDot = !q ? "bg-oc-fg-dim"
                 : q.status === "SENT" ? "bg-[#f97316]"
                 : q.status === "REVISION_REQUESTED" ? "bg-amber-400"
                 : q.status === "ACCEPTED" ? "bg-emerald-400"
                 : q.status === "REJECTED" || q.status === "CANCELLED" ? "bg-red-400"
-                : "bg-[#374151]"
+                : "bg-oc-muted"
               const statusLabel = !q ? "Invited"
                 : q.status === "SENT" ? "Quote Sent"
                 : q.status === "REVISION_REQUESTED" ? "Revision Requested"
@@ -312,20 +311,20 @@ export default async function CFAdminOverviewPage() {
 
               return (
                 <Link key={lead.id} href={`/cf-admin/leads/${lead.id}`}
-                  className="flex items-center gap-4 px-4 py-3 hover:bg-[#111827] transition-colors">
+                  className="flex items-center gap-4 px-4 py-3 hover:bg-oc-card transition-colors">
                   <div className={`w-2 h-2 rounded-full shrink-0 ${statusDot}`} />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-[#e5e7eb] truncate">{lead.societyName}</p>
-                    <p className="text-[11px] text-[#6b7280]">{lead.contactEmail}</p>
+                    <p className="text-sm font-medium text-oc-fg-soft truncate">{lead.societyName}</p>
+                    <p className="text-[11px] text-oc-fg-dim">{lead.contactEmail}</p>
                   </div>
                   {est && (est.oneTime > 0 || est.monthly > 0) && (
                     <div className="text-right shrink-0">
                       {est.oneTime > 0 && <p className="text-xs text-cyan-400">{formatPaise(est.oneTime)}</p>}
-                      {est.monthly > 0 && <p className="text-[10px] text-[#6b7280]">{formatPaise(est.monthly)}/mo</p>}
+                      {est.monthly > 0 && <p className="text-[10px] text-oc-fg-dim">{formatPaise(est.monthly)}/mo</p>}
                     </div>
                   )}
-                  <span className="text-xs text-[#6b7280] shrink-0">{statusLabel}</span>
-                  <ChevronRight className="w-3.5 h-3.5 text-[#374151] shrink-0" />
+                  <span className="text-xs text-oc-fg-dim shrink-0">{statusLabel}</span>
+                  <ChevronRight className="w-3.5 h-3.5 text-oc-muted shrink-0" />
                 </Link>
               )
             })}

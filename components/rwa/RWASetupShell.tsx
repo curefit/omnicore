@@ -125,12 +125,12 @@ export function RWASetupShell({
 
   if (submitted) {
     return (
-      <div className="bg-[#111111] rounded-xl border border-[#1f2937] p-8 text-center space-y-4">
+      <div className="bg-oc-void rounded-xl border border-oc-border p-8 text-center space-y-4">
         <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto">
           <span className="text-emerald-400 text-2xl">✓</span>
         </div>
-        <h2 className="text-xl font-semibold text-[#e5e7eb]">Submitted!</h2>
-        <p className="text-sm text-[#6b7280]">
+        <h2 className="text-xl font-semibold text-oc-fg-soft">Submitted!</h2>
+        <p className="text-sm text-oc-fg-dim">
           Thank you! The CultSport team will review your information and send a quote shortly.
         </p>
       </div>
@@ -149,20 +149,20 @@ export function RWASetupShell({
                   ? "bg-emerald-500/20 text-emerald-400"
                   : i === step
                   ? "bg-[#f97316]/20 text-[#f97316]"
-                  : "bg-[#1f2937] text-[#6b7280]"
+                  : "bg-oc-border text-oc-fg-dim"
               }`}
             >
               {i < step ? "✓" : i + 1}
             </div>
             <span
               className={`text-xs ${
-                i === step ? "text-[#e5e7eb] font-medium" : "text-[#6b7280]"
+                i === step ? "text-oc-fg-soft font-medium" : "text-oc-fg-dim"
               }`}
             >
               {label}
             </span>
             {i < STEPS.filter(s => s !== "Equipment" || hasEquipmentStep).length - 1 && (
-              <div className="flex-1 h-px bg-[#1f2937] min-w-[20px]" />
+              <div className="flex-1 h-px bg-oc-border min-w-[20px]" />
             )}
           </div>
         ))}
@@ -178,14 +178,14 @@ export function RWASetupShell({
       {step === 0 && (
         <form
           onSubmit={handleSubmit(onGymDetailsSubmit)}
-          className="bg-[#111111] rounded-xl border border-[#1f2937] p-6 space-y-4"
+          className="bg-oc-void rounded-xl border border-oc-border p-6 space-y-4"
         >
-          <h2 className="text-sm font-medium text-[#e5e7eb]">Gym Details</h2>
+          <h2 className="text-sm font-medium text-oc-fg-soft">Gym Details</h2>
 
           <div className="grid grid-cols-2 gap-4">
             {/* Gym setup type — mandatory first field */}
             <div className="col-span-2 space-y-1">
-              <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">Gym Setup Type *</label>
+              <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">Gym Setup Type *</label>
               <select {...register("gymSetupType")} className="form-input">
                 <option value="NEW_GYM">New Gym Setup — full equipment recommendation</option>
                 <option value="EXISTING_GYM">Existing Gym Registration — equipment upgrade</option>
@@ -194,70 +194,70 @@ export function RWASetupShell({
             </div>
 
             <div className="col-span-2 space-y-1">
-              <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">Gym Name *</label>
+              <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">Gym Name *</label>
               <input {...register("name")} className="form-input" placeholder={`${societyName} Gym`} />
               {errors.name && <p className="text-xs text-red-400">{errors.name.message}</p>}
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">Capacity *</label>
+              <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">Capacity *</label>
               <input {...register("capacity")} className="form-input" placeholder="50" inputMode="numeric" />
               {errors.capacity && <p className="text-xs text-red-400">{errors.capacity.message}</p>}
             </div>
 
             <div className="col-span-2 space-y-1">
-              <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">Address *</label>
+              <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">Address *</label>
               <input {...register("address")} className="form-input" placeholder="Building A, Main Road" />
               {errors.address && <p className="text-xs text-red-400">{errors.address.message}</p>}
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">City *</label>
+              <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">City *</label>
               <input {...register("city")} className="form-input" placeholder="Bangalore" />
               {errors.city && <p className="text-xs text-red-400">{errors.city.message}</p>}
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">Pincode *</label>
+              <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">Pincode *</label>
               <input {...register("pincode")} className="form-input" placeholder="560001" />
               {errors.pincode && <p className="text-xs text-red-400">{errors.pincode.message}</p>}
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">Gym Size (sq ft)</label>
+              <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">Gym Size (sq ft)</label>
               <input {...register("gymSqFt")} className="form-input" placeholder="1200" inputMode="numeric" />
               {errors.gymSqFt && <p className="text-xs text-red-400">{String(errors.gymSqFt.message)}</p>}
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">Total Households *</label>
+              <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">Total Households *</label>
               <input {...register("totalUnits")} className="form-input" placeholder="200" inputMode="numeric" />
               {errors.totalUnits && <p className="text-xs text-red-400">{errors.totalUnits.message}</p>}
             </div>
 
-            <hr className="col-span-2 border-[#1f2937]" />
-            <p className="col-span-2 text-xs font-medium text-[#9ca3af] uppercase tracking-wider">RWA Information</p>
+            <hr className="col-span-2 border-oc-border" />
+            <p className="col-span-2 text-xs font-medium text-oc-fg-muted uppercase tracking-wider">RWA Information</p>
 
             <div className="col-span-2 space-y-1">
-              <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">RWA Name *</label>
+              <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">RWA Name *</label>
               <input {...register("rwaName")} className="form-input" placeholder={`${societyName} RWA`} />
               {errors.rwaName && <p className="text-xs text-red-400">{errors.rwaName.message}</p>}
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">Your Name *</label>
+              <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">Your Name *</label>
               <input {...register("contactPersonName")} className="form-input" placeholder="Rohit Sharma" />
               {errors.contactPersonName && <p className="text-xs text-red-400">{errors.contactPersonName.message}</p>}
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">Phone *</label>
+              <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">Phone *</label>
               <input {...register("contactPersonPhone")} className="form-input" placeholder="9876543210" />
               {errors.contactPersonPhone && <p className="text-xs text-red-400">{errors.contactPersonPhone.message}</p>}
             </div>
 
             <div className="col-span-2 space-y-1">
-              <label className="text-xs font-medium text-[#9ca3af] uppercase tracking-wider">Email *</label>
+              <label className="text-xs font-medium text-oc-fg-muted uppercase tracking-wider">Email *</label>
               <input {...register("contactPersonEmail")} type="email" className="form-input" placeholder="rohit@society.in" />
               {errors.contactPersonEmail && <p className="text-xs text-red-400">{errors.contactPersonEmail.message}</p>}
             </div>
@@ -265,7 +265,7 @@ export function RWASetupShell({
 
           <button
             type="submit"
-            className="w-full py-2.5 bg-[#f97316] text-white text-sm font-medium rounded-lg hover:bg-[#ea6c0c] transition-colors"
+            className="btn-primary w-full"
           >
             Next: Choose Services →
           </button>
@@ -274,9 +274,9 @@ export function RWASetupShell({
 
       {/* Step 1: Module Selection */}
       {step === 1 && (
-        <div className="bg-[#111111] rounded-xl border border-[#1f2937] p-6 space-y-4">
-          <h2 className="text-sm font-medium text-[#e5e7eb]">Which services do you need?</h2>
-          <p className="text-xs text-[#6b7280]">
+        <div className="bg-oc-void rounded-xl border border-oc-border p-6 space-y-4">
+          <h2 className="text-sm font-medium text-oc-fg-soft">Which services do you need?</h2>
+          <p className="text-xs text-oc-fg-dim">
             Select the services you want at your gym. Pricing details will be included in the quote.
           </p>
 
@@ -291,13 +291,13 @@ export function RWASetupShell({
                   className={`w-full text-left p-4 rounded-lg border transition-colors ${
                     selected
                       ? "border-[#f97316] bg-[#f97316]/5"
-                      : "border-[#1f2937] hover:border-[#374151]"
+                      : "border-oc-border hover:border-oc-muted"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-sm font-medium text-[#e5e7eb]">{mod.label}</p>
-                      <p className="text-xs text-[#6b7280] mt-0.5">{mod.description}</p>
+                      <p className="text-sm font-medium text-oc-fg-soft">{mod.label}</p>
+                      <p className="text-xs text-oc-fg-dim mt-0.5">{mod.description}</p>
                       <p className="text-xs text-[#f97316]/70 mt-1">
                         {MODULE_PRICING_LABEL[mod.key as keyof typeof MODULE_PRICING_LABEL]}
                       </p>
@@ -306,10 +306,10 @@ export function RWASetupShell({
                       className={`w-5 h-5 rounded border flex-shrink-0 mt-0.5 flex items-center justify-center ${
                         selected
                           ? "bg-[#f97316] border-[#f97316]"
-                          : "border-[#374151]"
+                          : "border-oc-muted"
                       }`}
                     >
-                      {selected && <span className="text-white text-xs">✓</span>}
+                      {selected && <span className="text-oc-fg text-xs">✓</span>}
                     </div>
                   </div>
                 </button>
@@ -320,14 +320,14 @@ export function RWASetupShell({
           <div className="flex gap-3 pt-2">
             <button
               onClick={() => setStep(0)}
-              className="px-4 py-2 bg-[#1f2937] text-[#e5e7eb] text-sm font-medium rounded-lg hover:bg-[#374151] transition-colors"
+              className="btn-secondary"
             >
               ← Back
             </button>
             <button
               onClick={() => setStep(hasEquipmentStep ? 2 : 3)}
               disabled={selectedModules.length === 0}
-              className="flex-1 py-2.5 bg-[#f97316] text-white text-sm font-medium rounded-lg hover:bg-[#ea6c0c] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="btn-primary flex-1"
             >
               {hasEquipmentStep ? "Next: Equipment →" : "Next: Review & Submit →"}
             </button>
@@ -361,8 +361,8 @@ export function RWASetupShell({
 
       {/* Step 3: Confirm */}
       {step === 3 && gymData && (
-        <div className="bg-[#111111] rounded-xl border border-[#1f2937] p-6 space-y-4">
-          <h2 className="text-sm font-medium text-[#e5e7eb]">Review & Submit</h2>
+        <div className="bg-oc-void rounded-xl border border-oc-border p-6 space-y-4">
+          <h2 className="text-sm font-medium text-oc-fg-soft">Review & Submit</h2>
 
           <div className="space-y-2">
             <ConfirmRow label="Gym Name" value={gymData.name} />
@@ -375,7 +375,7 @@ export function RWASetupShell({
           </div>
 
           <div>
-            <p className="text-xs text-[#6b7280] mb-2">Selected Services</p>
+            <p className="text-xs text-oc-fg-dim mb-2">Selected Services</p>
             <div className="flex flex-wrap gap-2">
               {selectedModules.map((m) => (
                 <span key={m} className="text-xs bg-[#f97316]/10 text-[#f97316] px-2 py-0.5 rounded">
@@ -386,8 +386,8 @@ export function RWASetupShell({
           </div>
 
           {selectedEquipment.length > 0 && (
-            <div className="rounded-lg border border-[#1f2937] p-3">
-              <p className="text-xs text-[#6b7280] mb-1.5">Equipment Request</p>
+            <div className="rounded-lg border border-oc-border p-3">
+              <p className="text-xs text-oc-fg-dim mb-1.5">Equipment Request</p>
               <div className="flex flex-wrap gap-1.5">
                 {selectedEquipment.slice(0, 5).map(e => (
                   <span key={e.sku} className="text-[11px] bg-cyan-500/10 text-cyan-400 px-2 py-0.5 rounded border border-cyan-500/20">
@@ -395,7 +395,7 @@ export function RWASetupShell({
                   </span>
                 ))}
                 {selectedEquipment.length > 5 && (
-                  <span className="text-[11px] text-[#6b7280]">+{selectedEquipment.length - 5} more</span>
+                  <span className="text-[11px] text-oc-fg-dim">+{selectedEquipment.length - 5} more</span>
                 )}
               </div>
             </div>
@@ -404,14 +404,14 @@ export function RWASetupShell({
           <div className="flex gap-3 pt-2">
             <button
               onClick={() => setStep(hasEquipmentStep ? 2 : 1)}
-              className="px-4 py-2 bg-[#1f2937] text-[#e5e7eb] text-sm font-medium rounded-lg hover:bg-[#374151] transition-colors"
+              className="btn-secondary"
             >
               ← Back
             </button>
             <button
               onClick={handleFinalSubmit}
               disabled={submitting}
-              className="flex-1 py-2.5 bg-[#f97316] text-white text-sm font-medium rounded-lg hover:bg-[#ea6c0c] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="btn-primary flex-1"
             >
               {submitting ? "Submitting…" : "Submit to CF Admin →"}
             </button>
@@ -425,8 +425,8 @@ export function RWASetupShell({
 function ConfirmRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between gap-4 py-1">
-      <span className="text-xs text-[#6b7280]">{label}</span>
-      <span className="text-xs text-[#e5e7eb] text-right">{value}</span>
+      <span className="text-xs text-oc-fg-dim">{label}</span>
+      <span className="text-xs text-oc-fg-soft text-right">{value}</span>
     </div>
   )
 }

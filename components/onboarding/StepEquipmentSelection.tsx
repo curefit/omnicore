@@ -37,11 +37,11 @@ function QuantityStepper({ value, onChange }: { value: number; onChange: (v: num
       <button
         type="button"
         onClick={() => onChange(Math.max(1, value - 1))}
-        className="w-7 h-7 rounded-full border border-[#374151] bg-[#1f2937] text-[#9ca3af] hover:bg-[#374151] hover:text-white flex items-center justify-center transition-all"
+        className="w-7 h-7 rounded-full border border-oc-muted bg-oc-border text-oc-fg-muted hover:bg-oc-muted hover:text-oc-fg flex items-center justify-center transition-all"
       >
         <Minus className="w-3 h-3" />
       </button>
-      <span className="w-8 text-center text-sm font-bold text-white tabular-nums">{value}</span>
+      <span className="w-8 text-center text-sm font-bold text-oc-fg tabular-nums">{value}</span>
       <button
         type="button"
         onClick={() => onChange(Math.min(20, value + 1))}
@@ -86,7 +86,7 @@ function CategoryCard({
         "rounded-2xl overflow-hidden transition-all duration-200",
         isModelCat
           ? "border border-cyan-500/20 shadow-[0_0_30px_rgba(6,182,212,0.06)]"
-          : "border border-[#1f2937]",
+          : "border border-oc-border",
         open ? "shadow-lg" : ""
       )}
     >
@@ -96,25 +96,24 @@ function CategoryCard({
         onClick={onToggle}
         className="w-full text-left relative group overflow-hidden"
       >
-        {/* Hero image with gradient overlay */}
+        {/* Cinematic category hero */}
         {heroImage ? (
-          <div className="relative h-28 overflow-hidden">
+          <div className="relative h-32 overflow-hidden bg-oc-deep">
             <img
               src={heroImage}
-              alt={catKey}
-              className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+              alt=""
+              aria-hidden
+              className="absolute inset-0 w-full h-full object-cover object-center opacity-25 transition-transform duration-700 group-hover:scale-105"
             />
-            {/* Dark gradient for readability */}
-            <div className="absolute inset-0 bg-gradient-to-r from-[#0a0d14]/95 via-[#0a0d14]/60 to-transparent" />
-            {/* Bottom fade */}
-            <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-[#0a0d14] to-transparent" />
+            <div className="hero-overlay-h" />
+            <div className="hero-overlay-v" />
 
             {/* Content over the image */}
             <div className="absolute inset-0 flex items-center justify-between px-5">
               <div className="flex items-center gap-3">
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <p className="text-base font-bold text-white leading-tight">
+                    <p className="text-base font-bold text-oc-fg leading-tight">
                       {CATEGORY_DISPLAY_NAMES[catKey] ?? catKey}
                     </p>
                     {isModelCat && (
@@ -123,7 +122,7 @@ function CategoryCard({
                       </span>
                     )}
                   </div>
-                  <p className="text-[11px] text-[#9ca3af] mt-0.5">{items.length} options available</p>
+                  <p className="text-[11px] text-oc-fg-muted mt-0.5">{items.length} options available</p>
                 </div>
               </div>
 
@@ -135,35 +134,35 @@ function CategoryCard({
                 )}
                 <div className={cn(
                   "w-7 h-7 rounded-full flex items-center justify-center border transition-colors",
-                  open ? "bg-[#1f2937] border-[#374151]" : "bg-[#1f2937]/60 border-[#374151]/60"
+                  open ? "bg-oc-border border-oc-muted" : "bg-oc-border/60 border-oc-muted/60"
                 )}>
                   {open
-                    ? <ChevronUp className="w-3.5 h-3.5 text-[#9ca3af]" />
-                    : <ChevronDown className="w-3.5 h-3.5 text-[#9ca3af]" />}
+                    ? <ChevronUp className="w-3.5 h-3.5 text-oc-fg-muted" />
+                    : <ChevronDown className="w-3.5 h-3.5 text-oc-fg-muted" />}
                 </div>
               </div>
             </div>
           </div>
         ) : (
           /* Fallback header without image */
-          <div className="h-16 bg-[#0d1117] flex items-center justify-between px-5 border-b border-[#1f2937]">
+          <div className="h-16 bg-oc-deep flex items-center justify-between px-5 border-b border-oc-border">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-[#1f2937] border border-[#374151] flex items-center justify-center">
-                <Wrench className="w-4 h-4 text-[#6b7280]" />
+              <div className="w-9 h-9 rounded-xl bg-oc-border border border-oc-muted flex items-center justify-center">
+                <Wrench className="w-4 h-4 text-oc-fg-dim" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-white">{CATEGORY_DISPLAY_NAMES[catKey] ?? catKey}</p>
-                <p className="text-[11px] text-[#6b7280]">{items.length} options</p>
+                <p className="text-sm font-semibold text-oc-fg">{CATEGORY_DISPLAY_NAMES[catKey] ?? catKey}</p>
+                <p className="text-[11px] text-oc-fg-dim">{items.length} options</p>
               </div>
             </div>
-            {open ? <ChevronUp className="w-4 h-4 text-[#6b7280]" /> : <ChevronDown className="w-4 h-4 text-[#6b7280]" />}
+            {open ? <ChevronUp className="w-4 h-4 text-oc-fg-dim" /> : <ChevronDown className="w-4 h-4 text-oc-fg-dim" />}
           </div>
         )}
       </button>
 
       {/* ── Equipment Items List ─────────────────────────────────────────────── */}
       {open && (
-        <div className="bg-[#0a0d14] divide-y divide-[#1a2030]">
+        <div className="bg-oc-base divide-y divide-oc-divide">
           {items.map((item) => {
             const sel = selMap.get(item.sku)
             const isChecked = !!sel
@@ -177,23 +176,23 @@ function CategoryCard({
                   "flex items-center gap-4 px-4 py-3.5 cursor-pointer transition-all duration-150 group",
                   isChecked
                     ? "bg-gradient-to-r from-cyan-500/[0.07] to-transparent"
-                    : "hover:bg-[#0f1623]"
+                    : "hover:bg-oc-row-alt"
                 )}
               >
                 {/* Checkbox icon */}
                 <div className="shrink-0">
                   {isChecked
                     ? <CheckCircle2 className="w-5 h-5 text-cyan-400" />
-                    : <Circle className="w-5 h-5 text-[#2d3748] group-hover:text-[#4a5568]" />}
+                    : <Circle className="w-5 h-5 text-oc-icon-dim group-hover:text-oc-icon-muted" />}
                 </div>
 
                 {/* Equipment image — larger, with depth effects */}
                 {item.imageUrl && (
                   <div className={cn(
-                    "relative shrink-0 w-[72px] h-[52px] rounded-xl overflow-hidden border transition-all duration-200",
+                    "relative shrink-0 w-[72px] h-[52px] rounded-xl overflow-hidden transition-all duration-200",
                     isChecked
-                      ? "border-cyan-500/40 shadow-[0_0_12px_rgba(6,182,212,0.2)]"
-                      : "border-[#1f2937] opacity-70 group-hover:opacity-90"
+                      ? "ring-1 ring-cyan-500/50 shadow-[0_0_16px_rgba(6,182,212,0.25)]"
+                      : "ring-1 ring-white/5 opacity-70 group-hover:opacity-95"
                   )}>
                     <img
                       src={item.imageUrl}
@@ -201,7 +200,7 @@ function CategoryCard({
                       className="w-full h-full object-cover object-center"
                     />
                     {/* Subtle vignette */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-transparent to-[#0a0d14]/40" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-transparent to-oc-base/40" />
                     {/* Checked overlay glow */}
                     {isChecked && (
                       <div className="absolute inset-0 ring-1 ring-inset ring-cyan-400/20 rounded-xl" />
@@ -213,7 +212,7 @@ function CategoryCard({
                 <div className="flex-1 min-w-0">
                   <p className={cn(
                     "text-sm font-medium leading-snug transition-colors",
-                    isChecked ? "text-white" : "text-[#9ca3af] group-hover:text-[#d1d5db]"
+                    isChecked ? "text-oc-fg" : "text-oc-fg-muted group-hover:text-oc-fg-hint"
                   )}>
                     {item.name}
                     {isModel && !isChecked && (
@@ -221,7 +220,7 @@ function CategoryCard({
                     )}
                   </p>
                   {item.specs && (
-                    <p className="text-[11px] text-[#4b5563] mt-0.5 truncate leading-relaxed">
+                    <p className="text-[11px] text-oc-placeholder mt-0.5 truncate leading-relaxed">
                       {item.specs}
                     </p>
                   )}
@@ -307,8 +306,8 @@ export function StepEquipmentSelection({
     <div className="space-y-5">
       {/* Header */}
       <div>
-        <h2 className="text-base font-semibold text-white mb-1">Equipment Selection</h2>
-        <p className="text-sm text-[#9ca3af]">
+        <h2 className="text-base font-semibold text-oc-fg mb-1">Equipment Selection</h2>
+        <p className="text-sm text-oc-fg-muted">
           Based on your gym size, we've pre-selected a recommended setup. Adjust or add items as needed.
         </p>
       </div>
@@ -336,9 +335,9 @@ export function StepEquipmentSelection({
 
       {/* Sticky selection summary */}
       {selectedEquipment.length > 0 && (
-        <div className="sticky bottom-4 z-10 rounded-2xl border border-cyan-500/25 bg-[#0a0d14]/90 backdrop-blur-md px-5 py-3.5 flex items-center justify-between shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+        <div className="sticky bottom-4 z-10 rounded-2xl border border-cyan-500/25 bg-oc-base/90 backdrop-blur-md px-5 py-3.5 flex items-center justify-between shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
           <div>
-            <p className="text-sm font-semibold text-white">
+            <p className="text-sm font-semibold text-oc-fg">
               {selectedEquipment.length} items &nbsp;·&nbsp; {totalQty} units
             </p>
             <p className="text-[11px] text-cyan-400/70 mt-0.5">Request will be sent to CF Admin</p>
@@ -355,7 +354,7 @@ export function StepEquipmentSelection({
               ) : null
             )}
             {selectedEquipment.length > 4 && (
-              <span className="w-7 h-7 rounded-lg bg-[#1f2937] border border-[#374151] flex items-center justify-center text-[10px] text-[#9ca3af]">
+              <span className="w-7 h-7 rounded-lg bg-oc-border border border-oc-muted flex items-center justify-center text-[10px] text-oc-fg-muted">
                 +{selectedEquipment.length - 4}
               </span>
             )}

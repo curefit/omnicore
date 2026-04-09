@@ -44,11 +44,11 @@ export function Stepper({ steps, currentStep, completedSteps, className }: Stepp
                   className={cn(
                     "flex items-center justify-center w-8 h-8 rounded-full border-2 text-xs font-bold transition-all",
                     isCompleted &&
-                      "bg-cyan-500 border-cyan-500 text-[#0a0d14]",
+                      "bg-cyan-500 border-cyan-500 text-oc-base",
                     isActive &&
-                      "bg-[#1e3a4a] border-cyan-500 text-cyan-400 shadow-[0_0_0_3px_rgba(6,182,212,0.15)]",
+                      "bg-oc-item-active border-cyan-500 text-cyan-400 shadow-[0_0_0_3px_rgba(6,182,212,0.15)]",
                     isPending &&
-                      "bg-[#111827] border-[#374151] text-[#6b7280]"
+                      "bg-oc-card border-oc-muted text-oc-fg-dim"
                   )}
                 >
                   {isCompleted ? (
@@ -64,14 +64,14 @@ export function Stepper({ steps, currentStep, completedSteps, className }: Stepp
                     className={cn(
                       "text-[11px] font-semibold whitespace-nowrap",
                       isCompleted && "text-cyan-400",
-                      isActive && "text-white",
-                      isPending && "text-[#6b7280]"
+                      isActive && "text-oc-fg",
+                      isPending && "text-oc-fg-dim"
                     )}
                   >
                     {step.label}
                   </p>
                   {step.isOptional && (
-                    <p className="text-[10px] text-[#6b7280]">Optional</p>
+                    <p className="text-[10px] text-oc-fg-dim">Optional</p>
                   )}
                 </div>
               </div>
@@ -81,7 +81,7 @@ export function Stepper({ steps, currentStep, completedSteps, className }: Stepp
                 <div
                   className={cn(
                     "flex-1 h-px mx-2 mt-[-18px]",
-                    isCompleted ? "bg-cyan-500/40" : "bg-[#1f2937]"
+                    isCompleted ? "bg-cyan-500/40" : "bg-oc-border"
                   )}
                 />
               )}

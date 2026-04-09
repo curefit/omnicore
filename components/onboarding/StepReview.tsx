@@ -19,9 +19,9 @@ interface Props {
 function ReviewRow({ label, value }: { label: string; value?: string | number | null }) {
   if (!value && value !== 0) return null
   return (
-    <div className="flex items-start justify-between py-2 border-b border-[#1f2937] last:border-0">
-      <span className="text-xs text-[#6b7280] min-w-32">{label}</span>
-      <span className="text-xs text-[#f9fafb] text-right">{value}</span>
+    <div className="flex items-start justify-between py-2 border-b border-oc-border last:border-0">
+      <span className="text-xs text-oc-fg-dim min-w-32">{label}</span>
+      <span className="text-xs text-oc-fg text-right">{value}</span>
     </div>
   )
 }
@@ -34,8 +34,8 @@ export function StepReview({ data, steps, onBack, onSubmit, isSaving, error }: P
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-base font-semibold text-white mb-1">Review & Confirm</h2>
-        <p className="text-sm text-[#9ca3af]">
+        <h2 className="text-base font-semibold text-oc-fg mb-1">Review & Confirm</h2>
+        <p className="text-sm text-oc-fg-muted">
           Confirm the details below. The center will be saved in{" "}
           <StatusBadge status="ONBOARDING" size="sm" /> status and can be
           completed later.
@@ -43,10 +43,10 @@ export function StepReview({ data, steps, onBack, onSubmit, isSaving, error }: P
       </div>
 
       {/* Center details */}
-      <div className="rounded-xl border border-[#1f2937] bg-[#111827] overflow-hidden">
-        <div className="flex items-center gap-2.5 px-4 py-3 border-b border-[#1f2937] bg-[#0d1117]">
+      <div className="rounded-xl border border-oc-border bg-oc-card overflow-hidden">
+        <div className="flex items-center gap-2.5 px-4 py-3 border-b border-oc-border bg-oc-deep">
           <Building2 className="w-4 h-4 text-cyan-400" />
-          <span className="text-xs font-semibold text-[#9ca3af] uppercase tracking-wider">
+          <span className="text-xs font-semibold text-oc-fg-muted uppercase tracking-wider">
             Center Details
           </span>
         </div>
@@ -60,10 +60,10 @@ export function StepReview({ data, steps, onBack, onSubmit, isSaving, error }: P
       </div>
 
       {/* Society details */}
-      <div className="rounded-xl border border-[#1f2937] bg-[#111827] overflow-hidden">
-        <div className="flex items-center gap-2.5 px-4 py-3 border-b border-[#1f2937] bg-[#0d1117]">
+      <div className="rounded-xl border border-oc-border bg-oc-card overflow-hidden">
+        <div className="flex items-center gap-2.5 px-4 py-3 border-b border-oc-border bg-oc-deep">
           <MapPin className="w-4 h-4 text-purple-400" />
-          <span className="text-xs font-semibold text-[#9ca3af] uppercase tracking-wider">
+          <span className="text-xs font-semibold text-oc-fg-muted uppercase tracking-wider">
             Society / RWA
           </span>
         </div>
@@ -77,10 +77,10 @@ export function StepReview({ data, steps, onBack, onSubmit, isSaving, error }: P
       </div>
 
       {/* Modules */}
-      <div className="rounded-xl border border-[#1f2937] bg-[#111827] overflow-hidden">
-        <div className="flex items-center gap-2.5 px-4 py-3 border-b border-[#1f2937] bg-[#0d1117]">
+      <div className="rounded-xl border border-oc-border bg-oc-card overflow-hidden">
+        <div className="flex items-center gap-2.5 px-4 py-3 border-b border-oc-border bg-oc-deep">
           <Users className="w-4 h-4 text-emerald-400" />
-          <span className="text-xs font-semibold text-[#9ca3af] uppercase tracking-wider">
+          <span className="text-xs font-semibold text-oc-fg-muted uppercase tracking-wider">
             Enabled Modules ({enabledModules.length})
           </span>
         </div>
@@ -94,17 +94,17 @@ export function StepReview({ data, steps, onBack, onSubmit, isSaving, error }: P
             </span>
           ))}
           {enabledModules.length === 0 && (
-            <span className="text-xs text-[#6b7280]">No modules selected</span>
+            <span className="text-xs text-oc-fg-dim">No modules selected</span>
           )}
         </div>
       </div>
 
       {/* MyGate config summary */}
       {data.selectedModules.includes("MYGATE") && data.myGateSocietyId && (
-        <div className="rounded-xl border border-[#1f2937] bg-[#111827] overflow-hidden">
-          <div className="flex items-center gap-2.5 px-4 py-3 border-b border-[#1f2937] bg-[#0d1117]">
+        <div className="rounded-xl border border-oc-border bg-oc-card overflow-hidden">
+          <div className="flex items-center gap-2.5 px-4 py-3 border-b border-oc-border bg-oc-deep">
             <Wifi className="w-4 h-4 text-cyan-400" />
-            <span className="text-xs font-semibold text-[#9ca3af] uppercase tracking-wider">
+            <span className="text-xs font-semibold text-oc-fg-muted uppercase tracking-wider">
               MyGate Config
             </span>
           </div>

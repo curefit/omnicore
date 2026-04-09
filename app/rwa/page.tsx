@@ -14,7 +14,7 @@ export default async function RWADashboard() {
     return (
       <div className="flex flex-col items-center justify-center h-64 gap-3">
         <OmniMascot variant="empty" size="lg" />
-        <p className="text-sm text-[#9ca3af]">No active center found</p>
+        <p className="text-sm text-oc-fg-muted">No active center found</p>
       </div>
     )
   }
@@ -22,8 +22,8 @@ export default async function RWADashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-[#e5e7eb]">{center.name}</h1>
-        <p className="text-sm text-[#6b7280] mt-1">
+        <h1 className="text-2xl font-display font-bold tracking-[-0.02em] text-oc-fg-soft">{center.name}</h1>
+        <p className="text-sm text-oc-fg-dim mt-1">
           Resident dashboard —{" "}
           {new Date().toLocaleDateString("en-IN", {
             weekday: "long",

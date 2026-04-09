@@ -46,16 +46,16 @@ interface Center {
 }
 
 function quoteStatusDot(quoteStatus: string | undefined): string {
-  if (!quoteStatus) return "bg-[#6b7280]"
+  if (!quoteStatus) return "bg-oc-fg-dim"
   const map: Record<string, string> = {
-    DRAFT: "bg-[#374151]",
+    DRAFT: "bg-oc-muted",
     SENT: "bg-[#f97316]",
     REVISION_REQUESTED: "bg-amber-400 animate-pulse",
     ACCEPTED: "bg-emerald-400",
     REJECTED: "bg-red-400",
     CANCELLED: "bg-red-400",
   }
-  return map[quoteStatus] ?? "bg-[#6b7280]"
+  return map[quoteStatus] ?? "bg-oc-fg-dim"
 }
 
 function quoteStatusLabel(quoteStatus: string | undefined, revisionRound: number): string {
@@ -97,19 +97,19 @@ export function CenterQuoteStatusCard({
     : null
 
   return (
-    <div className={`rounded-xl border overflow-hidden transition-all ${hasBilling ? "border-emerald-500/20" : "border-[#1f2937]"}`}>
+    <div className={`rounded-xl border overflow-hidden transition-all ${hasBilling ? "border-emerald-500/20" : "border-oc-border"}`}>
       {/* Main row */}
-      <div className="flex items-center gap-4 px-4 py-3 bg-[#111827] hover:bg-[#1a2235] transition-colors">
-        <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-[#1f2937] border border-[#374151] shrink-0">
-          <Building2 className="w-4 h-4 text-[#6b7280]" />
+      <div className="flex items-center gap-4 px-4 py-3 bg-oc-card hover:bg-oc-hover transition-colors">
+        <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-oc-border border border-oc-muted shrink-0">
+          <Building2 className="w-4 h-4 text-oc-fg-dim" />
         </div>
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <p className="text-sm font-semibold text-white truncate">{center.name}</p>
+            <p className="text-sm font-semibold text-oc-fg truncate">{center.name}</p>
             <StatusBadge status={center.status} showDot />
           </div>
-          <p className="text-[11px] text-[#6b7280] mt-0.5">
+          <p className="text-[11px] text-oc-fg-dim mt-0.5">
             {center.city} · {center.code}
             {center.gymSqFt && ` · ${center.gymSqFt.toLocaleString()} sqft`}
             {center.residentialDetails && ` · ${center.residentialDetails.totalUnits.toLocaleString()} units`}
@@ -130,7 +130,7 @@ export function CenterQuoteStatusCard({
           ) : center.lead ? (
             <>
               <div className={`w-2.5 h-2.5 rounded-full ${quoteStatusDot(quote?.status)}`} />
-              <span className="text-[11px] text-[#9ca3af] hidden sm:block">
+              <span className="text-[11px] text-oc-fg-muted hidden sm:block">
                 {quoteStatusLabel(quote?.status, quote?.revisionRound ?? 0)}
               </span>
             </>
@@ -145,7 +145,7 @@ export function CenterQuoteStatusCard({
             ) : (
               <>
                 {totalOneTime != null && totalOneTime > 0 && (
-                  <p className="text-xs text-[#9ca3af]">{formatPaise(totalOneTime)} setup</p>
+                  <p className="text-xs text-oc-fg-muted">{formatPaise(totalOneTime)} setup</p>
                 )}
                 {totalMonthly != null && totalMonthly > 0 && (
                   <p className="text-xs text-emerald-400">{formatPaise(totalMonthly)}/mo</p>
@@ -159,7 +159,7 @@ export function CenterQuoteStatusCard({
         {isLegacyActive && legacyMonthly > 0 && (
           <div className="shrink-0 text-right hidden md:block">
             <p className="text-xs text-emerald-400">{formatPaise(legacyMonthly)}/mo</p>
-            <p className="text-[10px] text-[#6b7280]">est. recurring</p>
+            <p className="text-[10px] text-oc-fg-dim">est. recurring</p>
           </div>
         )}
 
@@ -169,7 +169,7 @@ export function CenterQuoteStatusCard({
             <button
               type="button"
               onClick={() => setExpanded((v) => !v)}
-              className="p-1.5 rounded-lg hover:bg-[#1f2937] text-[#6b7280] hover:text-white transition-colors"
+              className="p-1.5 rounded-lg hover:bg-oc-border text-oc-fg-dim hover:text-oc-fg transition-colors"
               title="Show quote history"
             >
               {expanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5 -rotate-90" />}
@@ -178,7 +178,7 @@ export function CenterQuoteStatusCard({
           {/* Center detail (RWA replica for CF Admin) vs lead page */}
           <Link
             href={`/cf-admin/centers/${center.id}`}
-            className="p-1.5 rounded-lg hover:bg-[#1f2937] text-[#6b7280] hover:text-white transition-colors"
+            className="p-1.5 rounded-lg hover:bg-oc-border text-oc-fg-dim hover:text-oc-fg transition-colors"
             title="View center detail"
           >
             <ChevronRight className="w-3.5 h-3.5" />
@@ -188,28 +188,28 @@ export function CenterQuoteStatusCard({
 
       {/* Expandable history dropdown */}
       {expanded && history.length > 0 && (
-        <div className="px-4 py-3 bg-[#0d1117] border-t border-[#1f2937]">
-          <p className="text-[10px] font-semibold text-[#6b7280] uppercase tracking-wider mb-2.5">Quote Journey</p>
+        <div className="px-4 py-3 bg-oc-deep border-t border-oc-border">
+          <p className="text-[10px] font-semibold text-oc-fg-dim uppercase tracking-wider mb-2.5">Quote Journey</p>
           <div className="space-y-2">
             {history.map((entry, i) => (
               <div key={i} className="flex items-start gap-2.5">
                 <div className={`w-2 h-2 rounded-full shrink-0 mt-1.5 ${ACTION_DOT[entry.action]}`} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-[11px] text-[#e5e7eb] font-medium">{ACTION_LABEL[entry.action]}</p>
-                  {entry.notes && <p className="text-[10px] text-[#6b7280] italic">&ldquo;{entry.notes}&rdquo;</p>}
+                  <p className="text-[11px] text-oc-fg-soft font-medium">{ACTION_LABEL[entry.action]}</p>
+                  {entry.notes && <p className="text-[10px] text-oc-fg-dim italic">&ldquo;{entry.notes}&rdquo;</p>}
                   {entry.snapshot?.totalOneTime != null && entry.snapshot.totalOneTime > 0 && (
-                    <p className="text-[10px] text-[#4b5563]">
+                    <p className="text-[10px] text-oc-placeholder">
                       {formatPaise(entry.snapshot.totalOneTime)} one-time
                       {entry.snapshot.totalMonthly ? ` · ${formatPaise(entry.snapshot.totalMonthly)}/mo` : ""}
                     </p>
                   )}
                   {entry.snapshot?.totalAmount != null && (
-                    <p className="text-[10px] text-[#4b5563]">
+                    <p className="text-[10px] text-oc-placeholder">
                       Total: {formatPaise(entry.snapshot.totalAmount)}
                     </p>
                   )}
                 </div>
-                <span className="text-[10px] text-[#374151] shrink-0">
+                <span className="text-[10px] text-oc-muted shrink-0">
                   {new Date(entry.ts).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
                 </span>
               </div>
