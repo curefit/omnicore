@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Inter, DM_Mono, Space_Grotesk } from "next/font/google"
+import { Inter, Roboto, DM_Mono, Space_Grotesk } from "next/font/google"
 import { ThemeProvider } from "@/components/theme/ThemeProvider"
 import { GlobalThemeToggle } from "@/components/theme/GlobalThemeToggle"
 import "./globals.css"
@@ -7,6 +7,13 @@ import "./globals.css"
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  display: "swap",
+})
+
+const roboto = Roboto({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-roboto",
   display: "swap",
 })
 
@@ -37,7 +44,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${dmMono.variable} ${spaceGrotesk.variable}`}
+      className={`${inter.variable} ${roboto.variable} ${dmMono.variable} ${spaceGrotesk.variable}`}
       suppressHydrationWarning
     >
       <body>

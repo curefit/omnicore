@@ -51,7 +51,7 @@ export function Sidebar({ role, currentPath, endSlot }: SidebarProps) {
       </div>
 
       {/* Nav items */}
-      <nav className="flex-1 px-3 py-2 space-y-0.5 overflow-y-auto">
+      <nav className="flex-1 px-3 py-2 space-y-0.5 overflow-y-auto font-ui">
         {navItems.map((item) => {
           const isActive =
             currentPath === item.href ||
