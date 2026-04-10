@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { StatusBadge } from "@/components/shared/StatusBadge"
 import { type OnboardingData } from "./OnboardingShell"
 import { type OnboardingStep } from "@/lib/onboarding/steps"
-import { ChevronLeft, Save, Loader2, Building2, Users, Wifi, MapPin } from "lucide-react"
+import { ChevronLeft, Save, Loader2, Building2, Users, Wifi, MapPin, Wrench } from "lucide-react"
 import { CENTER_MODULE_META } from "@/lib/constants/enums"
 
 interface Props {
@@ -56,6 +56,10 @@ export function StepReview({ data, steps, onBack, onSubmit, isSaving, error }: P
           <ReviewRow label="Address" value={`${data.address}, ${data.city} — ${data.pincode}`} />
           <ReviewRow label="Capacity" value={data.capacity} />
           <ReviewRow label="Gym Size" value={data.gymSqFt ? `${data.gymSqFt} sq ft` : null} />
+          <ReviewRow
+            label="Gym setup"
+            value={data.gymSetupType === "NEW_GYM" ? "New gym (full catalog)" : "Existing gym (upgrades)"}
+          />
         </div>
       </div>
 
@@ -98,6 +102,29 @@ export function StepReview({ data, steps, onBack, onSubmit, isSaving, error }: P
           )}
         </div>
       </div>
+
+      {/* Selected equipment (ASSETS) */}
+      {data.selectedModules.includes("ASSETS") && data.selectedEquipment.length > 0 && (
+        <div className="rounded-xl border border-oc-border bg-oc-card overflow-hidden">
+          <div className="flex items-center gap-2.5 px-4 py-3 border-b border-oc-border bg-oc-deep">
+            <Wrench className="w-4 h-4 text-amber-400" />
+            <span className="text-xs font-semibold text-oc-fg-muted uppercase tracking-wider">
+              Equipment ({data.selectedEquipment.length} lines)
+            </span>
+          </div>
+          <div className="px-4 py-3 max-h-48 overflow-y-auto space-y-1">
+            {data.selectedEquipment.map((item) => (
+              <div
+                key={item.sku}
+                className="flex justify-between text-xs text-oc-fg-muted gap-2"
+              >
+                <span className="text-oc-fg truncate">{item.name}</span>
+                <span className="shrink-0 tabular-nums">×{item.qty}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* MyGate config summary */}
       {data.selectedModules.includes("MYGATE") && data.myGateSocietyId && (

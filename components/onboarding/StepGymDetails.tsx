@@ -22,6 +22,7 @@ export function StepGymDetails({ data, onChange, onNext }: Props) {
   } = useForm<OnboardingStep1>({
     resolver: zodResolver(OnboardingStep1Schema),
     defaultValues: {
+      gymSetupType: data.gymSetupType ?? "NEW_GYM",
       name: data.name,
       code: data.code,
       address: data.address,
@@ -50,6 +51,19 @@ export function StepGymDetails({ data, onChange, onNext }: Props) {
           Gym Details
         </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <FormField
+            label="Gym setup type"
+            error={errors.gymSetupType?.message}
+            hint="New gym gets full equipment selection; existing gym focuses on upgrades"
+            required
+            className="sm:col-span-2"
+          >
+            <select {...register("gymSetupType")} className="form-input">
+              <option value="NEW_GYM">New gym — full equipment catalog (same as RWA setup)</option>
+              <option value="EXISTING_GYM">Existing gym — equipment upgrade selection</option>
+            </select>
+          </FormField>
+
           <FormField label="Center / Gym Name" error={errors.name?.message} required>
             <input
               {...register("name")}

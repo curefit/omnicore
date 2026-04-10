@@ -1,23 +1,26 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Stepper } from "@/components/shared/Stepper"
 import { Button } from "@/components/ui/button"
 import { deriveOnboardingSteps } from "@/lib/onboarding/steps"
 import { type CenterModuleKey } from "@/lib/constants/enums"
+import { getModelGymItems, computeGymTier, type GymSetupType } from "@/lib/equipment/catalog"
 import { StepGymDetails } from "./StepGymDetails"
 import { StepModuleSelection } from "./StepModuleSelection"
 import { StepTrainerSetup } from "./StepTrainerSetup"
 import { StepAssetSetup } from "./StepAssetSetup"
+import { StepEquipmentSelection, type SelectedEquipmentItem } from "./StepEquipmentSelection"
+import { StepServicesNeeded } from "./StepServicesNeeded"
 import { StepMyGateConfig } from "./StepMyGateConfig"
 import { StepVendingSetup } from "./StepVendingSetup"
 import { StepBrandingSetup } from "./StepBrandingSetup"
 import { StepReview } from "./StepReview"
-import { ChevronLeft, ChevronRight, Save } from "lucide-react"
 
 export interface OnboardingData {
   // Step 1
+  gymSetupType: GymSetupType
   name: string
   code: string
   address: string
@@ -34,8 +37,9 @@ export interface OnboardingData {
   selectedModules: CenterModuleKey[]
   // Step 3a
   trainerIds?: string[]
-  // Step 3b — assets added during onboarding (simplified)
+  // Step 3b — assets added during onboarding (simplified legacy)
   assetCount?: number
+  selectedEquipment: SelectedEquipmentItem[]
   // Step 3e
   myGateSocietyId?: string
   myGateApiKey?: string
@@ -45,6 +49,7 @@ export interface OnboardingData {
 }
 
 const EMPTY_DATA: OnboardingData = {
+  gymSetupType: "NEW_GYM",
   name: "",
   code: "",
   address: "",
@@ -57,6 +62,7 @@ const EMPTY_DATA: OnboardingData = {
   contactPersonPhone: "",
   contactPersonEmail: "",
   selectedModules: [],
+  selectedEquipment: [],
 }
 
 interface OnboardingShellProps {
@@ -71,8 +77,32 @@ export function OnboardingShell({ availableTrainers }: OnboardingShellProps) {
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const steps = deriveOnboardingSteps(data.selectedModules)
+  const steps = deriveOnboardingSteps(data.selectedModules, data.gymSetupType)
   const currentStepDef = steps[currentStep]
+  const equipmentPrefillDoneRef = useRef(false)
+
+  useEffect(() => {
+    if (currentStepDef?.id !== "equipment-selection") {
+      equipmentPrefillDoneRef.current = false
+      return
+    }
+    if (data.gymSetupType !== "NEW_GYM") return
+    if ((data.selectedEquipment?.length ?? 0) > 0) return
+    if (equipmentPrefillDoneRef.current) return
+    equipmentPrefillDoneRef.current = true
+    const tier = computeGymTier(data.gymSqFt, data.totalUnits)
+    const modelItems = getModelGymItems(tier)
+    setData((prev) => ({
+      ...prev,
+      selectedEquipment: modelItems.map((i) => ({ ...i, qty: i.qty })),
+    }))
+  }, [
+    currentStepDef?.id,
+    data.gymSetupType,
+    data.gymSqFt,
+    data.totalUnits,
+    data.selectedEquipment.length,
+  ])
   const isLastStep = currentStep === steps.length - 1
   const isFirstStep = currentStep === 0
 
@@ -141,6 +171,26 @@ export function OnboardingShell({ availableTrainers }: OnboardingShellProps) {
       case "asset-setup":
         return (
           <StepAssetSetup data={data} onChange={updateData} onNext={goNext} onBack={goBack} />
+        )
+      case "equipment-selection":
+        return (
+          <StepEquipmentSelection
+            gymSqFt={data.gymSqFt}
+            totalUnits={data.totalUnits}
+            selectedEquipment={data.selectedEquipment}
+            onChange={(items) => updateData({ selectedEquipment: items })}
+            onNext={goNext}
+            onBack={goBack}
+          />
+        )
+      case "services-needed":
+        return (
+          <StepServicesNeeded
+            selectedEquipment={data.selectedEquipment}
+            onChange={(items) => updateData({ selectedEquipment: items })}
+            onNext={goNext}
+            onBack={goBack}
+          />
         )
       case "mygate-config":
         return (

@@ -11,7 +11,16 @@ const VALID_MODULE_KEYS = [
   CenterModuleKey.MYGATE,
 ] as const
 
+const SelectedEquipmentItemSchema = z.object({
+  sku: z.string(),
+  name: z.string(),
+  category: z.string(),
+  qty: z.number().int().min(1),
+  imageUrl: z.string().optional(),
+})
+
 const OnboardingPayloadSchema = z.object({
+  gymSetupType: z.enum(["NEW_GYM", "EXISTING_GYM"]),
   name: z.string().min(2),
   code: z.string().min(3).max(20).regex(/^[A-Z0-9-]+$/),
   address: z.string().min(5),
@@ -33,6 +42,7 @@ const OnboardingPayloadSchema = z.object({
   myGateWebhookUrl: z.string().optional(),
   // displayName is stored in the BRANDING CenterModule config field, not on Center directly
   displayName: z.string().optional(),
+  selectedEquipment: z.array(SelectedEquipmentItemSchema).optional().default([]),
 })
 
 export async function POST(req: NextRequest) {
@@ -120,6 +130,25 @@ export async function POST(req: NextRequest) {
             trainerId,
             isActive: true,
           })),
+        })
+      }
+
+      // 6. Equipment assets (same shape as quote acceptance — ASSETS module + selection)
+      const equipmentList = data.selectedEquipment ?? []
+      if (data.selectedModules.includes(CenterModuleKey.ASSETS) && equipmentList.length > 0) {
+        const sixMonthsFromNow = new Date(Date.now() + 180 * 24 * 60 * 60 * 1000)
+        await tx.equipmentAsset.createMany({
+          data: equipmentList.flatMap(({ sku, name, category, qty }) =>
+            Array.from({ length: Math.min(qty, 10) }, () => ({
+              centerId: center.id,
+              name,
+              category,
+              catalogItemSku: sku,
+              condition: "GOOD",
+              installationDate: new Date(),
+              nextServiceDue: sixMonthsFromNow,
+            }))
+          ),
         })
       }
 

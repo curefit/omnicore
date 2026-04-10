@@ -4,6 +4,7 @@ import { CenterModuleKey } from "@/lib/constants/enums"
 // ─── Step 1: Gym & Society Details ────────────────────────────────────────────
 
 export const GymDetailsSchema = z.object({
+  gymSetupType: z.enum(["NEW_GYM", "EXISTING_GYM"]),
   name: z.string().min(2, "Center name must be at least 2 characters"),
   code: z
     .string()
